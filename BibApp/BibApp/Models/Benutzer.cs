@@ -8,7 +8,9 @@ namespace BibApp.Models
     public class Benutzer
     {
         public int Id { get; set; }
-    }
+        public String Name { get; set; }
 
-    public String Name { get; set; }
+
+
+    }
 }
