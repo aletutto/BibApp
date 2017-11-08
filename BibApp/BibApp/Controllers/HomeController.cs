@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BibApp.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BibApp.Controllers
 {
@@ -27,13 +28,7 @@ namespace BibApp.Controllers
             ViewData["Message"] = "Your contact page.";
 
             return View();
-        }
-
-        public IActionResult Login()
-        {
-            ViewData["Message"] = "Your login page.";
-            return View();
-        }
+        }     
 
         public IActionResult Error()
         {

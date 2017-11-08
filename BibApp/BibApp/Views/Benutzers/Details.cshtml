@@ -1,0 +1,30 @@
+﻿@model BibApp.Models.Benutzer
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Benutzer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Benutzername)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Benutzername)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Passwort)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Passwort)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
