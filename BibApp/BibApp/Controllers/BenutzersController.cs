@@ -22,50 +22,80 @@ namespace BibApp.Controllers
             return View();
         }
 
-        public async Task<ActionResult> BenutzerCheck(Benutzer user)
+        [HttpPost]
+        public ActionResult BenutzerCheck(Benutzer benutzer)
         {
-
-            if (ModelState.IsValid)
+              
+            if (IsValid(benutzer.Benutzername, benutzer.Passwort))
             {
-                List<Benutzer> groups = new List<Benutzer>();
-                var conn = _context.Database.GetDbConnection();
-                try
-                {
-                    await conn.OpenAsync();
-                    using (var command = conn.CreateCommand())
-                    {
-                        string query = "SELECT Benutzername, Passwort "
-                            + "FROM Benutzers "
-                            + "WHERE Benutzername='" + user.Benutzername 
-                            + "' AND Passwort='" + user.Passwort + "'";
-                        command.CommandText = query;
-                        DbDataReader reader = await command.ExecuteReaderAsync();
-
-                        if (reader.HasRows)
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                var row = new Benutzer { Benutzername = reader.GetString(0), Passwort = reader.GetString(1) };
-                                groups.Add(row);
-                                System.Console.WriteLine("HIER:::  "+ row.Benutzername + "  PW:   " + row.Passwort);
-                            }
-                        } else
-                        {
-                            System.Console.WriteLine("FEHLER FEHLERFEHLERFEHLER FEHLER FEHLER");
-                            return View("Login");
-                        }
-                        reader.Dispose();
-                    }
-                }
-                finally
-                {
-                    conn.Close();
-                }
-                return RedirectToAction(nameof(Index));
-
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Login details are wrong.");
             }
             return View("Login");
         }
+
+        private bool IsValid(string benutzername, string password)
+        {
+            bool IsValid = false;
+            var user = _context.Benutzers.FirstOrDefault(u => u.Benutzername == benutzername);
+            if (user != null)
+            {
+                var pw = _context.Benutzers.FirstOrDefault(u => u.Passwort == password);
+                if (pw != null)
+                {
+                    IsValid = true;
+                }
+            }
+            return IsValid;
+        }
+
+        //public async Task<ActionResult> BenutzerCheck(Benutzer user)
+        //{
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        List<Benutzer> groups = new List<Benutzer>();
+        //        var conn = _context.Database.GetDbConnection();
+        //        try
+        //        {
+        //            await conn.OpenAsync();
+        //            using (var command = conn.CreateCommand())
+        //            {
+        //                string query = "SELECT Benutzername, Passwort "
+        //                    + "FROM Benutzers "
+        //                    + "WHERE Benutzername='" + user.Benutzername 
+        //                    + "' AND Passwort='" + user.Passwort + "'";
+        //                command.CommandText = query;
+        //                DbDataReader reader = await command.ExecuteReaderAsync();
+
+        //                if (reader.HasRows)
+        //                {
+        //                    while (await reader.ReadAsync())
+        //                    {
+        //                        var row = new Benutzer { Benutzername = reader.GetString(0), Passwort = reader.GetString(1) };
+        //                        groups.Add(row);
+        //                        System.Console.WriteLine("HIER:::  "+ row.Benutzername + "  PW:   " + row.Passwort);
+        //                    }
+        //                } else
+        //                {
+        //                    System.Console.WriteLine("FEHLER FEHLERFEHLERFEHLER FEHLER FEHLER");
+        //                    return View("Login");
+        //                }
+        //                reader.Dispose();
+        //            }
+        //        }
+        //        finally
+        //        {
+        //            conn.Close();
+        //        }
+        //        return RedirectToAction(nameof(Index));
+
+        //    }
+        //    return View("Login");
+        //}
 
         // GET: Benutzers
         public async Task<IActionResult> Index()
