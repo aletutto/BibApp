@@ -22,12 +22,18 @@ namespace BibApp.Controllers
             return View();
         }
 
+        public IActionResult Logout()
+        {
+            return View();
+        }
+
         [HttpPost]
         public ActionResult BenutzerCheck(Benutzer benutzer)
         {
               
             if (IsValid(benutzer.Benutzername, benutzer.Passwort))
             {
+                Benutzer.isLoggedIn = true;
                 return RedirectToAction("Index");
             }
             else

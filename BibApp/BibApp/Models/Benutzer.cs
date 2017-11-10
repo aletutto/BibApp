@@ -11,6 +11,8 @@ namespace BibApp.Models
     {
         public int Id { get; set; }
 
+        public static bool isLoggedIn = false;
+
         [Required]
         public string Benutzername { get; set; }
 
