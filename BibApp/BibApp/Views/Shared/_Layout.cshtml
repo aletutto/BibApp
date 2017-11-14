@@ -36,7 +36,6 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">Verwaltung</a></li>
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Accountverwaltung placeholder</a></li>
 
-                    <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
                     <li><a href="#">Link</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -53,11 +52,10 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                   @*@if (User.Identity.IsAuthenticated)*@
                    @if (Benutzer.isLoggedIn == true)
-                    {
-                        <li>@User.Identity.Name</li>
-                        <li><form method="post" asp-controller="Benutzers" asp-action="Logout"> <input type="submit" value="Logout" /></form> </li>
+                   {
+                        <li><a href="">Willkommen!</a></li>
+                        <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
                     }
                     else
                     {
