@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BibApp.Models;
-using System.Data.Common;
-using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {

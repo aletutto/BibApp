@@ -1,0 +1,65 @@
+﻿@model IEnumerable<BibApp.Models.Buch>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Bezeichnung)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Autoren)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Verfügbarkeit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Verlag)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Regal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Reihe)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bezeichnung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Autoren)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Verfügbarkeit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Verlag)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Regal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reihe)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

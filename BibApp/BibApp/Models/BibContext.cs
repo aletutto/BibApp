@@ -10,5 +10,6 @@ public class BibContext : DbContext
 
     // Mehrere Models möglich!
     public DbSet<Benutzer> Benutzers { get; set; }
+    public DbSet<Buch> Buecher { get; set; }
 
 }

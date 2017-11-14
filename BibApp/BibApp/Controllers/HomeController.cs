@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BibApp.Models;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BibApp.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly BibContext _context;
+
+        public HomeController(BibContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Benutzers.ToListAsync());
         }
 
         public IActionResult About()

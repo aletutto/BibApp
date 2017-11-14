@@ -23,9 +23,6 @@ namespace BibApp
             services.AddDbContext<BibContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("BibContextConnection")));
             services.AddMvc();
-            services.AddIdentity<IdentityUser, IdentityRole>()
-             .AddEntityFrameworkStores<IdentityDbContext>()
-             .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,7 +37,6 @@ namespace BibApp
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseAuthentication();
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

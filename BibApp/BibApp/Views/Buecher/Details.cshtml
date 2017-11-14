@@ -1,0 +1,54 @@
+﻿@model BibApp.Models.Buch
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Buch</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Bezeichnung)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Bezeichnung)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Autoren)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Autoren)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Verfügbarkeit)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Verfügbarkeit)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Verlag)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Verlag)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Regal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Regal)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Reihe)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Reihe)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
