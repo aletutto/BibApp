@@ -17,6 +17,8 @@ namespace BibApp.Models
 
         public bool Verfügbarkeit { get; set; }
 
+        public bool IstVorgemerkt { get; set; }
+
         public String Verlag { get; set; }
 
         [Range(1, 24)]
@@ -24,5 +26,11 @@ namespace BibApp.Models
 
         [Range(1, 4)]
         public int Reihe { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime EntliehenVom { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime EntliehenBis { get; set; }
     }
 }

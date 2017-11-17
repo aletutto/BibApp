@@ -29,10 +29,10 @@ namespace BibApp.Data
 
             var buch = new Buch[]
             {
-            new Buch{Bezeichnung="Deutsch 1", Autoren="Max H.", Regal=4, Reihe=1, Verfügbarkeit=true, Verlag="German Verlag"},
-            new Buch{Bezeichnung="Deutsch 2", Autoren="Max B.", Regal=2, Reihe=4, Verfügbarkeit=false, Verlag="Germanee Verlag"},
-            new Buch{Bezeichnung="Deutsch 3", Autoren="Max D.", Regal=1, Reihe=3, Verfügbarkeit=true, Verlag="dutch Verlag"},
-            new Buch{Bezeichnung="Deutsch 4", Autoren="Max A.", Regal=3, Reihe=2, Verfügbarkeit=true, Verlag="english Verlag"},
+            new Buch{Bezeichnung="Deutsch 1", Autoren="Max H.", Regal=4, Reihe=1, Verfügbarkeit=true, Verlag="German Verlag", IstVorgemerkt=false},
+            new Buch{Bezeichnung="Deutsch 2", Autoren="Max B.", Regal=2, Reihe=4, Verfügbarkeit=false, Verlag="Germanee Verlag", IstVorgemerkt=false},
+            new Buch{Bezeichnung="Deutsch 3", Autoren="Max D.", Regal=1, Reihe=3, Verfügbarkeit=true, Verlag="dutch Verlag", IstVorgemerkt=false},
+            new Buch{Bezeichnung="Deutsch 4", Autoren="Max A.", Regal=3, Reihe=2, Verfügbarkeit=true, Verlag="english Verlag", IstVorgemerkt=false},
             };
             foreach (Buch c in buch)
             {
