@@ -53,7 +53,7 @@ namespace BibApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,Verlag,Regal,Reihe")] Buch buch)
+        public async Task<IActionResult> Create([Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace BibApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,Verlag,Regal,Reihe")] Buch buch)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
         {
             if (id != buch.Id)
             {

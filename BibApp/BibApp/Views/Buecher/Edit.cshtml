@@ -31,6 +31,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IstVorgemerkt" /> @Html.DisplayNameFor(model => model.IstVorgemerkt)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
                 <label asp-for="Verlag" class="control-label"></label>
                 <input asp-for="Verlag" class="form-control" />
                 <span asp-validation-for="Verlag" class="text-danger"></span>
@@ -44,6 +51,16 @@
                 <label asp-for="Reihe" class="control-label"></label>
                 <input asp-for="Reihe" class="form-control" />
                 <span asp-validation-for="Reihe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EntliehenVom" class="control-label"></label>
+                <input asp-for="EntliehenVom" class="form-control" />
+                <span asp-validation-for="EntliehenVom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EntliehenBis" class="control-label"></label>
+                <input asp-for="EntliehenBis" class="form-control" />
+                <span asp-validation-for="EntliehenBis" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

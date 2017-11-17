@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BibApp.Models.Benutzer>
+﻿@model BibApp.Models.HomeIndexData
 
 @{
     ViewData["Title"] = "Home Page";
@@ -11,28 +11,52 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-9">
         <table class="table" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzername)
+                        @Html.DisplayNameFor(model => model.Buch.Bezeichnung)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Passwort)
+                        @Html.DisplayNameFor(model => model.Buch.Autoren)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Buch.Verlag)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Buch.EntliehenVom)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Buch.EntliehenBis)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Buecher)
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Benutzername)
+                            @Html.DisplayFor(modelItem => item.Bezeichnung)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Passwort)
+                            @Html.DisplayFor(modelItem => item.Autoren)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IstVorgemerkt)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Verlag)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EntliehenVom)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EntliehenBis)
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -44,7 +68,7 @@
             </tbody>
         </table>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-3">
         <p>TEST</p>
         <button type="button" class="btn">Benachrichtigen</button>
         <button type="button" class="btn btn-default">Benachrichtigen</button>
@@ -68,16 +92,16 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzername)
+                        @Html.DisplayNameFor(model => model.Benutzer.Benutzername)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Passwort)
+                        @Html.DisplayNameFor(model => model.Benutzer.Passwort)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Benutzers)
             {
                     <tr>
                         <td>

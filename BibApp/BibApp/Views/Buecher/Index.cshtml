@@ -22,6 +22,9 @@
                     @Html.DisplayNameFor(model => model.Verfügbarkeit)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.IstVorgemerkt)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.Verlag)
                 </th>
                 <th>
@@ -29,6 +32,12 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Reihe)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EntliehenVom)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EntliehenBis)
                 </th>
             <th></th>
         </tr>
@@ -46,6 +55,9 @@
                 @Html.DisplayFor(modelItem => item.Verfügbarkeit)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.IstVorgemerkt)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Verlag)
             </td>
             <td>
@@ -53,6 +65,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Reihe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntliehenVom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntliehenBis)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using BibApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Dynamic;
+using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {
@@ -16,9 +18,13 @@ namespace BibApp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Benutzers.ToListAsync());
+            HomeIndexData model = new HomeIndexData();
+
+            model.Benutzers = _context.Benutzers.ToList();
+            model.Buecher = _context.Buecher.ToList();
+            return View(model);
         }
 
         public IActionResult About()
