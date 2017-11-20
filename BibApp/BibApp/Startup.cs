@@ -42,7 +42,7 @@ namespace BibApp
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Benutzers}/{action=Login}/{id?}");
             });
             context.Database.EnsureCreated();
         }

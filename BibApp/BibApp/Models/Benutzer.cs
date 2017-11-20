@@ -9,6 +9,10 @@ namespace BibApp.Models
 
         public static bool isLoggedIn = false;
 
+        public static bool isAdmin = false;
+
+        public string Rolle { get; set; }
+
         [Required]
         public string Benutzername { get; set; }
 

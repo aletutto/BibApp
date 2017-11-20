@@ -33,11 +33,21 @@ namespace BibApp.Controllers
             if (IsValid(benutzer.Benutzername, benutzer.Passwort))
             {
                 Benutzer.isLoggedIn = true;
-                return RedirectToAction("Index");
+                var user = _context.Benutzers.FirstOrDefault(u => u.Benutzername == benutzer.Benutzername);
+                if (user.Rolle == "admin")
+                {
+                    Benutzer.isAdmin = true;
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    Benutzer.isAdmin = false;
+                    return RedirectToAction("UserIndex", "Home");
+                }
             }
             else
             {
-                ModelState.AddModelError("", "Login details are wrong.");
+                ModelState.AddModelError("", "Login Angaben sind falsch.");
             }
             return View("Login");
         }

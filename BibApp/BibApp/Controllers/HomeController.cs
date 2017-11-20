@@ -27,6 +27,15 @@ namespace BibApp.Controllers
             return View(model);
         }
 
+        public IActionResult UserIndex()
+        {
+            HomeIndexData model = new HomeIndexData();
+
+            model.Benutzers = _context.Benutzers.ToList();
+            model.Buecher = _context.Buecher.ToList();
+            return View(model);
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
