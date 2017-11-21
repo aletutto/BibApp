@@ -11,10 +11,7 @@
 </p>
 <table class="table table-hover" style="border: 1px solid #808080">
     <thead>
-        <tr>
-                <th>
-                     Checkbox!
-                </th>    
+        <tr>   
                 <th>
                     @Html.DisplayNameFor(model => model.Id)
                 </th>
@@ -51,9 +48,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.CheckBoxFor(modelItem => item.IsSelected)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
