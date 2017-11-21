@@ -9,9 +9,15 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-hover" style="border: 1px solid #808080">
     <thead>
         <tr>
+                <th>
+                     Checkbox!
+                </th>    
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Bezeichnung)
                 </th>
@@ -46,6 +52,12 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.CheckBoxFor(modelItem => item.IsSelected)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Bezeichnung)
             </td>
             <td>
@@ -79,5 +91,24 @@
             </td>
         </tr>
 }
+
+
     </tbody>
 </table>
+
+<div class="row">
+    <div class="col-sm-9">
+        <button type="submit" class="btn btn-default">Hinzufügen</button>
+
+
+
+
+        <button type="button" class="btn btn-default">Bearbeiten</button>
+        <button type="button" class="btn btn-primary">Details</button>
+        <button type="button" class="btn btn-success">Löschen</button>
+    </div>
+    <div class="col-sm-3">
+        <button type="button" class="btn btn-primary">Verleihen</button>
+        <button type="button" class="btn btn-success">Zurückgeben</button>
+    </div>
+</div>       

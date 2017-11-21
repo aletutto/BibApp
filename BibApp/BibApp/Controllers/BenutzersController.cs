@@ -23,7 +23,7 @@ namespace BibApp.Controllers
         public IActionResult Logout()
         {
             Benutzer.isLoggedIn = false;
-            return View();
+            return View("Login");
         }
 
         [HttpPost]
