@@ -18,8 +18,7 @@ namespace BibApp.Data
 
             var usr = new Benutzer[]
             {
-            new Benutzer{Benutzername="admin", Passwort="admin", Rolle="admin"},
-            new Benutzer{Benutzername="peter", Passwort="peter", Rolle="user"}
+
             };
             foreach (Benutzer s in usr)
             {

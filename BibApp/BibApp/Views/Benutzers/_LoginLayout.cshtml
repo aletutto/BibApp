@@ -35,15 +35,10 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                   @if (Benutzer.isLoggedIn == true)
-                   {
+
                         <li><a href="">Willkommen!</a></li>
                         <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
-                    }
-                    else
-                    {
                         <li><a asp-area="" asp-controller="Benutzers" asp-action="Login">Login</a></li>
-                    }
                 </ul>
               </div>
             </div>

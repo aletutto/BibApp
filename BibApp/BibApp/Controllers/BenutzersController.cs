@@ -3,244 +3,153 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BibApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 
 namespace BibApp.Controllers
 {
     public class BenutzersController : Controller
     {
         private readonly BibContext _context;
+        private readonly UserManager<Benutzer> _userManager;
+        private readonly SignInManager<Benutzer> _signInManager;
+        private readonly ILogger _logger;
 
-        public BenutzersController(BibContext context)
-        {
-            _context = context;
-        }
+        [TempData]
+        public string ErrorMessage { get; set; }
 
-        public IActionResult Login()
+        public BenutzersController(
+            UserManager<Benutzer> userManager,
+            SignInManager<Benutzer> signInManager,
+            ILogger<BenutzersController> logger)
         {
-            return View();
-        }
-
-        public IActionResult Logout()
-        {
-            Benutzer.isLoggedIn = false;
-            return View("Login");
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
         }
 
         [HttpPost]
-        public ActionResult BenutzerCheck(Benutzer benutzer)
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-              
-            if (IsValid(benutzer.Benutzername, benutzer.Passwort))
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
             {
-                Benutzer.isLoggedIn = true;
-                var user = _context.Benutzers.FirstOrDefault(u => u.Benutzername == benutzer.Benutzername);
-                if (user.Rolle == "admin")
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var result = await _signInManager.PasswordSignInAsync(model.Benutzername,
+                    model.Passwort, model.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
                 {
-                    Benutzer.isAdmin = true;
-                    return RedirectToAction("Index", "Home");
+                    _logger.LogInformation(1, "User logged in.");
+                    return RedirectToLocal(returnUrl);
+                }
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning(2, "User account locked out.");
+                    return View("Lockout");
                 }
                 else
                 {
-                    Benutzer.isAdmin = false;
-                    return RedirectToAction("UserIndex", "Home");
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "Login Angaben sind falsch.");
-            }
-            return View("Login");
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
         }
 
-        private bool IsValid(string benutzername, string password)
-        {
-            bool IsValid = false;
-            var user = _context.Benutzers.FirstOrDefault(u => u.Benutzername == benutzername);
-            if (user != null)
+            
+            [HttpGet]
+            [AllowAnonymous]
+            public async Task<IActionResult> Login(string returnUrl = null)
             {
-                var pw = _context.Benutzers.FirstOrDefault(u => u.Passwort == password);
-                if (pw != null)
+                // Clear the existing external cookie to ensure a clean login process
+                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+                ViewData["ReturnUrl"] = returnUrl;
+                return View();
+            }
+
+            [HttpGet]
+            [AllowAnonymous]
+            public IActionResult Lockout()
+            {
+                return View();
+            }
+
+            [HttpGet]
+            [AllowAnonymous]
+            public IActionResult Register(string returnUrl = null)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                return View();
+            }
+
+            [HttpPost]
+            [AllowAnonymous]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                if (ModelState.IsValid)
                 {
-                    IsValid = true;
-                }
-            }
-            return IsValid;
-        }
-
-        //public async Task<ActionResult> BenutzerCheck(Benutzer user)
-        //{
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        List<Benutzer> groups = new List<Benutzer>();
-        //        var conn = _context.Database.GetDbConnection();
-        //        try
-        //        {
-        //            await conn.OpenAsync();
-        //            using (var command = conn.CreateCommand())
-        //            {
-        //                string query = "SELECT Benutzername, Passwort "
-        //                    + "FROM Benutzers "
-        //                    + "WHERE Benutzername='" + user.Benutzername 
-        //                    + "' AND Passwort='" + user.Passwort + "'";
-        //                command.CommandText = query;
-        //                DbDataReader reader = await command.ExecuteReaderAsync();
-
-        //                if (reader.HasRows)
-        //                {
-        //                    while (await reader.ReadAsync())
-        //                    {
-        //                        var row = new Benutzer { Benutzername = reader.GetString(0), Passwort = reader.GetString(1) };
-        //                        groups.Add(row);
-        //                        System.Console.WriteLine("HIER:::  "+ row.Benutzername + "  PW:   " + row.Passwort);
-        //                    }
-        //                } else
-        //                {
-        //                    System.Console.WriteLine("FEHLER FEHLERFEHLERFEHLER FEHLER FEHLER");
-        //                    return View("Login");
-        //                }
-        //                reader.Dispose();
-        //            }
-        //        }
-        //        finally
-        //        {
-        //            conn.Close();
-        //        }
-        //        return RedirectToAction(nameof(Index));
-
-        //    }
-        //    return View("Login");
-        //}
-
-        // GET: Benutzers
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Benutzers.ToListAsync());
-        }
-
-        // GET: Benutzers/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var benutzer = await _context.Benutzers
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (benutzer == null)
-            {
-                return NotFound();
-            }
-
-            return View(benutzer);
-        }
-
-        // GET: Benutzers/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Benutzers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Benutzername,Passwort")] Benutzer benutzer)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(benutzer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(benutzer);
-        }
-
-        // GET: Benutzers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var benutzer = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-            if (benutzer == null)
-            {
-                return NotFound();
-            }
-            return View(benutzer);
-        }
-
-        // POST: Benutzers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Benutzername,Passwort")] Benutzer benutzer)
-        {
-            if (id != benutzer.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(benutzer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BenutzerExists(benutzer.Id))
+                    var user = new Benutzer { UserName = model.Benutzername};
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
                     {
-                        return NotFound();
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation("User created a new account with password.");
+                        return RedirectToLocal(returnUrl);
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    AddErrors(result);
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(benutzer);
-        }
 
-        // GET: Benutzers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+                // If we got this far, something failed, redisplay form
+                return View(model);
+            }
+
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Logout()
             {
-                return NotFound();
+                await _signInManager.SignOutAsync();
+                _logger.LogInformation("User logged out.");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
-            var benutzer = await _context.Benutzers
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (benutzer == null)
+            [HttpGet]
+            public IActionResult AccessDenied()
             {
-                return NotFound();
+                return View();
             }
 
-            return View(benutzer);
-        }
+            #region Helpers
 
-        // POST: Benutzers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var benutzer = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Benutzers.Remove(benutzer);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            private void AddErrors(IdentityResult result)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
 
-        private bool BenutzerExists(int id)
-        {
-            return _context.Benutzers.Any(e => e.Id == id);
+            private IActionResult RedirectToLocal(string returnUrl)
+            {
+                if (Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    return RedirectToAction("Logout");
+                }
+            }
+
+            #endregion
         }
     }
-}

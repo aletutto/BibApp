@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using BibApp.Models;
+using System;
 
 namespace BibApp
 {
@@ -22,6 +24,40 @@ namespace BibApp
         {
             services.AddDbContext<BibContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("BibContextConnection")));
+
+            services.AddIdentity<Benutzer, IdentityRole>()
+             .AddEntityFrameworkStores<BibContext>()
+             .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredUniqueChars = 6;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+        //        options.User.RequireUniqueEmail = true;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.Cookie.Expiration = TimeSpan.FromDays(150);
+                options.LoginPath = "/Benutzers/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
+                options.LogoutPath = "/Benutzers/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
+                options.AccessDeniedPath = "/Benutzers/Login"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
+                options.SlidingExpiration = true;
+            });
             services.AddMvc();
         }
 
@@ -38,6 +74,7 @@ namespace BibApp
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -28,13 +28,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @if (Benutzer.isAdmin == true){
+
                      <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BibApp</a>
-                }
-                else
-                {
+                
                     <a asp-area="" asp-controller="Home" asp-action="UserIndex" class="navbar-brand">BibApp</a>
-                }
+              
 
             </div>
             <div class="navbar-collapse collapse">
@@ -44,22 +42,16 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                   @if (Benutzer.isLoggedIn == true)
-                   {
-                     @if (Benutzer.isAdmin == true)
-                     {
+                   
+                  
                         <li class="navbar-text">Logged in as Admin</li>
-                     }
-                     else
-                     {
+                     
                         <li class="navbar-text">Logged in as User</li>
-                     }
+                     
                         <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
-                     }
-                    else
-                    {
+                     
                         <li><a asp-area="" asp-controller="Benutzers" asp-action="Login">Login</a></li>
-                    }
+ 
                 </ul>
               </div>
             </div>
