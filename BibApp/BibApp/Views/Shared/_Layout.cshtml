@@ -43,14 +43,17 @@
 
                 <ul class="nav navbar-nav navbar-right">
                    
-                  
-                        <li class="navbar-text">Logged in as Admin</li>
-                     
-                        <li class="navbar-text">Logged in as User</li>
-                     
-                        <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
-                     
-                        <li><a asp-area="" asp-controller="Benutzers" asp-action="Login">Login</a></li>
+                  @if (User.Identity.IsAuthenticated)
+                  {
+                    <li class="navbar-text">Willkommen @User.Identity.Name!</li>
+                    <li><a asp-area="" asp-controller="Benutzers" asp-action="ManageBenutzer">Mein Account</a> </li>
+                    <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
+                  }
+                  else
+                  {
+                    <li><a asp-area="" asp-controller="Benutzers" asp-action="Login">Login</a></li>
+
+                  }  
  
                 </ul>
               </div>

@@ -92,28 +92,28 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer.Benutzername)
+                        @@Html.DisplayNameFor(model => model.Benutzer.Benutzername)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer.Passwort)
+                        @@Html.DisplayNameFor(model => model.Benutzer.Passwort)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Benutzers)
+                @@foreach (var item in Model.Benutzers)
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Benutzername)
+                            @@Html.DisplayFor(modelItem => item.Benutzername)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Passwort)
+                            @@Html.DisplayFor(modelItem => item.Passwort)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <a asp-action="Edit" asp-route-id="@@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@@item.Id">Delete</a>
                         </td>
                     </tr>
                 }

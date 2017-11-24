@@ -32,11 +32,13 @@
     </div>
 
     <div class="form-group">
-        <div class="checkbox">
-            <label asp-for="RememberMe">
-                <input asp-for="RememberMe" />
-                @Html.DisplayNameFor(m => m.RememberMe)
-            </label>
+        <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+                <label asp-for="RememberMe">
+                    <input asp-for="RememberMe" />
+                    @Html.DisplayNameFor(m => m.RememberMe)
+                </label>
+            </div>
         </div>
     </div>
     
@@ -47,9 +49,11 @@
     </div>
 
     <div class="form-group">
-        <p>
-            <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
-        </p>
+        <div class="col-sm-offset-2 col-sm-10">
+            <p>
+                <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
+            </p>
+         </div>
     </div>
 </form>
 
