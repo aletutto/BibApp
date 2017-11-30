@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BibApp.Models;
+using BibApp.Models.Warenkorb;
+using Microsoft.AspNetCore.Identity;
 
 namespace BibApp.Controllers
 {
     public class BuecherController : Controller
     {
         private readonly BibContext _context;
+        private readonly UserManager<Benutzer> _userManager;
 
-        public BuecherController(BibContext context)
+        public BuecherController(BibContext context, UserManager<Benutzer> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Buecher
@@ -148,5 +152,28 @@ namespace BibApp.Controllers
         {
             return _context.Buecher.Any(e => e.Id == id);
         }
+
+        // GET: Buecher/AddToCart
+        public async Task<IActionResult> AddToCart(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var buch = await _context.Buecher.SingleOrDefaultAsync(b => b.Id == id);
+
+            if (buch == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var korb = Warenkorb.GetKorb(user, _context);
+            korb.AddToKorb(buch);
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

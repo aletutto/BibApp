@@ -4,11 +4,18 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Bücher</h2>
+<div class="col-sm-12">
+    <div class="col-sm-1">
+        <label for="search">Suche:</label>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" class="form-control" name="Suche:" value="" />
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<br /><br /><br />
+
 <table class="table table-hover" style="border: 1px solid #808080">
     <thead>
         <tr>   
@@ -81,22 +88,24 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="AddToCart" asp-route-id="@item.Id">Add to Cart</a>
+                @*<a asp-action="RemoveFromCart" asp-route-id="@item.Id">Remove from Cart</a>*@
+
             </td>
         </tr>
 }
 
-
     </tbody>
 </table>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
 
 <div class="row">
     <div class="col-sm-9">
         <button type="submit" class="btn btn-default">Hinzufügen</button>
-
-
-
-
         <button type="button" class="btn btn-default">Bearbeiten</button>
         <button type="button" class="btn btn-primary">Details</button>
         <button type="button" class="btn btn-success">Löschen</button>

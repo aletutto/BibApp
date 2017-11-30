@@ -1,0 +1,37 @@
+﻿@model IEnumerable<BibApp.Models.Warenkorb.Korb>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Warenkorb</h2>
+
+<table class="table table-hover" style="border: 1px solid #808080">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BuchTitel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            @if (User.Identity.Name.Equals(item.KorbId))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchTitel)
+                    </td>
+                    <td>
+                        <a  asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+<button type="submit" class="btn btn-success">Ausleihen</button>
+<input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("RemoveAllFromKorb", "Warenkorb")'" />
+
