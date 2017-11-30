@@ -13,6 +13,7 @@ public class BibContext : IdentityDbContext<Benutzer>
     public DbSet<Benutzer> Benutzers { get; set; }
     public DbSet<Buch> Buecher { get; set; }
     public DbSet<Korb> Warenkoerbe { get; set; }
+    public DbSet<AdminKorb> AdminWarenkoerbe { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

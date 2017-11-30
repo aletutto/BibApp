@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BibApp.Controllers
 {

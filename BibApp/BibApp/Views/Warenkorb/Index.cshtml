@@ -32,6 +32,6 @@
 
     </tbody>
 </table>
-<button type="submit" class="btn btn-success">Ausleihen</button>
+<input type="button" class="btn btn-success" value="Leihauftrag senden" onclick="location.href='@Url.Action("LeihauftragSenden", "Warenkorb")'" />
 <input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("RemoveAllFromKorb", "Warenkorb")'" />
 

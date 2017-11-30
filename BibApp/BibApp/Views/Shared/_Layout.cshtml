@@ -32,16 +32,23 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
-                    <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Personen</a></li>
-                    <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index">Warenkorb</a></li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
+                        <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Personen</a></li>
+                        <li><a asp-area="" asp-controller="AdminWarenkorb" asp-action="Index">Leihaufträge</a></li>
+
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
+                        <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index">Warenkorb</a></li>
+                    }
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right">
-                   
+                <ul class="nav navbar-nav navbar-right">           
                   @if (User.Identity.IsAuthenticated)
                   {
-                    <li class="navbar-text">Willkommen @User.Identity.Name!</li>
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="ManageBenutzer">Mein Account</a> </li>
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
                   }

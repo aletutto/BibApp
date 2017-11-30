@@ -25,14 +25,6 @@ namespace BibApp.Controllers
             this.userManager = userManager;
         }
 
-        //public async Task<IActionResult> Index()
-        //{
-        //    benutzer = await userManager.GetUserAsync(User);
-        //    var cart = Warenkorb.GetKorb(this.HttpContext, benutzer, context);
-            
-        //    return View();
-        //}
-
         public async Task<IActionResult> Index()
         {
             return View(context.Warenkoerbe.ToList());
@@ -66,9 +58,25 @@ namespace BibApp.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
-            korb.RemoveAllFromKorb();
+            await korb.RemoveAllFromKorb();
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Warenkorb/Abschicken
+        /* TODO: WICHTIG: Nur Bücher in den Warenkorb einfügen können, welche verfügbar, also noch nicht ausgeliehen worden sind.
+         * Nur Bücher verschicken können, welche noch nicht im AdminWarenkorb vorhanden sind.
+         * 
+        */
+        public async Task<IActionResult> LeihauftragSenden()
+        {
+            var user = await userManager.GetUserAsync(User);
+            var korb = Warenkorb.GetKorb(user, context);
+            await korb.LeihauftragSenden();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

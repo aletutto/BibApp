@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BibApp.Models.Warenkorb
@@ -69,7 +70,7 @@ namespace BibApp.Models.Warenkorb
             bibContext.SaveChangesAsync();
         }
 
-        public void RemoveAllFromKorb()
+        public async Task RemoveAllFromKorb()
         {
             var cartItems = bibContext.Warenkoerbe.Where(
             c => c.KorbId == BenutzerName);
@@ -78,14 +79,31 @@ namespace BibApp.Models.Warenkorb
             {
                 bibContext.Warenkoerbe.Remove(cartItem);
             }
-            bibContext.SaveChangesAsync();
+            await bibContext.SaveChangesAsync();
         }
 
         // TODO: Alle Bücher im Warenkorb zählen und im Layout anzeigen z.B. -> Warenkorb (2)
-        public int countAllItems(Benutzer benutzer)
+        public int CountAllItems(Benutzer benutzer)
         {
             return bibContext.Warenkoerbe.Count(
             c => c.KorbId == BenutzerName);
+        }
+
+        public async Task LeihauftragSenden()
+        {
+            var cartItems = bibContext.Warenkoerbe.Where(
+            c => c.KorbId == BenutzerName);
+
+            foreach (var cartItem in cartItems)
+            {
+                AdminKorb cart = new AdminKorb();
+                cart.BuchId = cartItem.BuchId;
+                cart.BuchTitel = cartItem.BuchTitel;
+                cart.KorbId = cartItem.KorbId;
+                bibContext.AdminWarenkoerbe.Add(cart);
+            }
+            await bibContext.SaveChangesAsync();
+            await RemoveAllFromKorb();
         }
     }
 }

@@ -86,12 +86,17 @@
                 @Html.DisplayFor(modelItem => item.EntliehenBis)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-action="AddToCart" asp-route-id="@item.Id">Add to Cart</a>
-                @*<a asp-action="RemoveFromCart" asp-route-id="@item.Id">Remove from Cart</a>*@
-
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span>|</span>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+                else
+                {
+                    <a asp-action="AddToCart" asp-route-id="@item.Id">In den Warenkorb</a>
+                    @*<a asp-action="RemoveFromCart" asp-route-id="@item.Id">Remove from Cart</a>*@
+                }
             </td>
         </tr>
 }

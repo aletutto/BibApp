@@ -1,0 +1,53 @@
+﻿@model IEnumerable<BibApp.Models.Warenkorb.AdminKorb>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Leihaufträge</h2>
+<div class="col-sm-12">
+    <div class="col-sm-1">
+        <label for="search">Suche:</label>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" class="form-control" name="Suche:" value="" />
+    </div>
+</div>
+<br /><br /><br />
+
+<table class="table table-hover" style="border: 1px solid #808080">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.KorbId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BuchId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BuchTitel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KorbId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BuchId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BuchTitel)
+                </td>
+                <td>
+                    <a  asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
