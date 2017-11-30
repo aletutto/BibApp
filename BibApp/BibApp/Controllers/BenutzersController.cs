@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {
@@ -32,10 +34,122 @@ namespace BibApp.Controllers
             _logger = logger;
             _context = context;
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Benutzers.ToListAsync());
+        }
+
+        public async Task<IActionResult> Details(String id)
+        {
+            var usr = await _context.Benutzers
+                .SingleOrDefaultAsync(m => m.Id == id);
+            if (usr == null)
+            {
+                return NotFound();
+            }
+
+            return View(usr);
+        }
+
+        public async Task<IActionResult> Edit(String id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
+            if (usr == null)
+            {
+                return NotFound();
+            }
+            return View(usr);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(String id, [Bind("UserName")] Benutzer model, String Role)
+        {
+            Console.WriteLine(Role);
+            Console.WriteLine(model.UserName);
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = await _userManager.FindByIdAsync(id);
+                    var newName = user.UserName;
+                    if (model.UserName != newName)
+                    {
+                        var setNameResult = await _userManager.SetUserNameAsync(user, model.UserName);
+                        if (!setNameResult.Succeeded)
+                        {
+                            throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                        }
+                    }
+
+                    if (Role == "")
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    if (Role == "King")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                        user.Role = "Admin";
+                        _context.Update(user);
+                        _context.SaveChanges();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    if (Role == "Pawn")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Member");
+                        user.Role = "Member";
+                        _context.Update(user);
+                        _context.SaveChanges();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    return RedirectToAction(nameof(Index));
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool BenutzerExists(String id)
+        {
+            return _context.Benutzers.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Delete(String id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var usr = await _context.Benutzers
+                .SingleOrDefaultAsync(m => m.Id == id);
+            if (usr == null)
+            {
+                return NotFound();
+            }
+
+            return View(usr);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(String id)
+        {
+            var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
+            _context.Benutzers.Remove(usr);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -83,7 +197,7 @@ namespace BibApp.Controllers
             var model = new ManageBenutzerModel
             {
                 Benutzername = user.UserName,
-                
+
             };
             return View(model);
         }
@@ -152,99 +266,96 @@ namespace BibApp.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             _logger.LogInformation("User changed their password successfully.");
-
             return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
-            [AllowAnonymous]
-            public async Task<IActionResult> Login(string returnUrl = null)
-            {
-                // Clear the existing external cookie to ensure a clean login process
-                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-                ViewData["ReturnUrl"] = returnUrl;
-                return View();
-            }
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
-            [HttpGet]
-            [AllowAnonymous]
-            public IActionResult Lockout()
-            {
-                return View();
-            }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Lockout()
+        {
+            return View();
+        }
 
-            [HttpGet]
-            [AllowAnonymous]
-            public IActionResult Register(string returnUrl = null)
-            {
-                ViewData["ReturnUrl"] = returnUrl;
-                return View();
-            }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
-            [HttpPost]
-            [AllowAnonymous]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
             {
-                ViewData["ReturnUrl"] = returnUrl;
-                if (ModelState.IsValid)
+                var user = new Benutzer { UserName = model.Benutzername };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
                 {
-                    var user = new Benutzer { UserName = model.Benutzername};
-                    var result = await _userManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created a new account with password.");
-                        return RedirectToLocal(returnUrl);
-                    }
-                    AddErrors(result);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation("User created a new account with password.");
+                    return RedirectToLocal(returnUrl);
                 }
-
-                // If we got this far, something failed, redisplay form
-                return View(model);
+                AddErrors(result);
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Logout()
-            {
-                await _signInManager.SignOutAsync();
-                _logger.LogInformation("User logged out.");
-                return RedirectToAction(nameof(HomeController.Index), "Index");
-            }
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
 
-            [HttpGet]
-            public IActionResult AccessDenied()
-            {
-                return View();
-            }
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
+            return View();
+        }
 
-            
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
 
 
         #region Helpers
 
         private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                ModelState.AddModelError(string.Empty, error.Description);
             }
-
-            private IActionResult RedirectToLocal(string returnUrl)
-            {
-                if (Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-
-            #endregion
         }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        #endregion
     }
+}

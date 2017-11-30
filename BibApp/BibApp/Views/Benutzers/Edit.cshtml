@@ -6,30 +6,31 @@
 
 <h2>Edit</h2>
 
-<h4>Benutzer</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-2">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Benutzername" class="control-label"></label>
-                <input asp-for="Benutzername" class="form-control" />
-                <span asp-validation-for="Benutzername" class="text-danger"></span>
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Passwort" class="control-label"></label>
-                <input asp-for="Passwort" class="form-control" />
-                <span asp-validation-for="Passwort" class="text-danger"></span>
-            </div>
+                    @Html.DropDownList("Role",
+                  new List<SelectListItem> {
+                      new SelectListItem { Value = "" , Text = "Select Role" },
+                       new SelectListItem { Value = "King" , Text = "Admin" },
+                       new SelectListItem { Value = "Pawn" , Text = "Member" },
+                        },
+                  new { @class = "form-control" })
+            <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

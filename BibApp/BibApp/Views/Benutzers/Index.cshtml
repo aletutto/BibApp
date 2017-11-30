@@ -3,17 +3,8 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="row">
-    <div class="col-sm-12">
-        <h2>Welcome!</h2>
-    </div>
-</div>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
+<br />
+<br />
 <table class="table">
     <thead>
         <tr>
@@ -21,7 +12,7 @@
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PasswordHash)
+                @Html.DisplayNameFor(model => model.Role)
             </th>
             <th></th>
         </tr>
@@ -34,7 +25,7 @@
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PasswordHash)
+                    @Html.DisplayFor(modelItem => item.Role)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
