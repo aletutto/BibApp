@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using BibApp.Models;
 using System;
+using System.Threading.Tasks;
 
 namespace BibApp
 {
@@ -31,13 +32,13 @@ namespace BibApp
 
             services.Configure<IdentityOptions>(options =>
             {
-                // Password settings
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
+                //Password settings
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 1;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 6;
+                options.Password.RequiredUniqueChars = 1;
 
                 // Lockout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
@@ -62,7 +63,7 @@ namespace BibApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, BibContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, BibContext context, IServiceProvider service)
         {
             if (env.IsDevelopment())
             {
@@ -74,6 +75,7 @@ namespace BibApp
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+            
             app.UseAuthentication();
             app.UseMvc(routes =>
             {
@@ -82,6 +84,45 @@ namespace BibApp
                     template: "{controller=Benutzers}/{action=Login}/{id?}");
             });
             context.Database.EnsureCreated();
+            CreateRoles(service).Wait();
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<Benutzer>>();
+            string[] roleNames = { "Admin", "Member" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+            var poweruser = new Benutzer
+            {
+                UserName = "dude",
+                Email = "dude2000@gmail.com",
+                Role = "Admin"
+            };
+            //Ensure you have these values in your appsettings.json file
+            string userPWD = "dude";
+            var _user = await UserManager.FindByEmailAsync("dude2000@gmail.com");
+
+            if (_user == null)
+            {
+                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role
+                    await UserManager.AddToRoleAsync(poweruser, "Admin");
+
+                }
+            }
         }
     }
 }
