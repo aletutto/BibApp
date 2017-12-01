@@ -109,18 +109,27 @@ namespace BibApp
                 Email = "dude2000@gmail.com",
                 Role = "Admin"
             };
+            var testuser = new Benutzer
+            {
+                UserName = "member",
+                Email = "member@gmail.com",
+                Role = "Member"
+            };
             //Ensure you have these values in your appsettings.json file
             string userPWD = "dude";
+            string testPWD = "member";
             var _user = await UserManager.FindByEmailAsync("dude2000@gmail.com");
+            var _test = await UserManager.FindByEmailAsync("member@gmail.com");
 
             if (_user == null)
             {
                 var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                var createTestUser = await UserManager.CreateAsync(testuser, testPWD);
                 if (createPowerUser.Succeeded)
                 {
                     //here we tie the new user to the role
                     await UserManager.AddToRoleAsync(poweruser, "Admin");
-
+                    await UserManager.AddToRoleAsync(testuser, "Member");
                 }
             }
         }

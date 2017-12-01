@@ -3,16 +3,26 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<h2>Personen</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Suche nach UserName: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" />
+        </p>
+    </div>
+</form>
+
 <br />
-<br />
-<table class="table">
+<table class="table table-hover" style="border: 1px solid #808080">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.UserName)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Role)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm"]">@Html.DisplayNameFor(model => model.Role)</a>
             </th>
             <th></th>
         </tr>

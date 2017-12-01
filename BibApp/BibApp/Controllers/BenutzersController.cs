@@ -35,9 +35,35 @@ namespace BibApp.Controllers
             _context = context;
         }
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            return View(await _context.Benutzers.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["RoleSortParm"] = sortOrder == "Role" ? "role_desc" : "Role";
+            ViewData["CurrentFilter"] = searchString;
+
+            var benutzer = from s in _context.Benutzers
+                        select s;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                benutzer = benutzer.Where(s => s.UserName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    benutzer = benutzer.OrderByDescending(s => s.UserName);
+                    break;
+                case "role_desc":
+                    benutzer = benutzer.OrderByDescending(s => s.Role);
+                    break;
+                case "Role":
+                    benutzer = benutzer.OrderBy(s => s.Role);
+                    break;
+                default:
+                    benutzer = benutzer.OrderBy(s => s.UserName);
+                    break;
+            }
+            return View(await benutzer.AsNoTracking().ToListAsync());
         }
 
         public async Task<IActionResult> Details(String id)
@@ -305,8 +331,13 @@ namespace BibApp.Controllers
             {
                 var user = new Benutzer { UserName = model.Benutzername };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.AddToRoleAsync(user, "Member");
+                user.Role = "Member";
+                _context.Update(user);
+                _context.SaveChanges();
                 if (result.Succeeded)
                 {
+                    
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);

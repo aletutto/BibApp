@@ -5,37 +5,38 @@
 }
 
 <h2>Bücher</h2>
-<div class="col-sm-12">
-    <div class="col-sm-1">
-        <label for="search">Suche:</label>
-    </div>
-    <div class="col-sm-4">
-        <input type="text" class="form-control" name="Suche:" value="" />
-    </div>
-</div>
 
-<br /><br /><br />
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Suche nach Bezeichnung: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" />
+        </p>
+    </div>
+</form>
+
+<br />
 
 <table class="table table-hover" style="border: 1px solid #808080">
     <thead>
         <tr>   
                 <th>
-                    @Html.DisplayNameFor(model => model.Id)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Bezeichnung)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Bezeichnung)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Autoren)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Autoren)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Verfügbarkeit)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VerfSortParm"]">@Html.DisplayNameFor(model => model.Verfügbarkeit)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.IstVorgemerkt)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VorgSortParm"]">@Html.DisplayNameFor(model => model.IstVorgemerkt)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Verlag)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Verlag)</a>
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Regal)
@@ -44,10 +45,10 @@
                     @Html.DisplayNameFor(model => model.Reihe)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.EntliehenVom)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["entlVomSortParm"]">@Html.DisplayNameFor(model => model.EntliehenVom)</a>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.EntliehenBis)
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["entlBisSortParm"]">@Html.DisplayNameFor(model => model.EntliehenBis)</a>
                 </th>
             <th></th>
         </tr>
