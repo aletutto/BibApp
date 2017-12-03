@@ -38,7 +38,10 @@ namespace BibApp.Controllers
                            select s;
             if (!String.IsNullOrEmpty(searchString))
             {
-                books = books.Where(s => s.Bezeichnung.Contains(searchString));
+                books = books.Where(s => 
+                s.Bezeichnung.Contains(searchString) 
+                || s.Autoren.Contains(searchString)
+                || s.Verlag.Contains(searchString));
             }
             switch (sortOrder)
             {
