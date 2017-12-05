@@ -34,8 +34,13 @@
                 <ul class="nav navbar-nav">
                     @if (User.IsInRole("Admin"))
                     {
-                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
-                        <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Personen</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Stammdaten <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
+                                <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Personen</a></li>
+                            </ul>
+                        </li>
                         <li><a asp-area="" asp-controller="AdminWarenkorb" asp-action="Index">Leihaufträge</a></li>
 
                     }
