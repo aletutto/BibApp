@@ -43,7 +43,17 @@
                     @Html.DisplayFor(modelItem => item.BuchTitel)
                 </td>
                 <td>
-                    <a  asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            Aktion
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a></li>
+                            @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
+                            <li><a asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         }
