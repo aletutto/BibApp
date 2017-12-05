@@ -20,22 +20,28 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.Bezeichnung)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Buch.Id)</a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.Autoren)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Bezeichnung)</a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autoren)</a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.Verlag)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VerfSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verfügbarkeit)</a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.EntliehenVom)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VorgSortParm"]">@Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)</a>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.EntliehenBis)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["entlVomSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenVom)</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["entlBisSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenBis)</a>
                     </th>
                     <th></th>
                 </tr>
@@ -90,34 +96,44 @@
         <h3>Abgelaufenes Leihfristende</h3>
     </div>
 </div>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Suche: <input type="text" name="SearchString2" value="@ViewData["currentFilter2"]" />
+            <input type="submit" value="Search" class="btn btn-default" />
+        </p>
+    </div>
+</form>
+
 <div class="row">
     <div class="col-sm-6">
         <table class="table" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th>
-                        @@Html.DisplayNameFor(model => model.Benutzer.Benutzername)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Benutzer.UserName)</a>
                     </th>
                     <th>
-                        @@Html.DisplayNameFor(model => model.Benutzer.Passwort)
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">@Html.DisplayNameFor(model => model.Benutzer.Role)</a>
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @@foreach (var item in Model.Benutzers)
+                @foreach (var item in Model.Benutzers)
             {
                     <tr>
                         <td>
-                            @@Html.DisplayFor(modelItem => item.Benutzername)
+                            @Html.DisplayFor(modelItem => item.UserName)
                         </td>
                         <td>
-                            @@Html.DisplayFor(modelItem => item.Passwort)
+                            @Html.DisplayFor(modelItem => item.Role)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@@item.Id">Delete</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         </td>
                     </tr>
                 }

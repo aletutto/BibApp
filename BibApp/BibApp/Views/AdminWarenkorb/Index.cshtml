@@ -3,61 +3,122 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Leihaufträge</h2>
-<div class="col-sm-12">
-    <div class="col-sm-1">
-        <label for="search">Suche:</label>
-    </div>
-    <div class="col-sm-4">
-        <input type="text" class="form-control" name="Suche:" value="" />
-    </div>
-</div>
-<br /><br /><br />
+<div class="col-sm-6">
+    <h2>Ausleihen</h2>
 
-<table class="table table-hover" style="border: 1px solid #808080">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.KorbId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BuchId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BuchTitel)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Suche: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" />
+            </p>
+        </div>
+    </form>
+
+    <table class="table table-hover" style="border: 1px solid #808080">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.KorbId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BuchId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BuchTitel)
-                </td>
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                            Aktion
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a></li>
-                            @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
-                            <li><a asp-action="Ausleihen" asp-route-id="@item.Id">Ausleihen</a></li>
-                        </ul>
-                    </div>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.KorbId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BuchId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BuchTitel)
+                </th>
+                <th></th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.KorbId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchTitel)
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Aktion
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
+                                @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
+                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">löschen</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 
+<div class="col-sm-6">
+    <h2>Zurückgeben</h2>
+
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Suche: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+                <input type="submit" value="Search" class="btn btn-default" />
+            </p>
+        </div>
+    </form>
+
+    <table class="table table-hover" style="border: 1px solid #808080">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.KorbId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BuchId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BuchTitel)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.KorbId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchTitel)
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Aktion
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">verlängern</a></li>
+                                @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
+                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">zurückgeben</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
