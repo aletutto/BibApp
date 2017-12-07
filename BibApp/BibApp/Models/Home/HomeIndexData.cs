@@ -8,13 +8,13 @@ namespace BibApp.Models
 {
     public class HomeIndexData
     {
-        public List<Benutzer> Benutzers { get; set; }
-        public Benutzer Benutzer { get; set; }
+        public List<Benutzer.Benutzer> Benutzers { get; set; }
+        public Benutzer.Benutzer Benutzer { get; set; }
 
         public string Rolle { get; set; }
         public IEnumerable<SelectListItem> Rollen { get; set; }
 
-        public List<Buch> Buecher { get; set; }
-        public Buch Buch { get; set; }
+        public List<Buch.Buch> Buecher { get; set; }
+        public Buch.Buch Buch { get; set; }
     }
 }

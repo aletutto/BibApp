@@ -1,4 +1,5 @@
-﻿using BibApp.Models;
+﻿using BibApp.Models.Benutzer;
+using BibApp.Models.Buch;
 using System;
 using System.Linq;
 
@@ -16,6 +17,7 @@ namespace BibApp.Data
                 return;   // DB has been seeded
             }
 
+            // TODO: User hierüber laden
             var usr = new Benutzer[]
             {
 
@@ -26,20 +28,25 @@ namespace BibApp.Data
             }
             context.SaveChanges();
 
-            var buch = new Buch[]
+            var buecher = new Buch[]
             {
-            new Buch{Bezeichnung="Deutsch 1", Autoren="Max H.", Regal=4, Reihe=1, Verfügbarkeit=true, Verlag="German Verlag", IstVorgemerkt=false},
-            new Buch{Bezeichnung="Deutsch 2", Autoren="Max B.", Regal=2, Reihe=4, Verfügbarkeit=false, Verlag="Germanee Verlag", IstVorgemerkt=false},
-            new Buch{Bezeichnung="Deutsch 3", Autoren="Max D.", Regal=1, Reihe=3, Verfügbarkeit=true, Verlag="dutch Verlag", IstVorgemerkt=false},
-            new Buch{Bezeichnung="Deutsch 4", Autoren="Max A.", Regal=3, Reihe=2, Verfügbarkeit=true, Verlag="english Verlag", IstVorgemerkt=false},
+                new Buch{ISBN="1234-567-8910", Titel="Deutsch 1", Autor="Max H.", Erscheinungsjahr=2010, Regal=4, Reihe=1, Verlag="Beuth Verlag", AnzahlExemplare=1},
+                new Buch{ISBN="1235-567-8910", Titel="ITIL V3", Autor="Max B.", Erscheinungsjahr=2009, Regal=2, Reihe=4, Verlag="Beuth Verlag", AnzahlExemplare=2},
+                new Buch{ISBN="1236-567-8910", Titel="Java für Dummies", Autor="Max D.", Erscheinungsjahr=2000, Regal=1, Reihe=3, Verlag="Kühlen Verlag", AnzahlExemplare=1},
+                new Buch{ISBN="1237-567-8910", Titel="SQL Datenbanken", Autor="Max A.", Erscheinungsjahr=2015, Regal=3, Reihe=2, Verlag="CARLSEN Verlag", AnzahlExemplare=3}
             };
-            foreach (Buch c in buch)
+            foreach (Buch buch in buecher)
             {
-                context.Buecher.Add(c);
+                context.Buecher.Add(buch);
+
+                for(int i = 1; i <= buch.AnzahlExemplare; i++)
+                {
+                    var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
+                    context.Exemplare.Add(exemplar);
+                }
+               
             }
             context.SaveChanges();
-
-           
         }
     }
 }

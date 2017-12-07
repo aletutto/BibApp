@@ -1,4 +1,4 @@
-﻿@model BibApp.Models.Buch
+﻿@model BibApp.Models.Buch.Buch
 
 @{
     ViewData["Title"] = "Create";
@@ -13,16 +13,16 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Bezeichnung" class="control-label"></label>
-                <input asp-for="Bezeichnung" class="form-control" />
-                <span asp-validation-for="Bezeichnung" class="text-danger"></span>
+                <label asp-for="Titel" class="control-label"></label>
+                <input asp-for="Titel" class="form-control" />
+                <span asp-validation-for="Titel" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Autoren" class="control-label"></label>
-                <input asp-for="Autoren" class="form-control" />
-                <span asp-validation-for="Autoren" class="text-danger"></span>
+                <label asp-for="Autor" class="control-label"></label>
+                <input asp-for="Autor" class="form-control" />
+                <span asp-validation-for="Autor" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <div class="checkbox">
                     <label>
                         <input asp-for="Verfügbarkeit" /> @Html.DisplayNameFor(model => model.Verfügbarkeit)
@@ -35,7 +35,7 @@
                         <input asp-for="IstVorgemerkt" /> @Html.DisplayNameFor(model => model.IstVorgemerkt)
                     </label>
                 </div>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Verlag" class="control-label"></label>
                 <input asp-for="Verlag" class="form-control" />
@@ -51,7 +51,7 @@
                 <input asp-for="Reihe" class="form-control" />
                 <span asp-validation-for="Reihe" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="EntliehenVom" class="control-label"></label>
                 <input asp-for="EntliehenVom" class="form-control" />
                 <span asp-validation-for="EntliehenVom" class="text-danger"></span>
@@ -60,7 +60,7 @@
                 <label asp-for="EntliehenBis" class="control-label"></label>
                 <input asp-for="EntliehenBis" class="form-control" />
                 <span asp-validation-for="EntliehenBis" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>

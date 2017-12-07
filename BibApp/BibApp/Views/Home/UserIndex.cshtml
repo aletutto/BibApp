@@ -16,23 +16,23 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.Bezeichnung)
+                        @Html.DisplayNameFor(model => model.Buch.Titel)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Buch.Autoren)
+                        @Html.DisplayNameFor(model => model.Buch.Autor)
                     </th>
-                    <th>
+                    @*<th>
                         @Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)
-                    </th>
+                    </th>*@
                     <th>
                         @Html.DisplayNameFor(model => model.Buch.Verlag)
                     </th>
-                    <th>
+                    @*<th>
                         @Html.DisplayNameFor(model => model.Buch.EntliehenVom)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Buch.EntliehenBis)
-                    </th>
+                    </th>*@
                     <th></th>
                 </tr>
             </thead>
@@ -41,23 +41,23 @@
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Bezeichnung)
+                            @Html.DisplayFor(modelItem => item.Titel)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Autoren)
+                            @Html.DisplayFor(modelItem => item.Autor)
                         </td>
-                        <td>
+                        @*<td>
                             @Html.DisplayFor(modelItem => item.IstVorgemerkt)
-                        </td>
+                        </td>*@
                         <td>
                             @Html.DisplayFor(modelItem => item.Verlag)
                         </td>
-                        <td>
+                        @*<td>
                             @Html.DisplayFor(modelItem => item.EntliehenVom)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.EntliehenBis)
-                        </td>
+                        </td>*@
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -92,10 +92,10 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer.Benutzername)
+                        @Html.DisplayNameFor(model => model.Benutzer.UserName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer.Passwort)
+                        @Html.DisplayNameFor(model => model.Benutzer.Role)
                     </th>
                     <th></th>
                 </tr>
@@ -105,10 +105,10 @@
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Benutzername)
+                            @Html.DisplayFor(modelItem => item.UserName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Passwort)
+                            @Html.DisplayFor(modelItem => item.Role)
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

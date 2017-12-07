@@ -19,26 +19,31 @@ namespace BibApp.Models.Warenkorb
         {
             this.bibContext = context;
         }
-        public static Warenkorb GetKorb(Benutzer benutzer, BibContext bibContext)
+        public static Warenkorb GetKorb(Benutzer.Benutzer benutzer, BibContext bibContext)
         {
             var cart = new Warenkorb(bibContext);
             cart.BenutzerName = benutzer.UserName;
             return cart;
         }
 
-        public void AddToKorb(Buch buch)
+        public void AddToKorb(Buch.Exemplar exemplar)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
-            c => c.KorbId == BenutzerName
-            && c.BuchId == buch.Id);
+                c => c.Benutzer == BenutzerName
+                && c.ISBN == exemplar.ISBN
+                && c.ExemplarId == exemplar.ExemplarId);
 
             if (cartItem == null)
             {
+                var buch = bibContext.Buecher.SingleOrDefault(
+                    c => c.ISBN == exemplar.ISBN);
+
                 cartItem = new Korb()
                 {
-                    KorbId = BenutzerName,
-                    BuchId = buch.Id,
-                    BuchTitel = buch.Bezeichnung
+                    Benutzer = BenutzerName,
+                    ISBN = exemplar.ISBN,
+                    ExemplarId = exemplar.ExemplarId,
+                    BuchTitel = buch.Titel
                 };
                 bibContext.Add(cartItem);
                 bibContext.SaveChangesAsync();
@@ -46,11 +51,12 @@ namespace BibApp.Models.Warenkorb
         }
 
         // TODO: Wenn das Buch schon dem Warenkorb hinzugefügt wurde, dann sollte man einen Hinweis erhalten das das Buch bereits im Warenkorb ist wenn man nochmal versucht es hinzuzufügen
-        public bool checkIfAlreadyAdded(Buch buch)
+        public bool checkIfAlreadyAdded(Buch.Exemplar exemplar)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
-            c => c.KorbId == BenutzerName
-            && c.BuchId == buch.Id);
+            c => c.Benutzer == BenutzerName
+            && c.ISBN == exemplar.ISBN
+            && c.ExemplarId == exemplar.ExemplarId);
 
             if (cartItem == null)
             {
@@ -63,8 +69,9 @@ namespace BibApp.Models.Warenkorb
         public void RemoveFromKorb(Korb korb)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
-            c => c.KorbId == BenutzerName
-            && c.BuchId == korb.BuchId);
+            c => c.Benutzer == BenutzerName
+            && c.ISBN == korb.ISBN
+            && c.ExemplarId == korb.ExemplarId);
 
             bibContext.Warenkoerbe.Remove(cartItem);
             bibContext.SaveChangesAsync();
@@ -73,7 +80,7 @@ namespace BibApp.Models.Warenkorb
         public async Task RemoveAllFromKorb()
         {
             var cartItems = bibContext.Warenkoerbe.Where(
-            c => c.KorbId == BenutzerName);
+            c => c.Benutzer == BenutzerName);
 
             foreach (var cartItem in cartItems)
             {
@@ -83,23 +90,24 @@ namespace BibApp.Models.Warenkorb
         }
 
         // TODO: Alle Bücher im Warenkorb zählen und im Layout anzeigen z.B. -> Warenkorb (2)
-        public int CountAllItems(Benutzer benutzer)
+        public int CountAllItems(Benutzer.Benutzer benutzer)
         {
             return bibContext.Warenkoerbe.Count(
-            c => c.KorbId == BenutzerName);
+            c => c.Benutzer == BenutzerName);
         }
 
         public async Task LeihauftragSenden()
         {
             var cartItems = bibContext.Warenkoerbe.Where(
-            c => c.KorbId == BenutzerName);
+            c => c.Benutzer == BenutzerName);
 
             foreach (var cartItem in cartItems)
             {
                 AdminKorb cart = new AdminKorb();
-                cart.BuchId = cartItem.BuchId;
+                cart.ISBN = cartItem.ISBN;
                 cart.BuchTitel = cartItem.BuchTitel;
-                cart.KorbId = cartItem.KorbId;
+                cart.Benutzer = cartItem.Benutzer;
+                cart.ExemplarId = cartItem.ExemplarId;
                 bibContext.AdminWarenkoerbe.Add(cart);
             }
             await bibContext.SaveChangesAsync();

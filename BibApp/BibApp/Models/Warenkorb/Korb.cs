@@ -9,9 +9,10 @@ namespace BibApp.Models.Warenkorb
     public class Korb
     {
         [Key]
-        public string Id { get; set; }
-        public string KorbId { get; set; }
-        public int BuchId { get; set; }
+        public int Id { get; set; }
+        public string Benutzer { get; set; }
+        public string ISBN { get; set; }
+        public int ExemplarId { get; set; }
         public string BuchTitel { get; set; }
     }
 }

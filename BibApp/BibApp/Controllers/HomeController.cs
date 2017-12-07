@@ -38,8 +38,8 @@ namespace BibApp.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 books = books.Where(s =>
-                s.Bezeichnung.Contains(searchString)
-                || s.Autoren.Contains(searchString)
+                s.Titel.Contains(searchString)
+                || s.Autor.Contains(searchString)
                 || s.Verlag.Contains(searchString));
             }
             switch (sortOrder)
@@ -51,38 +51,38 @@ namespace BibApp.Controllers
                     books = books.OrderBy(s => s.Id);
                     break;
                 case "aut_desc":
-                    books = books.OrderByDescending(s => s.Autoren);
+                    books = books.OrderByDescending(s => s.Autor);
                     break;
                 case "Autor":
-                    books = books.OrderBy(s => s.Autoren);
+                    books = books.OrderBy(s => s.Autor);
                     break;
                 case "name_desc":
-                    books = books.OrderByDescending(s => s.Bezeichnung);
+                    books = books.OrderByDescending(s => s.Titel);
                     break;
-                case "entlBis_desc":
-                    books = books.OrderByDescending(s => s.EntliehenBis);
-                    break;
-                case "EntliehenBis":
-                    books = books.OrderBy(s => s.EntliehenBis);
-                    break;
-                case "entlVom_desc":
-                    books = books.OrderByDescending(s => s.EntliehenVom);
-                    break;
-                case "EntliehenVom":
-                    books = books.OrderBy(s => s.EntliehenVom);
-                    break;
-                case "vorg_desc":
-                    books = books.OrderByDescending(s => s.IstVorgemerkt);
-                    break;
-                case "Vorgemerkt":
-                    books = books.OrderBy(s => s.IstVorgemerkt);
-                    break;
-                case "verfüg_desc":
-                    books = books.OrderByDescending(s => s.Verfügbarkeit);
-                    break;
-                case "Verfügbarkeit":
-                    books = books.OrderBy(s => s.Verfügbarkeit);
-                    break;
+                //case "entlBis_desc":
+                //    books = books.OrderByDescending(s => s.EntliehenBis);
+                //    break;
+                //case "EntliehenBis":
+                //    books = books.OrderBy(s => s.EntliehenBis);
+                //    break;
+                //case "entlVom_desc":
+                //    books = books.OrderByDescending(s => s.EntliehenVom);
+                //    break;
+                //case "EntliehenVom":
+                //    books = books.OrderBy(s => s.EntliehenVom);
+                //    break;
+                //case "vorg_desc":
+                //    books = books.OrderByDescending(s => s.IstVorgemerkt);
+                //    break;
+                //case "Vorgemerkt":
+                //    books = books.OrderBy(s => s.IstVorgemerkt);
+                //    break;
+                //case "verfüg_desc":
+                //    books = books.OrderByDescending(s => s.Verfügbarkeit);
+                //    break;
+                //case "Verfügbarkeit":
+                //    books = books.OrderBy(s => s.Verfügbarkeit);
+                //    break;
                 case "verlag_desc":
                     books = books.OrderByDescending(s => s.Verlag);
                     break;
@@ -90,7 +90,7 @@ namespace BibApp.Controllers
                     books = books.OrderBy(s => s.Verlag);
                     break;
                 default:
-                    books = books.OrderBy(s => s.Bezeichnung);
+                    books = books.OrderBy(s => s.Titel);
                     break;
             }
 

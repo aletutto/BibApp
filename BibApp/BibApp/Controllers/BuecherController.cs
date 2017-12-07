@@ -5,25 +5,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BibApp.Models;
+using BibApp.Models.Benutzer;
 using BibApp.Models.Warenkorb;
+using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
 
 namespace BibApp.Controllers
 {
     public class BuecherController : Controller
     {
-        private readonly BibContext _context;
-        private readonly UserManager<Benutzer> _userManager;
+        private readonly BibContext context;
+        private readonly UserManager<Benutzer> userManager;
 
         public BuecherController(BibContext context, UserManager<Benutzer> userManager)
         {
-            _context = context;
-            _userManager = userManager;
+            this.context = context;
+            this.userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
+
+            BuchExemplar model = new BuchExemplar();
+
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
             ViewData["AutSortParm"] = sortOrder == "Autor" ? "aut_desc" : "Autor";
@@ -34,13 +38,17 @@ namespace BibApp.Controllers
             ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from s in _context.Buecher
+            var books = from s in context.Buecher
                            select s;
+
+            var exemplare = from s in context.Exemplare
+                           select s;
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 books = books.Where(s => 
-                s.Bezeichnung.Contains(searchString) 
-                || s.Autoren.Contains(searchString)
+                s.Titel.Contains(searchString) 
+                || s.Autor.Contains(searchString)
                 || s.Verlag.Contains(searchString));
             }
             switch (sortOrder)
@@ -52,38 +60,38 @@ namespace BibApp.Controllers
                     books = books.OrderBy(s => s.Id);
                     break;
                 case "aut_desc":
-                    books = books.OrderByDescending(s => s.Autoren);
+                    books = books.OrderByDescending(s => s.Autor);
                     break;
                 case "Autor":
-                    books = books.OrderBy(s => s.Autoren);
+                    books = books.OrderBy(s => s.Autor);
                     break;
                 case "name_desc":
-                    books = books.OrderByDescending(s => s.Bezeichnung);
+                    books = books.OrderByDescending(s => s.Titel);
                     break;
                 case "entlBis_desc":
-                    books = books.OrderByDescending(s => s.EntliehenBis);
-                    break;
-                case "EntliehenBis":
-                    books = books.OrderBy(s => s.EntliehenBis);
-                    break;
-                case "entlVom_desc":
-                    books = books.OrderByDescending(s => s.EntliehenVom);
-                    break;
-                case "EntliehenVom":
-                    books = books.OrderBy(s => s.EntliehenVom);
-                    break;
-                case "vorg_desc":
-                    books = books.OrderByDescending(s => s.IstVorgemerkt);
-                    break;
-                case "Vorgemerkt":
-                    books = books.OrderBy(s => s.IstVorgemerkt);
-                    break;
-                case "verfüg_desc":
-                    books = books.OrderByDescending(s => s.Verfügbarkeit);
-                    break;
-                case "Verfügbarkeit":
-                    books = books.OrderBy(s => s.Verfügbarkeit);
-                    break;
+                //    books = books.OrderByDescending(s => s.EntliehenBis);
+                //    break;
+                //case "EntliehenBis":
+                //    books = books.OrderBy(s => s.EntliehenBis);
+                //    break;
+                //case "entlVom_desc":
+                //    books = books.OrderByDescending(s => s.EntliehenVom);
+                //    break;
+                //case "EntliehenVom":
+                //    books = books.OrderBy(s => s.EntliehenVom);
+                //    break;
+                //case "vorg_desc":
+                //    books = books.OrderByDescending(s => s.IstVorgemerkt);
+                //    break;
+                //case "Vorgemerkt":
+                //    books = books.OrderBy(s => s.IstVorgemerkt);
+                //    break;
+                //case "verfüg_desc":
+                //    books = books.OrderByDescending(s => s.Verfügbarkeit);
+                //    break;
+                //case "Verfügbarkeit":
+                //    books = books.OrderBy(s => s.Verfügbarkeit);
+                //    break;
                 case "verlag_desc":
                     books = books.OrderByDescending(s => s.Verlag);
                     break;
@@ -91,10 +99,14 @@ namespace BibApp.Controllers
                     books = books.OrderBy(s => s.Verlag);
                     break;
                 default:
-                    books = books.OrderBy(s => s.Bezeichnung);
+                    books = books.OrderBy(s => s.Titel);
                     break;
             }
-            return View(await books.AsNoTracking().ToListAsync());
+
+            model.Exemplare = await exemplare.AsNoTracking().ToListAsync();
+            model.Buecher = await books.AsNoTracking().ToListAsync();
+
+            return View(model);
         }
 
         // GET: Buecher/Details/5
@@ -105,7 +117,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await _context.Buecher
+            var buch = await context.Buecher
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
@@ -130,8 +142,8 @@ namespace BibApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(buch);
-                await _context.SaveChangesAsync();
+                context.Add(buch);
+                await context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(buch);
@@ -145,7 +157,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await _context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
+            var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
                 return NotFound();
@@ -169,8 +181,8 @@ namespace BibApp.Controllers
             {
                 try
                 {
-                    _context.Update(buch);
-                    await _context.SaveChangesAsync();
+                    context.Update(buch);
+                    await context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -196,7 +208,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await _context.Buecher
+            var buch = await context.Buecher
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
@@ -211,35 +223,36 @@ namespace BibApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var buch = await _context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Buecher.Remove(buch);
-            await _context.SaveChangesAsync();
+            var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
+            context.Buecher.Remove(buch);
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BuchExists(int id)
         {
-            return _context.Buecher.Any(e => e.Id == id);
+            return context.Buecher.Any(e => e.Id == id);
         }
 
         // GET: Buecher/AddToCart
         public async Task<IActionResult> AddToCart(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var buch = await _context.Buecher.SingleOrDefaultAsync(b => b.Id == id);
+            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.Id == id);
 
-            if (buch == null)
+            if (exemplar == null)
             {
                 return NotFound();
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            var korb = Warenkorb.GetKorb(user, _context);
-            korb.AddToKorb(buch);
+            var user = await userManager.GetUserAsync(User);
+            var korb = Warenkorb.GetKorb(user, context);
+            korb.AddToKorb(exemplar);
 
             return RedirectToAction(nameof(Index));
         }

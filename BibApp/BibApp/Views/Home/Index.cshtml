@@ -23,26 +23,26 @@
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Buch.Id)</a>
                     </th>
                     <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Bezeichnung)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
                     </th>
                     <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autoren)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
                     </th>
-                    <th>
+                    @*<th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["VerfSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verfügbarkeit)</a>
                     </th>
                     <th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["VorgSortParm"]">@Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)</a>
-                    </th>
+                    </th>*@
                     <th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
                     </th>
-                    <th>
+                    @*<th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["entlVomSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenVom)</a>
                     </th>
                     <th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["entlBisSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenBis)</a>
-                    </th>
+                    </th>*@
                     <th></th>
                 </tr>
             </thead>
@@ -51,23 +51,23 @@
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Bezeichnung)
+                            @Html.DisplayFor(modelItem => item.Titel)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Autoren)
+                            @Html.DisplayFor(modelItem => item.Autor)
                         </td>
-                        <td>
+                        @*<td>
                             @Html.DisplayFor(modelItem => item.IstVorgemerkt)
-                        </td>
+                        </td>*@
                         <td>
                             @Html.DisplayFor(modelItem => item.Verlag)
                         </td>
-                        <td>
+                        @*<td>
                             @Html.DisplayFor(modelItem => item.EntliehenVom)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.EntliehenBis)
-                        </td>
+                        </td>*@
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

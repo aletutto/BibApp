@@ -1,8 +1,14 @@
-﻿@model IEnumerable<BibApp.Models.Buch>
+﻿@model BibApp.Models.Buch.BuchExemplar
 
 @{
     ViewData["Title"] = "Index";
 }
+
+<style type="text/css">
+    tr.parent {
+        cursor: pointer;
+    }
+</style>
 
 <h2>Bücher</h2>
 
@@ -15,91 +21,91 @@
     </div>
 </form>
 
-<table class="table table-hover" style="border: 1px solid #808080">
+<table class="table table-hover" style="border: 1px solid #808080" id="buecher">
     <thead>
-        <tr>   
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Bezeichnung)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Autoren)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VerfSortParm"]">@Html.DisplayNameFor(model => model.Verfügbarkeit)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VorgSortParm"]">@Html.DisplayNameFor(model => model.IstVorgemerkt)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Verlag)</a>
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Regal)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Reihe)
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["entlVomSortParm"]">@Html.DisplayNameFor(model => model.EntliehenVom)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["entlBisSortParm"]">@Html.DisplayNameFor(model => model.EntliehenBis)</a>
-                </th>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Buch.Regal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Buch.Reihe)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Bezeichnung)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Autoren)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Verfügbarkeit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IstVorgemerkt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Verlag)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Regal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reihe)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EntliehenVom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EntliehenBis)
-            </td>
-            <td>
-                @if (User.IsInRole("Admin"))
-                {
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span>|</span>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                }
-                else
-                {
-                    <a asp-action="AddToCart" asp-route-id="@item.Id">In den Warenkorb</a>
-                    @*<a asp-action="RemoveFromCart" asp-route-id="@item.Id">Remove from Cart</a>*@
-                }
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Buecher)
+        {
+            <tr class="parent">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Titel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Autor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Verlag)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Regal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reihe)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span>|</span>
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                </td>
+            </tr>
 
+            @foreach (var exemplar in Model.Exemplare)
+            {
+                @if (item.ISBN.Equals(exemplar.ISBN))
+                {
+                    <tr class="child">
+                        <td>- Exemplar @exemplar.ExemplarId</td>
+                        @if (exemplar.Verfügbarkeit)
+                        {
+                            <td>Verfügbarkeit: @exemplar.Verfügbarkeit</td>
+                        }
+                        else
+                        {
+                            <td>Entliehen vom: @exemplar.EntliehenVom</td>
+                            <td>Entliehen bis: @exemplar.EntliehenBis</td>
+                        }
+                        <td>Vorgemerkt: @exemplar.IstVorgemerkt</td>
+
+                        @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
+                        {
+                            <td>
+                                <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
+                                @*<a asp-action="RemoveFromCart" asp-route-id="@item.Id">Remove from Cart</a>*@
+                            </td>
+                        }
+                        <td></td>
+                        <td></td>
+                        @if (User.IsInRole("Admin") && exemplar.Verfügbarkeit)
+                        {
+                            <td></td>
+                        }
+
+                    </tr>
+                }
+            }
+        }
     </tbody>
 </table>
 
@@ -107,15 +113,29 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-<div class="row">
-    <div class="col-sm-9">
-        <button type="submit" class="btn btn-default">Hinzufügen</button>
-        <button type="button" class="btn btn-default">Bearbeiten</button>
-        <button type="button" class="btn btn-primary">Details</button>
-        <button type="button" class="btn btn-success">Löschen</button>
-    </div>
-    <div class="col-sm-3">
-        <button type="button" class="btn btn-primary">Verleihen</button>
-        <button type="button" class="btn btn-success">Zurückgeben</button>
-    </div>
-</div>       
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.child').toggle();
+
+            function getChildren($row) {
+                var children = [];
+                while ($row.next().hasClass('child')) {
+                    children.push($row.next());
+                    $row = $row.next();
+                }
+                return children;
+            }
+
+            $('.parent').on('click', function () {
+
+                var children = getChildren($(this));
+                $.each(children, function () {
+                    $(this).toggle();
+                })
+            });
+        })
+    </script>
+}

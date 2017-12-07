@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BibApp.Models.Warenkorb;
-using BibApp.Models;
+using BibApp.Models.Benutzer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +32,7 @@ namespace BibApp.Controllers
 
 
         // GET: Warenkorb/RemoveFromKorb
-        public async Task<IActionResult> RemoveFromKorb(string id)
+        public async Task<IActionResult> RemoveFromKorb(int id)
         {
             if (id == null)
             {

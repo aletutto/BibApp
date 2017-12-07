@@ -1,4 +1,4 @@
-﻿@model BibApp.Models.Buch
+﻿@model BibApp.Models.Buch.Buch
 
 @{
     ViewData["Title"] = "Delete";
@@ -12,18 +12,18 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Bezeichnung)
+            @Html.DisplayNameFor(model => model.Titel)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Bezeichnung)
+            @Html.DisplayFor(model => model.Titel)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Autoren)
+            @Html.DisplayNameFor(model => model.Autor)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Autoren)
+            @Html.DisplayFor(model => model.Autor)
         </dd>
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.Verfügbarkeit)
         </dt>
         <dd>
@@ -34,7 +34,7 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.IstVorgemerkt)
-        </dd>
+        </dd>*@
         <dt>
             @Html.DisplayNameFor(model => model.Verlag)
         </dt>
@@ -53,7 +53,7 @@
         <dd>
             @Html.DisplayFor(model => model.Reihe)
         </dd>
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.EntliehenVom)
         </dt>
         <dd>
@@ -64,7 +64,7 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.EntliehenBis)
-        </dd>
+        </dd>*@
     </dl>
     
     <form asp-action="Delete">
