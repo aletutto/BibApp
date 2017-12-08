@@ -5,17 +5,20 @@
 }
         <h2>Leihaufträge</h2>
 
-<form asp-action="Index" method="get">
+<form asp-action="Index" method="get" class="form-search form-inline">
     <div class="form-actions no-color">
-        <p>
-            Suche: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" />
-        </p>
+        <div style="padding:0px;">
+                <div class="input-group">
+                    <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary"> Search</button>
+                    </span>
+                </div>
+        </div>
     </div>
 </form>
-
+<br />
 <div class="row">
-    <div class="col-sm-9">
+    <div class="col-sm-6">
         <table class="table" style="border: 1px solid #808080">
             <thead>
                 <tr>
@@ -78,7 +81,7 @@
             </tbody>
         </table>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-6">
         <p>TEST</p>
         <button type="button" class="btn">Benachrichtigen</button>
         <button type="button" class="btn btn-default">Benachrichtigen</button>
@@ -91,20 +94,20 @@
      </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <h3>Abgelaufenes Leihfristende</h3>
-    </div>
-</div>
+<h2>Abgelaufenes Leihfristende</h2>
 
-<form asp-action="Index" method="get">
+<form asp-action="Index" method="get" class="form-search form-inline">
     <div class="form-actions no-color">
-        <p>
-            Suche: <input type="text" name="SearchString2" value="@ViewData["currentFilter2"]" />
-            <input type="submit" value="Search" class="btn btn-default" />
-        </p>
+        <div style="padding:0px;">
+            <div class="input-group">
+                <input type="text" class="form-control search-query" name="SearchString2" value="@ViewData["currentFilter2"]" placeholder="Search..." /> <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"> Search</button>
+                </span>
+            </div>
+        </div>
     </div>
 </form>
+<br />
 
 <div class="row">
     <div class="col-sm-6">

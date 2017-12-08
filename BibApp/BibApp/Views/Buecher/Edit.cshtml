@@ -23,24 +23,20 @@
                 <input asp-for="Autor" class="form-control" />
                 <span asp-validation-for="Autor" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Verfügbarkeit" /> @Html.DisplayNameFor(model => model.Verfügbarkeit)
-                    </label>
-                </div>
-            </div>
             <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="IstVorgemerkt" /> @Html.DisplayNameFor(model => model.IstVorgemerkt)
-                    </label>
-                </div>
-            </div>*@
+                <label asp-for="ISBN" class="control-label"></label>
+                <input asp-for="ISBN" class="form-control" />
+                <span asp-validation-for="ISBN" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Verlag" class="control-label"></label>
                 <input asp-for="Verlag" class="form-control" />
                 <span asp-validation-for="Verlag" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Erscheinungsjahr" class="control-label"></label>
+                <input asp-for="Erscheinungsjahr" class="form-control" />
+                <span asp-validation-for="Erscheinungsjahr" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Regal" class="control-label"></label>
@@ -52,16 +48,6 @@
                 <input asp-for="Reihe" class="form-control" />
                 <span asp-validation-for="Reihe" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                <label asp-for="EntliehenVom" class="control-label"></label>
-                <input asp-for="EntliehenVom" class="form-control" />
-                <span asp-validation-for="EntliehenVom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EntliehenBis" class="control-label"></label>
-                <input asp-for="EntliehenBis" class="form-control" />
-                <span asp-validation-for="EntliehenBis" class="text-danger"></span>
-            </div>*@
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>

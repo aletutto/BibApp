@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using BibApp.Models.Benutzer;
 using System;
 using System.Threading.Tasks;
+using BibApp.Data;
 
 namespace BibApp
 {
@@ -49,6 +50,7 @@ namespace BibApp
         //        options.User.RequireUniqueEmail = true;
             });
 
+            services.AddScoped<DbInitializer>();
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
@@ -63,7 +65,7 @@ namespace BibApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, BibContext context, IServiceProvider service)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, BibContext context, IServiceProvider service, DbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -84,54 +86,7 @@ namespace BibApp
                     template: "{controller=Benutzers}/{action=Login}/{id?}");
             });
             context.Database.EnsureCreated();
-            CreateRoles(service).Wait();
-        }
-
-        private async Task CreateRoles(IServiceProvider serviceProvider)
-        {
-            //initializing custom roles 
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var UserManager = serviceProvider.GetRequiredService<UserManager<Benutzer>>();
-            string[] roleNames = { "Admin", "Member" };
-            IdentityResult roleResult;
-
-            foreach (var roleName in roleNames)
-            {
-                var roleExist = await RoleManager.RoleExistsAsync(roleName);
-                if (!roleExist)
-                {
-                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
-                }
-            }
-            var poweruser = new Benutzer
-            {
-                UserName = "dude",
-                Email = "dude2000@gmail.com",
-                Role = "Admin"
-            };
-            var testuser = new Benutzer
-            {
-                UserName = "member",
-                Email = "member@gmail.com",
-                Role = "Member"
-            };
-            //Ensure you have these values in your appsettings.json file
-            string userPWD = "dude";
-            string testPWD = "member";
-            var _user = await UserManager.FindByEmailAsync("dude2000@gmail.com");
-            var _test = await UserManager.FindByEmailAsync("member@gmail.com");
-
-            if (_user == null)
-            {
-                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
-                var createTestUser = await UserManager.CreateAsync(testuser, testPWD);
-                if (createPowerUser.Succeeded)
-                {
-                    //here we tie the new user to the role
-                    await UserManager.AddToRoleAsync(poweruser, "Admin");
-                    await UserManager.AddToRoleAsync(testuser, "Member");
-                }
-            }
+            ((DbInitializer)dbInitializer).Initialize().Wait();
         }
     }
 }

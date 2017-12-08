@@ -24,7 +24,6 @@ namespace BibApp
                 try
                 {
                     var context = services.GetRequiredService<BibContext>();
-                    DbInitializer.Initialize(context);
                 }
                 catch (Exception ex)
                 {

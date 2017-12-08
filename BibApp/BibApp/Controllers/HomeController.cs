@@ -24,12 +24,7 @@ namespace BibApp.Controllers
             HomeIndexData model = new HomeIndexData();
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
             ViewData["AutSortParm"] = sortOrder == "Autor" ? "aut_desc" : "Autor";
-            ViewData["entlBisSortParm"] = sortOrder == "EntliehenBis" ? "entlBis_desc" : "EntliehenBis";
-            ViewData["entlVomSortParm"] = sortOrder == "EntliehenVom" ? "entlVom_desc" : "EntliehenVom";
-            ViewData["VorgSortParm"] = sortOrder == "Vorgemerkt" ? "vorg_desc" : "Vorgemerkt";
-            ViewData["VerfSortParm"] = sortOrder == "Verfügbarkeit" ? "verfüg_desc" : "Verfügbarkeit";
             ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
             ViewData["CurrentFilter"] = searchString;
 
@@ -44,12 +39,6 @@ namespace BibApp.Controllers
             }
             switch (sortOrder)
             {
-                case "id_desc":
-                    books = books.OrderByDescending(s => s.Id);
-                    break;
-                case "Id":
-                    books = books.OrderBy(s => s.Id);
-                    break;
                 case "aut_desc":
                     books = books.OrderByDescending(s => s.Autor);
                     break;
@@ -59,30 +48,6 @@ namespace BibApp.Controllers
                 case "name_desc":
                     books = books.OrderByDescending(s => s.Titel);
                     break;
-                //case "entlBis_desc":
-                //    books = books.OrderByDescending(s => s.EntliehenBis);
-                //    break;
-                //case "EntliehenBis":
-                //    books = books.OrderBy(s => s.EntliehenBis);
-                //    break;
-                //case "entlVom_desc":
-                //    books = books.OrderByDescending(s => s.EntliehenVom);
-                //    break;
-                //case "EntliehenVom":
-                //    books = books.OrderBy(s => s.EntliehenVom);
-                //    break;
-                //case "vorg_desc":
-                //    books = books.OrderByDescending(s => s.IstVorgemerkt);
-                //    break;
-                //case "Vorgemerkt":
-                //    books = books.OrderBy(s => s.IstVorgemerkt);
-                //    break;
-                //case "verfüg_desc":
-                //    books = books.OrderByDescending(s => s.Verfügbarkeit);
-                //    break;
-                //case "Verfügbarkeit":
-                //    books = books.OrderBy(s => s.Verfügbarkeit);
-                //    break;
                 case "verlag_desc":
                     books = books.OrderByDescending(s => s.Verlag);
                     break;

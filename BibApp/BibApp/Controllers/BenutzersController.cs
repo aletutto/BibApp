@@ -21,9 +21,6 @@ namespace BibApp.Controllers
         private readonly SignInManager<Benutzer> _signInManager;
         private readonly ILogger _logger;
 
-        [TempData]
-        public string ErrorMessage { get; set; }
-
         public BenutzersController(
             UserManager<Benutzer> userManager,
             SignInManager<Benutzer> signInManager,
@@ -67,6 +64,7 @@ namespace BibApp.Controllers
             return View(await benutzer.AsNoTracking().ToListAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
             var usr = await _context.Benutzers
@@ -79,6 +77,7 @@ namespace BibApp.Controllers
             return View(usr);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id)
         {
             if (id == null)
@@ -96,6 +95,7 @@ namespace BibApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id, [Bind("UserName")] Benutzer model, String Role)
         {
             Console.WriteLine(Role);
@@ -152,6 +152,7 @@ namespace BibApp.Controllers
             return _context.Benutzers.Any(e => e.Id == id);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(String id)
         {
             if (id == null)
@@ -171,6 +172,7 @@ namespace BibApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(String id)
         {
             var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);

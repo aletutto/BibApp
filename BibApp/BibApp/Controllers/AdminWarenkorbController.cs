@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using BibApp.Models.Warenkorb;
 using Microsoft.AspNetCore.Identity;
 using BibApp.Models.Benutzer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BibApp.Controllers
 {
@@ -21,12 +22,14 @@ namespace BibApp.Controllers
             this.context = context;
             this.userManager = userManager;
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View(context.AdminWarenkoerbe.ToList());
         }
 
         // TODO: Funktion für das finale ausleihen implementieren
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Ausleihen(int? id)
         {
             var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(

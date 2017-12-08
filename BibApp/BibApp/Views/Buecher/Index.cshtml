@@ -12,14 +12,18 @@
 
 <h2>Bücher</h2>
 
-<form asp-action="Index" method="get">
+<form asp-action="Index" method="get" class="form-search form-inline">
     <div class="form-actions no-color">
-        <p>
-            Suche: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" />
-        </p>
+        <div style="padding:0px;">
+            <div class="input-group">
+                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"> Search</button>
+                </span>
+            </div>
+        </div>
     </div>
 </form>
+<br />
 
 <table class="table table-hover" style="border: 1px solid #808080" id="buecher">
     <thead>
@@ -31,7 +35,13 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
             </th>
             <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["IsbnSortParm"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+            </th>
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ErschSortParm"]">@Html.DisplayNameFor(model => model.Buch.Erscheinungsjahr)</a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Buch.Regal)
@@ -53,7 +63,13 @@
                     @Html.DisplayFor(modelItem => item.Autor)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.ISBN)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Verlag)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Erscheinungsjahr)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Regal)
@@ -109,9 +125,12 @@
     </tbody>
 </table>
 
+@if (User.IsInRole("Admin"))
+{
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+}
 
 @section Scripts
 {

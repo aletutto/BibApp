@@ -9,6 +9,7 @@ using BibApp.Models.Benutzer;
 using BibApp.Models.Warenkorb;
 using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BibApp.Controllers
 {
@@ -29,12 +30,9 @@ namespace BibApp.Controllers
             BuchExemplar model = new BuchExemplar();
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
             ViewData["AutSortParm"] = sortOrder == "Autor" ? "aut_desc" : "Autor";
-            ViewData["entlBisSortParm"] = sortOrder == "EntliehenBis" ? "entlBis_desc" : "EntliehenBis";
-            ViewData["entlVomSortParm"] = sortOrder == "EntliehenVom" ? "entlVom_desc" : "EntliehenVom";
-            ViewData["VorgSortParm"] = sortOrder == "Vorgemerkt" ? "vorg_desc" : "Vorgemerkt";
-            ViewData["VerfSortParm"] = sortOrder == "Verfügbarkeit" ? "verfüg_desc" : "Verfügbarkeit";
+            ViewData["IsbnSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
+            ViewData["ErschSortParm"] = sortOrder == "Erscheinung" ? "ersch_desc" : "Erscheinung";
             ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
             ViewData["CurrentFilter"] = searchString;
 
@@ -53,12 +51,6 @@ namespace BibApp.Controllers
             }
             switch (sortOrder)
             {
-                case "id_desc":
-                    books = books.OrderByDescending(s => s.Id);
-                    break;
-                case "Id":
-                    books = books.OrderBy(s => s.Id);
-                    break;
                 case "aut_desc":
                     books = books.OrderByDescending(s => s.Autor);
                     break;
@@ -68,30 +60,18 @@ namespace BibApp.Controllers
                 case "name_desc":
                     books = books.OrderByDescending(s => s.Titel);
                     break;
-                case "entlBis_desc":
-                //    books = books.OrderByDescending(s => s.EntliehenBis);
-                //    break;
-                //case "EntliehenBis":
-                //    books = books.OrderBy(s => s.EntliehenBis);
-                //    break;
-                //case "entlVom_desc":
-                //    books = books.OrderByDescending(s => s.EntliehenVom);
-                //    break;
-                //case "EntliehenVom":
-                //    books = books.OrderBy(s => s.EntliehenVom);
-                //    break;
-                //case "vorg_desc":
-                //    books = books.OrderByDescending(s => s.IstVorgemerkt);
-                //    break;
-                //case "Vorgemerkt":
-                //    books = books.OrderBy(s => s.IstVorgemerkt);
-                //    break;
-                //case "verfüg_desc":
-                //    books = books.OrderByDescending(s => s.Verfügbarkeit);
-                //    break;
-                //case "Verfügbarkeit":
-                //    books = books.OrderBy(s => s.Verfügbarkeit);
-                //    break;
+                case "isbn_desc":
+                    books = books.OrderByDescending(s => s.ISBN);
+                    break;
+                case "ISBN":
+                    books = books.OrderBy(s => s.ISBN);
+                    break;
+                case "ersch_desc":
+                    books = books.OrderByDescending(s => s.Erscheinungsjahr);
+                    break;
+                case "Erscheinung":
+                    books = books.OrderBy(s => s.Erscheinungsjahr);
+                    break;
                 case "verlag_desc":
                     books = books.OrderByDescending(s => s.Verlag);
                     break;
@@ -128,6 +108,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Buecher/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -138,6 +119,7 @@ namespace BibApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
         {
             if (ModelState.IsValid)
@@ -150,6 +132,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Buecher/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -170,6 +153,7 @@ namespace BibApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
         {
             if (id != buch.Id)
@@ -201,6 +185,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Buecher/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -221,6 +206,7 @@ namespace BibApp.Controllers
         // POST: Buecher/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);

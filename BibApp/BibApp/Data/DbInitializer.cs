@@ -1,32 +1,78 @@
 ﻿using BibApp.Models.Benutzer;
 using BibApp.Models.Buch;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BibApp.Data
 {
-    public static class DbInitializer
+    public class DbInitializer
     {
-        public static void Initialize(BibContext context)
+        private readonly BibContext _context;
+        private readonly UserManager<Benutzer> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public DbInitializer(
+        BibContext context,
+        UserManager<Benutzer> userManager,
+        RoleManager<IdentityRole> roleManager)
         {
-            context.Database.EnsureCreated();
+            _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
 
-            // Look for any students.
-            if (context.Buecher.Any())
+        public async Task Initialize()
+        {
+
+            string[] roleNames = { "Admin", "Member" };
+            IdentityResult roleResult;
+
+            // Look for Roles.
+            foreach (var roleName in roleNames)
             {
-                return;   // DB has been seeded
+                var roleExist = await _roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                }
             }
 
-            // TODO: User hierüber laden
-            var usr = new Benutzer[]
+            // Look for any users.
+            if (!_context.Benutzers.Any())
             {
+                var poweruser = new Benutzer
+                {
+                    UserName = "dude",
+                    Email = "dude2000@gmail.com",
+                    Role = "Admin"
+                };
+                var testuser = new Benutzer
+                {
+                    UserName = "member",
+                    Email = "member@gmail.com",
+                    Role = "Member"
+                };
 
-            };
-            foreach (Benutzer s in usr)
-            {
-                context.Benutzers.Add(s);
+                string userPWD = "dude";
+                string testPWD = "member";
+                var _user = await _userManager.FindByEmailAsync("dude2000@gmail.com");
+                var _test = await _userManager.FindByEmailAsync("member@gmail.com");
+
+                if (_user == null)
+                {
+                    var createPowerUser = await _userManager.CreateAsync(poweruser, userPWD);
+                    var createTestUser = await _userManager.CreateAsync(testuser, testPWD);
+                    if (createPowerUser.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(poweruser, "Admin");
+                        await _userManager.AddToRoleAsync(testuser, "Member");
+                    }
+                }
             }
-            context.SaveChanges();
+            
 
             var buecher = new Buch[]
             {
@@ -37,16 +83,16 @@ namespace BibApp.Data
             };
             foreach (Buch buch in buecher)
             {
-                context.Buecher.Add(buch);
+                _context.Buecher.Add(buch);
 
                 for(int i = 1; i <= buch.AnzahlExemplare; i++)
                 {
                     var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
-                    context.Exemplare.Add(exemplar);
+                    _context.Exemplare.Add(exemplar);
                 }
                
             }
-            context.SaveChanges();
+            _context.SaveChanges();
         }
     }
 }
