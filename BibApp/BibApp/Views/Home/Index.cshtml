@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+
         <h2>Leihaufträge</h2>
 
 <form asp-action="Index" method="get" class="form-search form-inline">
@@ -17,81 +18,48 @@
     </div>
 </form>
 <br />
+
 <div class="row">
-    <div class="col-sm-6">
-        <table class="table" style="border: 1px solid #808080">
+    <div class="col-sm-10">
+        <table class="table table-fixedheader table-hover" style="border: 1px solid #808080">
             <thead>
                 <tr>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Buch.Id)</a>
-                    </th>
-                    <th>
+                    <th class="col-xs-2">
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
                     </th>
-                    <th>
+                    <th class="col-xs-2">
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
                     </th>
-                    @*<th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VerfSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verfügbarkeit)</a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VorgSortParm"]">@Html.DisplayNameFor(model => model.Buch.IstVorgemerkt)</a>
-                    </th>*@
-                    <th>
+                    <th class="col-xs-2">
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
                     </th>
-                    @*<th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["entlVomSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenVom)</a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["entlBisSortParm"]">@Html.DisplayNameFor(model => model.Buch.EntliehenBis)</a>
-                    </th>*@
-                    <th></th>
+                    <th class="col-xs-2">Aktionen</th>
                 </tr>
             </thead>
+       
             <tbody>
-                @foreach (var item in Model.Buecher)
-            {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Titel)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Autor)
-                        </td>
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.IstVorgemerkt)
-                        </td>*@
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Verlag)
-                        </td>
-                        @*<td>
-                            @Html.DisplayFor(modelItem => item.EntliehenVom)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.EntliehenBis)
-                        </td>*@
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="col-sm-6">
-        <p>TEST</p>
-        <button type="button" class="btn">Benachrichtigen</button>
-        <button type="button" class="btn btn-default">Benachrichtigen</button>
-        <button type="button" class="btn btn-primary">Benachrichtigen</button>
-        <button type="button" class="btn btn-success">Benachrichtigen</button>
-        <button type="button" class="btn btn-info">Benachrichtigen</button>
-        <button type="button" class="btn btn-warning">Benachrichtigen</button>
-        <button type="button" class="btn btn-danger">Benachrichtigen</button>
-        <button type="button" class="btn btn-link">Benachrichtigen</button>
-     </div>
+                    @foreach (var item in Model.Buecher)
+                   {
+                        <tr>
+                            <td class="col-xs-2">
+                                @Html.DisplayFor(modelItem => item.Titel)
+                            </td>
+                            <td class="col-xs-2">
+                                @Html.DisplayFor(modelItem => item.Autor)
+                            </td>
+                            <td class="col-xs-2">
+                                @Html.DisplayFor(modelItem => item.Verlag)
+                            </td>
+                            <td class="col-xs-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 </div>
 
 <h2>Abgelaufenes Leihfristende</h2>

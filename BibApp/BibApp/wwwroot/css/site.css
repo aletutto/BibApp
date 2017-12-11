@@ -33,3 +33,37 @@
         display: none;
     }
 }
+
+.table-fixedheader {
+    width: 100%;
+}
+
+.table-fixedheader,
+.table-fixedheader > thead,
+.table-fixedheader > tbody,
+.table-fixedheader > thead > tr,
+.table-fixedheader > tbody > tr,
+.table-fixedheader > thead > tr > th,
+.table-fixedheader > tbody > td {
+    display: block;
+}
+
+.table-fixedheader > thead > tr:after,
+.table-fixedheader > tbody > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.table-fixedheader > tbody {
+    overflow-y: scroll;
+    height: 200px;
+}
+
+    
+.table-fixedheader > thead > tr > th,
+.table-fixedheader > tbody > tr > td {
+    width: 25%;
+    float: left;
+}
