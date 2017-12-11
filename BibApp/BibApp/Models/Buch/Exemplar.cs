@@ -16,10 +16,10 @@ namespace BibApp.Models.Buch
         public bool Verfügbarkeit { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime EntliehenVom { get; set; }
+        public DateTime? EntliehenVom { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime EntliehenBis { get; set; }
+        public DateTime? EntliehenBis { get; set; }
 
         public bool IstVorgemerkt { get; set; }
     }

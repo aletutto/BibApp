@@ -37,30 +37,32 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Benutzer)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ExemplarId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BuchTitel)
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                Aktion
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
-                                @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
-                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">löschen</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
+                @if (!item.IstVerliehen)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Benutzer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExemplarId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BuchTitel)
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Aktion
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
+                                    <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
             }
 
         </tbody>
@@ -101,30 +103,32 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Benutzer)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ExemplarId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BuchTitel)
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                Aktion
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">verlängern</a></li>
-                                @* Keine ahnung weöche Aktionen hier nochmal drin waren :D, aber vom Prinzip kannste das so machen *@
-                                <li><a asp-action="Ausleihen" asp-route-id="@item.Id">zurückgeben</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
+                @if (item.IstVerliehen)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Benutzer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExemplarId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BuchTitel)
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Aktion
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-action="Verlaengern" asp-route-id="@item.Id">verlängern</a></li>
+                                    <li><a asp-action="Zurueckgeben" asp-route-id="@item.Id">zurückgeben</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
             }
 
         </tbody>

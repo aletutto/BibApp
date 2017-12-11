@@ -108,6 +108,7 @@ namespace BibApp.Models.Warenkorb
                 cart.BuchTitel = cartItem.BuchTitel;
                 cart.Benutzer = cartItem.Benutzer;
                 cart.ExemplarId = cartItem.ExemplarId;
+                cart.IstVerliehen = false;
                 bibContext.AdminWarenkoerbe.Add(cart);
             }
             await bibContext.SaveChangesAsync();

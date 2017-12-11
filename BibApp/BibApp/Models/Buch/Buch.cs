@@ -9,6 +9,7 @@ namespace BibApp.Models.Buch
 {
     public class Buch
     {
+        [Key]
         public int Id { get; set; }
 
         public String ISBN { get; set; }

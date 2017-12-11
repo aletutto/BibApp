@@ -14,5 +14,6 @@ namespace BibApp.Models.Warenkorb
         public string ISBN { get; set; }
         public int ExemplarId { get; set; }
         public string BuchTitel { get; set; }
+        public bool IstVerliehen { get; set; }
     }
 }
