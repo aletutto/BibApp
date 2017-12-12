@@ -60,7 +60,7 @@
     <tbody>
         @foreach (var item in Model.Buecher)
         {
-            <tr class="parent">
+            <tr class="parent" style="background-color:#f9fbff">
                 <td>
                     @Html.DisplayFor(modelItem => item.Titel)
                 </td>
@@ -132,22 +132,29 @@
                     <tr class="child">
                         <td>
                             - Exemplar @exemplar.ExemplarId
+                         </td>
 
                             @if (exemplar.Verfügbarkeit)
                             {
-                                <span style="color:forestgreen">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verfügbar</span>
+                                <td>
+                                    <span style="color:forestgreen">verfügbar</span>
+                                </td>
+                                
                             }
 
                             else
                             {
-                                <span style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entliehen bis:</span>
-                                <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
+                                <td>
+                                    <span style="color:red">entliehen bis:</span>
+                                    <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
+                                </td>
+                                
                             }
-                        </td>
+                        
                         
                         @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
                         {
-                            <td>
+                            <td class="hideextra">
                                 <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
                             </td>
                         }
@@ -158,7 +165,7 @@
                             </td>
                         }
 
-                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td>
                     </tr>
                 }
             }
