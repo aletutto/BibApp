@@ -26,7 +26,7 @@ namespace BibApp.Models.Warenkorb
             return cart;
         }
 
-        public void AddToKorb(Buch.Exemplar exemplar)
+        public async Task AddToKorb(Buch.Exemplar exemplar)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
                 c => c.Benutzer == BenutzerName
@@ -46,12 +46,12 @@ namespace BibApp.Models.Warenkorb
                     BuchTitel = buch.Titel
                 };
                 bibContext.Add(cartItem);
-                bibContext.SaveChangesAsync();
+                await bibContext.SaveChangesAsync();
             }
         }
 
         // TODO: Wenn das Buch schon dem Warenkorb hinzugefügt wurde, dann sollte man einen Hinweis erhalten das das Buch bereits im Warenkorb ist wenn man nochmal versucht es hinzuzufügen
-        public bool checkIfAlreadyAdded(Buch.Exemplar exemplar)
+        public bool CheckIfAlreadyAdded(Buch.Exemplar exemplar)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
             c => c.Benutzer == BenutzerName

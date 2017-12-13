@@ -8,6 +8,7 @@
     tr.parent {
         cursor: pointer;
     }
+
     .hideextra {
         white-space: nowrap;
         overflow: hidden;
@@ -60,7 +61,7 @@
     <tbody>
         @foreach (var item in Model.Buecher)
         {
-            <tr class="parent">
+            <tr class="parent" style="background-color:white">
                 <td>
                     @Html.DisplayFor(modelItem => item.Titel)
                 </td>
@@ -190,6 +191,20 @@
             }
 
             $('.parent').on('click', function () {
+
+                // $('.parent').css("background-color", "black");
+
+                if ($(this).css("background-color") == "rgb(255, 255, 255)") {
+
+                    $(this).css("background-color", "rgb(51, 122, 183)");
+                    $(this).css("color", "white");
+                    console.log("blue");
+                }
+                else if ($(this).css("background-color") == "rgb(51, 122, 183)") {
+                    $(this).css("background-color", "white");
+                    $(this).css("color", "black");
+                    console.log("white");
+                }
 
                 var children = getChildren($(this));
                 $.each(children, function () {
