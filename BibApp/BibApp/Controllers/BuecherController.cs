@@ -238,7 +238,7 @@ namespace BibApp.Controllers
 
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
-            korb.AddToKorb(exemplar);
+            await korb.AddToKorb(exemplar);
 
             return RedirectToAction(nameof(Index));
         }

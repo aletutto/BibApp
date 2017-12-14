@@ -32,7 +32,7 @@ namespace BibApp.Controllers
 
 
         // GET: Warenkorb/RemoveFromKorb
-        public async Task<IActionResult> RemoveFromKorb(int id)
+        public async Task<IActionResult> RemoveFromKorb(int? id)
         {
             if (id == null)
             {
@@ -76,7 +76,5 @@ namespace BibApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }
