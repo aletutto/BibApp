@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BibApp.Models.Buch;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,9 @@ namespace BibApp.Models.Warenkorb
         BibContext bibContext;
         string BenutzerName { get; set; }
 
-        public Warenkorb(BibContext context)
+        public Warenkorb(BibContext bibContext)
         {
-            this.bibContext = context;
+            this.bibContext = bibContext;
         }
         public static Warenkorb GetKorb(Benutzer.Benutzer benutzer, BibContext bibContext)
         {
@@ -66,7 +67,7 @@ namespace BibApp.Models.Warenkorb
             return true;
         }
 
-        public void RemoveFromKorb(Korb korb)
+        public async Task RemoveFromKorb(Korb korb)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
             c => c.Benutzer == BenutzerName
@@ -74,7 +75,18 @@ namespace BibApp.Models.Warenkorb
             && c.ExemplarId == korb.ExemplarId);
 
             bibContext.Warenkoerbe.Remove(cartItem);
-            bibContext.SaveChangesAsync();
+            await bibContext.SaveChangesAsync();
+        }
+
+        public async Task RemoveFromKorb(Exemplar exemplar)
+        {
+            var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
+            c => c.Benutzer == BenutzerName
+            && c.ISBN == exemplar.ISBN
+            && c.ExemplarId == exemplar.ExemplarId);
+
+            bibContext.Warenkoerbe.Remove(cartItem);
+            await bibContext.SaveChangesAsync();
         }
 
         public async Task RemoveAllFromKorb()

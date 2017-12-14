@@ -238,7 +238,31 @@ namespace BibApp.Controllers
 
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
+
             await korb.AddToKorb(exemplar);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> RemoveFromCart(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.Id == id);
+
+            if (exemplar == null)
+            {
+                return NotFound();
+            }
+
+            var user = await userManager.GetUserAsync(User);
+            var korb = Warenkorb.GetKorb(user, context);
+
+            await korb.RemoveFromKorb(exemplar);
 
             return RedirectToAction(nameof(Index));
         }

@@ -14,7 +14,6 @@ namespace BibApp.Controllers
     public class WarenkorbController : Controller
     {
         BibContext context;
-        Benutzer benutzer;
         private readonly UserManager<Benutzer> userManager;
 
         public WarenkorbController(
@@ -48,7 +47,7 @@ namespace BibApp.Controllers
 
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
-            korb.RemoveFromKorb(item);
+            await korb.RemoveFromKorb(item);
 
             return RedirectToAction(nameof(Index));
         }
