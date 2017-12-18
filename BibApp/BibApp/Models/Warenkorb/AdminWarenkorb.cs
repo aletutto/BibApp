@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace BibApp.Models.Warenkorb
@@ -32,7 +34,7 @@ namespace BibApp.Models.Warenkorb
             adminKorb.IstVerliehen = true;
 
             bibContext.Exemplare.Update(exemplar);
-            bibContext.AdminWarenkoerbe.Update(adminKorb);
+            bibContext.AdminWarenkoerbe.Update(adminKorb)
             await bibContext.SaveChangesAsync();
         }
 

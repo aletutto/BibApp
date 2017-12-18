@@ -126,6 +126,7 @@ namespace BibApp.Controllers
             {
                 context.Add(buch);
                 await context.SaveChangesAsync();
+                TempData["message"] = "Buch wurde erfolgreich erstellt!";
                 return RedirectToAction(nameof(Index));
             }
             return View(buch);
@@ -188,6 +189,7 @@ namespace BibApp.Controllers
                         throw;
                     }
                 }
+                TempData["message"] = "Buch wurde erfolgreich geändert!";
                 return RedirectToAction(nameof(Index));
             }
             return View(buch);
@@ -221,6 +223,7 @@ namespace BibApp.Controllers
             var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
             context.Buecher.Remove(buch);
             await context.SaveChangesAsync();
+            TempData["message"] = "Buch wurde erfolgreich gelöscht!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -249,7 +252,7 @@ namespace BibApp.Controllers
             var korb = Warenkorb.GetKorb(user, context);
 
             await korb.AddToKorb(exemplar);
-
+            TempData["message"] = "Buch wurde erfolgreich zum Warenkorb hinzugefügt!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -272,7 +275,7 @@ namespace BibApp.Controllers
             var korb = Warenkorb.GetKorb(user, context);
 
             await korb.RemoveFromKorb(exemplar);
-
+            TempData["message"] = "Buch wurde erfolgreich vom Warenkorb gelöscht!";
             return RedirectToAction(nameof(Index));
         }
 
