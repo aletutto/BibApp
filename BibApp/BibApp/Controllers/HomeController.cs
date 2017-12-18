@@ -24,81 +24,91 @@ namespace BibApp.Controllers
             HomeIndexData model = new HomeIndexData();
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["AutSortParm"] = sortOrder == "Autor" ? "aut_desc" : "Autor";
-            ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
+            ViewData["BuchSortParm"] = sortOrder == "Buch" ? "buch_desc" : "Buch";
+            ViewData["ISBNSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from s in _context.Buecher
+            var books = from s in _context.AdminWarenkoerbe
                         select s;
             if (!String.IsNullOrEmpty(searchString))
             {
                 books = books.Where(s =>
-                s.Titel.Contains(searchString)
-                || s.Autor.Contains(searchString)
-                || s.Verlag.Contains(searchString));
+                s.Benutzer.Contains(searchString)
+                || s.BuchTitel.Contains(searchString)
+                || s.ISBN.Contains(searchString));
             }
             switch (sortOrder)
             {
-                case "aut_desc":
-                    books = books.OrderByDescending(s => s.Autor);
+                case "buch_desc":
+                    books = books.OrderByDescending(s => s.BuchTitel);
                     break;
-                case "Autor":
-                    books = books.OrderBy(s => s.Autor);
+                case "Buch":
+                    books = books.OrderBy(s => s.BuchTitel);
                     break;
                 case "name_desc":
-                    books = books.OrderByDescending(s => s.Titel);
+                    books = books.OrderByDescending(s => s.Benutzer);
                     break;
-                case "verlag_desc":
-                    books = books.OrderByDescending(s => s.Verlag);
+                case "isbn_desc":
+                    books = books.OrderByDescending(s => s.ISBN);
                     break;
-                case "Verlag":
-                    books = books.OrderBy(s => s.Verlag);
+                case "ISBN":
+                    books = books.OrderBy(s => s.ISBN);
                     break;
                 default:
-                    books = books.OrderBy(s => s.Titel);
+                    books = books.OrderBy(s => s.Benutzer);
                     break;
             }
 
-            ViewData["NameSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["RoleSortParm2"] = sortOrder == "Role" ? "role_desc" : "Role";
+            ViewData["NameSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "name_desc2" : "";
+            ViewData["BuchSortParm2"] = sortOrder == "Buch2" ? "buch_desc2" : "Buch2";
+            ViewData["ISBNSortParm2"] = sortOrder == "ISBN2" ? "isbn_desc2" : "ISBN2";
             ViewData["CurrentFilter2"] = searchString2;
 
-            var benutzer = from s in _context.Benutzers
-                           select s;
+            var books2 = from s in _context.Buecher
+                        select s;
 
-            if (!String.IsNullOrEmpty(searchString2))
+            if (!String.IsNullOrEmpty(searchString))
             {
-                benutzer = benutzer.Where(s => s.UserName.Contains(searchString2));
+                books2 = books2.Where(s =>
+                s.Titel.Contains(searchString)
+                || s.Autor.Contains(searchString)
+                || s.ISBN.Contains(searchString));
             }
             switch (sortOrder)
             {
-                case "name_desc":
-                    benutzer = benutzer.OrderByDescending(s => s.UserName);
+                case "buch_desc2":
+                    books2 = books2.OrderByDescending(s => s.Titel);
                     break;
-                case "role_desc":
-                    benutzer = benutzer.OrderByDescending(s => s.Role);
+                case "Buch2":
+                    books2 = books2.OrderBy(s => s.Titel);
                     break;
-                case "Role":
-                    benutzer = benutzer.OrderBy(s => s.Role);
+                case "name_desc2":
+                    books2 = books2.OrderByDescending(s => s.Autor);
+                    break;
+                case "isbn_desc2":
+                    books2 = books2.OrderByDescending(s => s.ISBN);
+                    break;
+                case "ISBN2":
+                    books2 = books2.OrderBy(s => s.ISBN);
                     break;
                 default:
-                    benutzer = benutzer.OrderBy(s => s.UserName);
+                    books2 = books2.OrderBy(s => s.Autor);
                     break;
             }
 
-            model.Benutzers = await benutzer.AsNoTracking().ToListAsync();
-            model.Buecher = await books.AsNoTracking().ToListAsync();
+            model.Buecher = await books2.AsNoTracking().ToListAsync();
+            model.AdminKoerbe = await books.AsNoTracking().ToListAsync();
             return View(model);
         }
 
-        public IActionResult UserIndex()
-        {
-            HomeIndexData model = new HomeIndexData();
+        //public IActionResult UserIndex()
+        //{
+        //    HomeIndexData model = new HomeIndexData();
 
-            model.Benutzers = _context.Benutzers.ToList();
-            model.Buecher = _context.Buecher.ToList();
-            return View(model);
-        }
+        //    model.BuchExemplare = _context.Buecher.ToList();
+        //    model.AdminKoerbe = _context.AdminWarenkoerbe.ToList();
+        //    return View(model);
+        //}
 
         public IActionResult About()
         {

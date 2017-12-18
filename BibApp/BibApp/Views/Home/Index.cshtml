@@ -21,39 +21,33 @@
 
 <div class="row">
     <div class="col-sm-10">
-        <table class="table table-fixedheader table-hover" style="border: 1px solid #808080">
+        <table class="table table-hover" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
                     </th>
                     <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["BuchSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)</a>
                     </th>
                     <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["ISBNSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.ISBN)</a>
                     </th>
-                    <th class="col-xs-2">Aktionen</th>
                 </tr>
             </thead>
        
             <tbody>
-                    @foreach (var item in Model.Buecher)
+                    @foreach (var item in Model.AdminKoerbe)
                    {
                         <tr>
                             <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.Titel)
+                                @Html.DisplayFor(modelItem => item.Benutzer)
                             </td>
                             <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.Autor)
+                                @Html.DisplayFor(modelItem => item.BuchTitel)
                             </td>
                             <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.Verlag)
-                            </td>
-                            <td class="col-xs-2">
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                @Html.DisplayFor(modelItem => item.ISBN)
                             </td>
                         </tr>
                     }
@@ -83,23 +77,23 @@
             <thead>
                 <tr>
                     <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Benutzer.UserName)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
                     </th>
                     <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">@Html.DisplayNameFor(model => model.Benutzer.Role)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Benutzers)
+                @foreach (var item in Model.Buecher)
             {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.UserName)
+                            @Html.DisplayFor(modelItem => item.Titel)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Role)
+                            @Html.DisplayFor(modelItem => item.Autor)
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
