@@ -154,7 +154,7 @@ namespace BibApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
+        public async Task<IActionResult> Edit(int id, Buch buch)
         {
             if (id != buch.Id)
             {
@@ -165,6 +165,15 @@ namespace BibApp.Controllers
             {
                 try
                 {
+                    var buchISBN = await context.Buecher.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
+                    var oldISBN = buchISBN.ISBN;
+                    var exemplare = context.Exemplare.Where(e => e.ISBN == oldISBN);
+                    
+                    foreach (var exemplar in exemplare)
+                    {
+                        exemplar.ISBN = buch.ISBN; 
+                    }
+
                     context.Update(buch);
                     await context.SaveChangesAsync();
                 }
