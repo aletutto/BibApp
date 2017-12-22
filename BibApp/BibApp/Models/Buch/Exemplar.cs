@@ -10,7 +10,9 @@ namespace BibApp.Models.Buch
     {
         [Key]
         public int Id { get; set; }
+
         public int ExemplarId { get; set; }
+
         public string ISBN { get; set; }
 
         public bool Verfügbarkeit { get; set; }

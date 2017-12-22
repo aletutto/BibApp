@@ -1,18 +1,23 @@
 ﻿@model BibApp.Models.Buch.Buch
+@await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h2>Edit</h2>
+<h2>Buch bearbeiten</h2>
 
-<h4>Buch</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="ISBN" class="control-label"></label>
+                <input asp-for="ISBN" class="form-control" />
+                <span asp-validation-for="ISBN" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Titel" class="control-label"></label>
                 <input asp-for="Titel" class="form-control" />
@@ -22,11 +27,6 @@
                 <label asp-for="Autor" class="control-label"></label>
                 <input asp-for="Autor" class="form-control" />
                 <span asp-validation-for="Autor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ISBN" class="control-label"></label>
-                <input asp-for="ISBN" class="form-control" />
-                <span asp-validation-for="ISBN" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Verlag" class="control-label"></label>
@@ -47,6 +47,11 @@
                 <label asp-for="Reihe" class="control-label"></label>
                 <input asp-for="Reihe" class="form-control" />
                 <span asp-validation-for="Reihe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnzahlExemplare" class="control-label"></label>
+                <input asp-for="AnzahlExemplare" class="form-control" />
+                <span asp-validation-for="AnzahlExemplare" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

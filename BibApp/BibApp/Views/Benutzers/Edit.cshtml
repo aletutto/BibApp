@@ -17,13 +17,28 @@
                 <input asp-for="UserName" class="form-control" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
+            <label asp-for="Role" class="control-label"></label>
+                @if (ViewData["role"].Equals("Admin"))
+                {
                     @Html.DropDownList("Role",
                   new List<SelectListItem> {
-                      new SelectListItem { Value = "" , Text = "Select Role" },
                        new SelectListItem { Value = "King" , Text = "Admin" },
-                       new SelectListItem { Value = "Pawn" , Text = "Member" },
+                       new SelectListItem { Value = "Pawn" , Text = "Member" }
                         },
                   new { @class = "form-control" })
+
+                }
+                else
+                {
+                    @Html.DropDownList("Role",
+                  new List<SelectListItem> {
+                      new SelectListItem { Value = "King" , Text = "Member" },
+                       new SelectListItem { Value = "Pawn" , Text = "Admin" }
+                        },
+                  new { @class = "form-control" })
+
+                }
+
             <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

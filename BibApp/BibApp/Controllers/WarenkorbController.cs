@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BibApp.Models.Warenkorb;
 using BibApp.Models.Benutzer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 
 namespace BibApp.Controllers
 {
     public class WarenkorbController : Controller
     {
-        BibContext context;
+        private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
+        private readonly IToastNotification toastNotification;
 
         public WarenkorbController(
             BibContext context,
-            UserManager<Benutzer> userManager)
+            UserManager<Benutzer> userManager,
+            IToastNotification toastNotification)
         {
             this.context = context;
             this.userManager = userManager;
+            this.toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index()
@@ -49,6 +50,11 @@ namespace BibApp.Controllers
             var korb = Warenkorb.GetKorb(user, context);
             await korb.RemoveFromKorb(item);
 
+            toastNotification.AddToastMessage("Entfernen", "Das Buch\"" + item.BuchTitel + "\" wurde aus dem Warenkorb entfernt!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -58,6 +64,11 @@ namespace BibApp.Controllers
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
             await korb.RemoveAllFromKorb();
+
+            toastNotification.AddToastMessage("Entfernen", "Es wurden alle Bücher aus dem Warenkorb entfernt!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
 
             return RedirectToAction(nameof(Index));
         }
@@ -72,6 +83,11 @@ namespace BibApp.Controllers
             var user = await userManager.GetUserAsync(User);
             var korb = Warenkorb.GetKorb(user, context);
             await korb.LeihauftragSenden();
+
+            toastNotification.AddToastMessage("Leihauftrag senden", "Der Leihauftrag wurde an den Bibliothekar gesendet!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
 
             return RedirectToAction(nameof(Index));
         }

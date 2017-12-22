@@ -18,5 +18,7 @@ namespace BibApp.Models
 
         public List<AdminKorb> AdminKoerbe { get; set; }
         public AdminKorb AdminKorb { get; set; }
-    }
+
+        public Dictionary<AdminKorb, Exemplar>  Dictionary { get; set; }
+}
 }

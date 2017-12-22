@@ -34,7 +34,7 @@ namespace BibApp.Models.Warenkorb
             adminKorb.IstVerliehen = true;
 
             bibContext.Exemplare.Update(exemplar);
-            bibContext.AdminWarenkoerbe.Update(adminKorb)
+            bibContext.AdminWarenkoerbe.Update(adminKorb);
             await bibContext.SaveChangesAsync();
         }
 

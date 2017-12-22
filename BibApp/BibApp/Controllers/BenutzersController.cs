@@ -90,6 +90,9 @@ namespace BibApp.Controllers
             {
                 return NotFound();
             }
+
+            ViewData["role"] = usr.Role;
+
             return View(usr);
         }
 

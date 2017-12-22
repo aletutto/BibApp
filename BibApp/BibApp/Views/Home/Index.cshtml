@@ -1,10 +1,8 @@
 ﻿@model BibApp.Models.HomeIndexData
 
-@{
-    ViewData["Title"] = "Home Page";
-}
+@* ADMIN *@
 
-        <h2>Leihaufträge</h2>
+<h2>Leihaufträge</h2>
 
 <form asp-action="Index" method="get" class="form-search form-inline">
     <div class="form-actions no-color">
@@ -20,7 +18,7 @@
 <br />
 
 <div class="row">
-    <div class="col-sm-10">
+    <div class="col-sm-12">
         <table class="table table-hover" style="border: 1px solid #808080">
             <thead>
                 <tr>
@@ -72,48 +70,43 @@
 <br />
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-12">
         <table class="table" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                    </th>
+                    <th>
                         <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
                     </th>
                     <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Abgelaufen am</a>
                     </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Buecher)
-            {
+                @foreach (var item in Model.Dictionary)
+                {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Titel)
+                            @Html.DisplayFor(modelItem => item.Key.Benutzer)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Autor)
+                            @Html.DisplayFor(modelItem => item.Key.ISBN)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-    </div>
-    <div class="col-sm-6">
-        <button type="button" class="btn">Benachrichtigen</button>
-        <button type="button" class="btn btn-default">Benachrichtigen</button>
-        <button type="button" class="btn btn-primary">Benachrichtigen</button>
-        <button type="button" class="btn btn-success">Benachrichtigen</button>
-        <button type="button" class="btn btn-info">Benachrichtigen</button>
-        <button type="button" class="btn btn-warning">Benachrichtigen</button>
-        <button type="button" class="btn btn-danger">Benachrichtigen</button>
-        <button type="button" class="btn btn-link">Benachrichtigen</button>
-
     </div>
 </div>

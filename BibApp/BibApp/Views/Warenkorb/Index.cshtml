@@ -1,11 +1,7 @@
 ﻿@model IEnumerable<BibApp.Models.Warenkorb.Korb>
-@{
-    ViewData["Title"] = "Index";
-}
+@await Component.InvokeAsync("NToastNotify.Toastr")
 
 <h2>Warenkorb</h2>
-
-<h2>@TempData["message"]</h2>
 
 <table class="table table-hover" style="border: 1px solid #808080">
     <thead>

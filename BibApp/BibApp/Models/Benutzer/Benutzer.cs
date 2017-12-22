@@ -7,6 +7,7 @@ namespace BibApp.Models.Benutzer
 {
     public class Benutzer : IdentityUser
     {
+        // TODO: LÖSCHEN
         public Buch.Buch Buch { get; set; } 
         public string Role { get; set; }
     }

@@ -8,20 +8,25 @@ using Microsoft.AspNetCore.Identity;
 using BibApp.Models.Benutzer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
+using BibApp.Models.Buch;
 
 namespace BibApp.Controllers
 {
     public class AdminWarenkorbController : Controller
     {
-        BibContext context;
+        private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
+        private readonly IToastNotification toastNotification;
 
         public AdminWarenkorbController(
             BibContext context,
-            UserManager<Benutzer> userManager)
+            UserManager<Benutzer> userManager,
+            IToastNotification toastNotification)
         {
             this.context = context;
             this.userManager = userManager;
+            this.toastNotification = toastNotification;
         }
         [Authorize(Roles = "Admin")]
         public IActionResult Index(string searchString)
@@ -41,7 +46,6 @@ namespace BibApp.Controllers
             return View(adminWarenkoerbe.AsNoTracking().ToList()); 
         }
 
-        // TODO: Funktion für das finale ausleihen implementieren
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Ausleihen(int? id)
         {
@@ -52,12 +56,64 @@ namespace BibApp.Controllers
                 c => c.ISBN == adminKorbExemplar.ISBN 
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var user = await userManager.GetUserAsync(User);
-            var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
-            await adminWarenkorb.Ausleihen(exemplar, adminKorbExemplar);
+            if (!exemplar.Verfügbarkeit)
+            {
 
-            return RedirectToAction(nameof(Index));
+                var exemplare = context.Exemplare.Where(e => e.ISBN == buch.ISBN);
+
+                Exemplar gesuchtesExemplar = null;
+
+                foreach (var exemplarSuchen in exemplare)
+                {
+                    if (exemplarSuchen.Verfügbarkeit)
+                    {
+                        gesuchtesExemplar = exemplarSuchen;
+                        break;
+                    }
+                }
+
+                if (gesuchtesExemplar != null)
+                {
+                    var oldExemplarId = exemplar.ExemplarId;
+
+                    var user = await userManager.GetUserAsync(User);
+                    var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+
+                    adminKorbExemplar.ExemplarId = gesuchtesExemplar.ExemplarId;
+
+                    await adminWarenkorb.Ausleihen(gesuchtesExemplar, adminKorbExemplar);
+
+                    toastNotification.AddToastMessage("Anderes Exemplar verliehen", "Das Exemplar " + oldExemplarId + " ist bereits verliehen! Es wurde nun das Exemplar " + gesuchtesExemplar.ExemplarId + " des Buches \"" + buch.Titel + "\" verliehen.", ToastEnums.ToastType.Warning, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                toastNotification.AddToastMessage("Fehler", "Es sind bereits alle Exemplare des Buches \"" + buch.Titel + "\" verliehen!", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var user = await userManager.GetUserAsync(User);
+                var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+
+                await adminWarenkorb.Ausleihen(exemplar, adminKorbExemplar);
+
+                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde verliehen!", ToastEnums.ToastType.Success, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -70,6 +126,11 @@ namespace BibApp.Controllers
             var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
 
             await adminWarenkorb.Loeschen(adminKorbExemplar);
+
+            toastNotification.AddToastMessage("Entfernt", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\", welches von \"" + user.UserName + "\" ausgliehen werden wollte, wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
 
             return RedirectToAction(nameof(Index));
         }
@@ -89,6 +150,11 @@ namespace BibApp.Controllers
 
             await adminWarenkorb.Zurueckgeben(exemplar, adminKorbExemplar);
 
+            toastNotification.AddToastMessage("Zurückgegeben", "Das Buch\"" + adminKorbExemplar.BuchTitel + "\" wurde vom Benutzer \"" + user.UserName + "\" zurückgegeben!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -106,6 +172,11 @@ namespace BibApp.Controllers
             var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
 
             await adminWarenkorb.Verlaengern(exemplar);
+
+            toastNotification.AddToastMessage("Verlängert", "Das Buch\"" + adminKorbExemplar.BuchTitel + "\" des Benutzers \"" + user.UserName + "\" wurde verlängert!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
 
             return RedirectToAction(nameof(Index));
         }

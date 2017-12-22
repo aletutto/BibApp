@@ -115,12 +115,14 @@ namespace BibApp.Models.Warenkorb
 
             foreach (var cartItem in cartItems)
             {
-                AdminKorb cart = new AdminKorb();
-                cart.ISBN = cartItem.ISBN;
-                cart.BuchTitel = cartItem.BuchTitel;
-                cart.Benutzer = cartItem.Benutzer;
-                cart.ExemplarId = cartItem.ExemplarId;
-                cart.IstVerliehen = false;
+                AdminKorb cart = new AdminKorb
+                {
+                    ISBN = cartItem.ISBN,
+                    BuchTitel = cartItem.BuchTitel,
+                    Benutzer = cartItem.Benutzer,
+                    ExemplarId = cartItem.ExemplarId,
+                    IstVerliehen = false
+                };
                 bibContext.AdminWarenkoerbe.Add(cart);
             }
             await bibContext.SaveChangesAsync();

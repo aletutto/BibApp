@@ -10,6 +10,7 @@ using BibApp.Models.Warenkorb;
 using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using NToastNotify;
 
 namespace BibApp.Controllers
 {
@@ -17,16 +18,17 @@ namespace BibApp.Controllers
     {
         private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
+        private readonly IToastNotification toastNotification;
 
-        public BuecherController(BibContext context, UserManager<Benutzer> userManager)
+        public BuecherController(BibContext context, UserManager<Benutzer> userManager, IToastNotification toastNotification)
         {
             this.context = context;
             this.userManager = userManager;
+            this.toastNotification = toastNotification;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-
             BuchExemplar model = new BuchExemplar();
 
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -120,14 +122,40 @@ namespace BibApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Bezeichnung,Autoren,Verfügbarkeit,IstVorgemerkt,Verlag,Regal,Reihe,EntliehenVom,EntliehenBis")] Buch buch)
+        public async Task<IActionResult> Create([Bind("ISBN, Titel, Autor, Verlag, Erscheinungsjahr, Regal, Reihe, AnzahlExemplare")] Buch buch)
         {
             if (ModelState.IsValid)
             {
-                context.Add(buch);
-                await context.SaveChangesAsync();
-                TempData["message"] = "Buch wurde erfolgreich erstellt!";
-                return RedirectToAction(nameof(Index));
+                var buchVorhanden = await context.Buecher.SingleOrDefaultAsync(m => m.ISBN == buch.ISBN);
+
+                if (buchVorhanden == null)
+                {
+                    context.Add(buch);
+
+                    for (int i = 1; i <= buch.AnzahlExemplare; i++)
+                    {
+                        var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
+                        context.Exemplare.Add(exemplar);
+                    }
+
+                    await context.SaveChangesAsync();
+
+                    toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde erstellt!", ToastEnums.ToastType.Success, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    toastNotification.AddToastMessage("Fehler", "Das Buch mit der ISBN " + buch.ISBN + " existiert bereits in den Stammdaten!", ToastEnums.ToastType.Error, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
+
+                    return View(buch);
+                }                
             }
             return View(buch);
         }
@@ -166,10 +194,49 @@ namespace BibApp.Controllers
             {
                 try
                 {
-                    var buchISBN = await context.Buecher.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
-                    var oldISBN = buchISBN.ISBN;
-                    var exemplare = context.Exemplare.Where(e => e.ISBN == oldISBN);
-                    
+
+                    var buchVorher = await context.Buecher.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
+                    var AnzahlExemplareVorher = buchVorher.AnzahlExemplare;
+
+                    if (AnzahlExemplareVorher < buch.AnzahlExemplare)
+                    {
+                        var Differenz = buch.AnzahlExemplare - AnzahlExemplareVorher;
+
+                        for (int i = 1; i <= Differenz; i++)
+                        {
+                            var exemplar = new Exemplar { ExemplarId = AnzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
+                            context.Exemplare.Add(exemplar);
+                        }
+
+                    }
+
+                    if (AnzahlExemplareVorher > buch.AnzahlExemplare)
+                    {
+                        var Differenz = AnzahlExemplareVorher - buch.AnzahlExemplare;
+
+                        for (int i = 0; i < Differenz; i++)
+                        {
+                            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.ISBN == buchVorher.ISBN && e.ExemplarId == AnzahlExemplareVorher - i);
+                            if (!exemplar.Verfügbarkeit)
+                            {
+                                toastNotification.AddToastMessage("Fehler", "Das Exemplar ist noch verliehen und kann daher nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
+                                {
+                                    PositionClass = ToastPositions.TopCenter
+                                });
+
+                                return RedirectToAction(nameof(Edit));
+                            }
+                            else
+                            {
+                                context.Exemplare.Remove(exemplar);
+                            }
+                            
+                        }
+
+                    }
+
+                    var exemplare = context.Exemplare.Where(e => e.ISBN == buchVorher.ISBN);
+
                     foreach (var exemplar in exemplare)
                     {
                         exemplar.ISBN = buch.ISBN; 
@@ -189,7 +256,12 @@ namespace BibApp.Controllers
                         throw;
                     }
                 }
-                TempData["message"] = "Buch wurde erfolgreich geändert!";
+
+                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+
                 return RedirectToAction(nameof(Index));
             }
             return View(buch);
@@ -223,7 +295,12 @@ namespace BibApp.Controllers
             var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
             context.Buecher.Remove(buch);
             await context.SaveChangesAsync();
-            TempData["message"] = "Buch wurde erfolgreich gelöscht!";
+
+            toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -249,13 +326,31 @@ namespace BibApp.Controllers
             }
 
             var user = await userManager.GetUserAsync(User);
-            var korb = Warenkorb.GetKorb(user, context);
+            var buchVorhanden = context.Warenkoerbe.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
+            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
-            await korb.AddToKorb(exemplar);
-            TempData["message"] = "Buch wurde erfolgreich zum Warenkorb hinzugefügt!";
+            if (buchVorhanden == null)
+            {
+                var korb = Warenkorb.GetKorb(user, context);
+                await korb.AddToKorb(exemplar);
+
+                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde dem Warenkorb hinzugefügt!", ToastEnums.ToastType.Success, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+            }
+            else
+            {
+                toastNotification.AddToastMessage("Warnung", "Das Buch \"" + buch.Titel + "\" befindet sich bereits im Warenkorb!", ToastEnums.ToastType.Warning, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
+        // TODO: Noch einbauen
         public async Task<IActionResult> RemoveFromCart(int? id)
         {
 
@@ -275,7 +370,14 @@ namespace BibApp.Controllers
             var korb = Warenkorb.GetKorb(user, context);
 
             await korb.RemoveFromKorb(exemplar);
-            TempData["message"] = "Buch wurde erfolgreich vom Warenkorb gelöscht!";
+
+            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+
+            toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde vom Warenkorb entfernt!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+
             return RedirectToAction(nameof(Index));
         }
 

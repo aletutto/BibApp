@@ -7,16 +7,18 @@ using System.Linq;
 using System.Dynamic;
 using System.Collections.Generic;
 using System;
+using BibApp.Models.Warenkorb;
+using BibApp.Models.Buch;
 
 namespace BibApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly BibContext _context;
+        private readonly BibContext context;
 
         public HomeController(BibContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString, string searchString2)
@@ -28,7 +30,7 @@ namespace BibApp.Controllers
             ViewData["ISBNSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from s in _context.AdminWarenkoerbe
+            var books = from s in context.AdminWarenkoerbe
                         select s;
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -64,7 +66,7 @@ namespace BibApp.Controllers
             ViewData["ISBNSortParm2"] = sortOrder == "ISBN2" ? "isbn_desc2" : "ISBN2";
             ViewData["CurrentFilter2"] = searchString2;
 
-            var books2 = from s in _context.Buecher
+            var books2 = from s in context.Buecher
                         select s;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -96,19 +98,28 @@ namespace BibApp.Controllers
                     break;
             }
 
+            var exemplareFrist = context.Exemplare.Where(e =>
+            e.EntliehenBis != null &&
+            (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
+
+            var dic = new Dictionary<AdminKorb, Exemplar>();
+
+            if (exemplareFrist != null)
+            {
+                foreach (var item in exemplareFrist)
+                {
+                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId );
+                    dic.Add(adminKorb, item);
+
+                    Debug.WriteLine("HIER: " + (DateTime.Now.Date - item.EntliehenBis.Value).TotalDays);
+                }
+            }
+
+            model.Dictionary = dic;
             model.Buecher = await books2.AsNoTracking().ToListAsync();
             model.AdminKoerbe = await books.AsNoTracking().ToListAsync();
             return View(model);
         }
-
-        //public IActionResult UserIndex()
-        //{
-        //    HomeIndexData model = new HomeIndexData();
-
-        //    model.BuchExemplare = _context.Buecher.ToList();
-        //    model.AdminKoerbe = _context.AdminWarenkoerbe.ToList();
-        //    return View(model);
-        //}
 
         public IActionResult About()
         {

@@ -108,7 +108,7 @@ namespace BibApp.Data
                 new Buch{ISBN="978-3499138782", Titel="Der unsichtbare Mann", Autor="Ralph Ellison", Erscheinungsjahr=1998, Regal=7, Reihe=3, Verlag="Rowohlt", AnzahlExemplare=3},
                 new Buch{ISBN="978-3150079782", Titel="Medea: Griech. / Dt. ", Autor="Euripides", Erscheinungsjahr=1986, Regal=8, Reihe=4, Verlag="Reclam", AnzahlExemplare=2},
                 new Buch{ISBN="978-3257207217", Titel="Madame Bovary: Sitten der Provinz", Autor="Gustave Flaubert", Erscheinungsjahr=2005, Regal=10, Reihe=3, Verlag="Diogenes", AnzahlExemplare=1},
-                new Buch{ISBN="978-3518223567", Titel="Zigeunerromanzen: Primer romancero gitano 1924-1927", Autor="Federico García Lorca", Erscheinungsjahr=2002, Regal=14, Reihe=1, Verlag="Suhrkamp", AnzahlExemplare=2},
+                new Buch{ISBN="978-3518223567", Titel="Zigeunerromanzen: Primer romancero gitano", Autor="Federico García Lorca", Erscheinungsjahr=2002, Regal=14, Reihe=1, Verlag="Suhrkamp", AnzahlExemplare=2},
                 new Buch{ISBN="978-3596509812", Titel="Hundert Jahre Einsamkeit", Autor="Gabriel García Márquez", Erscheinungsjahr=2007, Regal=11, Reihe=2, Verlag="Fischer", AnzahlExemplare=3},
                 new Buch{ISBN="978-3596510214", Titel="Die Liebe in den Zeiten der Cholera", Autor="Gabriel García Márquez", Erscheinungsjahr=2007, Regal=15, Reihe=4, Verlag="Fischer", AnzahlExemplare=4},
 
