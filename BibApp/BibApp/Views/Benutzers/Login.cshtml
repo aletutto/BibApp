@@ -1,4 +1,5 @@
 ﻿@using BibApp.Models.Benutzer;
+@await Component.InvokeAsync("NToastNotify.Toastr")
 
 @model LoginViewModel
 @inject SignInManager<Benutzer> SignInManager

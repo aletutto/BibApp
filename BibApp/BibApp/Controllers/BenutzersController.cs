@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BibApp.Models.Benutzer;
 using BibApp.Models;
+using NToastNotify;
 
 namespace BibApp.Controllers
 {
@@ -19,17 +20,17 @@ namespace BibApp.Controllers
         private readonly BibContext _context;
         private readonly UserManager<Benutzer> _userManager;
         private readonly SignInManager<Benutzer> _signInManager;
-        private readonly ILogger _logger;
+        private readonly IToastNotification _toastNotification;
 
         public BenutzersController(
             UserManager<Benutzer> userManager,
             SignInManager<Benutzer> signInManager,
-            ILogger<BenutzersController> logger,
+            IToastNotification toastNotification,
             BibContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
+            _toastNotification = toastNotification;
             _context = context;
         }
         [Authorize(Roles = "Admin")]
@@ -101,9 +102,6 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id, [Bind("UserName")] Benutzer model, String Role)
         {
-            Console.WriteLine(Role);
-            Console.WriteLine(model.UserName);
-
             if (ModelState.IsValid)
             {
                 try
@@ -129,6 +127,10 @@ namespace BibApp.Controllers
                         user.Role = "Admin";
                         _context.Update(user);
                         _context.SaveChanges();
+                        _toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        {
+                            PositionClass = ToastPositions.TopCenter
+                        });
                         return RedirectToAction(nameof(Index));
                     }
                     if (Role == "Pawn")
@@ -137,6 +139,10 @@ namespace BibApp.Controllers
                         user.Role = "Member";
                         _context.Update(user);
                         _context.SaveChanges();
+                        _toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        {
+                            PositionClass = ToastPositions.TopCenter
+                        });
                         return RedirectToAction(nameof(Index));
                     }
                     return RedirectToAction(nameof(Index));
@@ -181,6 +187,10 @@ namespace BibApp.Controllers
             var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
             _context.Benutzers.Remove(usr);
             await _context.SaveChangesAsync();
+            _toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde erfolgreich gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
             return RedirectToAction(nameof(Index));
         }
 
@@ -198,12 +208,14 @@ namespace BibApp.Controllers
                     model.Passwort, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation(1, "User logged in.");
+                    _toastNotification.AddToastMessage("", "Login erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning(2, "User account locked out.");
                     return View("Lockout");
                 }
                 else
@@ -214,7 +226,7 @@ namespace BibApp.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return View("Login");
         }
 
         [HttpGet]
@@ -297,7 +309,6 @@ namespace BibApp.Controllers
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            _logger.LogInformation("User changed their password successfully.");
             return RedirectToAction("Index", "Home");
         }
 
@@ -345,7 +356,10 @@ namespace BibApp.Controllers
                 {
                     
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
+                    _toastNotification.AddToastMessage("", "Registrierung erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -358,8 +372,11 @@ namespace BibApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            return View();
+            _toastNotification.AddToastMessage("", "Logout erfolgreich!", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+            return View("Login");
         }
 
         [HttpGet]
