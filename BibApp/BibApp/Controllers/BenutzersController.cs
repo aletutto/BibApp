@@ -33,6 +33,7 @@ namespace BibApp.Controllers
             _toastNotification = toastNotification;
             _context = context;
         }
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
@@ -41,7 +42,7 @@ namespace BibApp.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var benutzer = from s in _context.Benutzers
-                        select s;
+                           select s;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -346,23 +347,34 @@ namespace BibApp.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new Benutzer { UserName = model.Benutzername };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                await _userManager.AddToRoleAsync(user, "Member");
-                user.Role = "Member";
-                _context.Update(user);
-                _context.SaveChanges();
-                if (result.Succeeded)
+                var userCheck = await _context.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
+                if (userCheck == null)
                 {
-                    
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _toastNotification.AddToastMessage("", "Registrierung erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
+                    var user = new Benutzer { UserName = model.Benutzername };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    await _userManager.AddToRoleAsync(user, "Member");
+                    user.Role = "Member";
+                    _context.Update(user);
+                    _context.SaveChanges();
+                    if (result.Succeeded)
+                    {
+
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _toastNotification.AddToastMessage("", "Registrierung erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
+                        {
+                            PositionClass = ToastPositions.TopCenter
+                        });
+                        return RedirectToLocal(returnUrl);
+                    }
+                    AddErrors(result);
+                }
+                else
+                {
+                    _toastNotification.AddToastMessage("", "Registrierung fehlgeschlagen!", ToastEnums.ToastType.Success, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
-                    return RedirectToLocal(returnUrl);
                 }
-                AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
