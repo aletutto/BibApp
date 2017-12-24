@@ -384,11 +384,11 @@ namespace BibApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _toastNotification.AddToastMessage("", "Logout erfolgreich!", ToastEnums.ToastType.Success, new ToastOption()
+            _toastNotification.AddToastMessage("", "Sie wurden erfolgreich ausgeloggt!", ToastEnums.ToastType.Info, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
-            return View("Login");
+            return RedirectToAction("Login");
         }
 
         [HttpGet]

@@ -291,14 +291,37 @@ namespace BibApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
-            context.Buecher.Remove(buch);
-            await context.SaveChangesAsync();
+            var exemplare = context.Exemplare.Where(e => e.ISBN == buch.ISBN);
+            bool istEinExemplarVerliehen = false;
 
-            toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+            foreach (var exemplar in exemplare)
             {
-                PositionClass = ToastPositions.TopCenter
-            });
+                if (!exemplar.Verfügbarkeit)
+                {
+                    istEinExemplarVerliehen = true;
+                    break;
+                }
+            }
 
+            if (!istEinExemplarVerliehen)
+            {
+                context.Buecher.Remove(buch);
+                await context.SaveChangesAsync();
+
+                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+
+            }
+            else
+            {
+                toastNotification.AddToastMessage("", "Ein Exemplar des Buch \"" + buch.Titel + "\" ist noch verliehen, daher kann das Buch nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+
+            }
             return RedirectToAction(nameof(Index));
         }
 
