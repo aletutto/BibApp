@@ -2,137 +2,173 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Leihaufträge";
+}
+
+
+@foreach (var item in Model)
+{
+    @if (!item.IstVerliehen)
+    {
+        ViewData["leihaufträgeNichtLeer"] = "true";
+    }
+    @if (item.IstVerliehen)
+    {
+        ViewData["verliehenNichtLeer"] = "true";
+    }
+     
+    @if (ViewData["verliehenNichtLeer"] != null && ViewData["leihaufträgeNichtLeer"] != null)
+    {
+        break;
+    }
 }
 
 <div class="col-sm-6">
     <h2>Ausleihen</h2>
 
-    <form asp-action="Index" method="get" class="form-search form-inline">
-        <div class="form-actions no-color">
-            <div style="padding:0px;">
-                <div class="input-group">
-                    <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
-                        <button type="submit" class="btn btn-primary"> Search</button>
-                    </span>
+    @if (ViewData["leihaufträgeNichtLeer"] != null)
+    {
+        <form asp-action="Index" method="get" class="form-search form-inline">
+            <div class="form-actions no-color">
+                <div style="padding:0px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary"> Search</button>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-    <br />
+        </form>
+        <br />
 
-    <table class="table table-hover" style="border: 1px solid #808080">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Benutzer)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ExemplarId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.BuchTitel)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                @if (!item.IstVerliehen)
+        <table class="table table-hover" style="border: 1px solid #808080">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Benutzer)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExemplarId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BuchTitel)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Benutzer)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ExemplarId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BuchTitel)
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                    Aktion
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
-                                    <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (!item.IstVerliehen)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Benutzer)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ExemplarId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BuchTitel)
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                        Aktion
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
+                                        <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert" style="font-size:medium">Momentan möchte keiner ein Buch ausleihen.</div>
+    }
+
+
 </div>
 
 <div class="col-sm-6">
     <h2>Zurückgeben</h2>
 
-    <form asp-action="Index" method="get" class="form-search form-inline">
-        <div class="form-actions no-color">
-            <div style="padding:0px;">
-                <div class="input-group">
-                    <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
-                        <button type="submit" class="btn btn-primary"> Search</button>
-                    </span>
+    @if (ViewData["verliehenNichtLeer"] != null)
+    {
+        <form asp-action="Index" method="get" class="form-search form-inline">
+            <div class="form-actions no-color">
+                <div style="padding:0px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary"> Search</button>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-    <br />
+        </form>
+        <br />
 
-    <table class="table table-hover" style="border: 1px solid #808080">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Benutzer)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ExemplarId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.BuchTitel)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                @if (item.IstVerliehen)
+        <table class="table table-hover" style="border: 1px solid #808080">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Benutzer)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ExemplarId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BuchTitel)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Benutzer)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ExemplarId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BuchTitel)
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                    Aktion
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a asp-action="Verlaengern" asp-route-id="@item.Id">verlängern</a></li>
-                                    <li><a asp-action="Zurueckgeben" asp-route-id="@item.Id">zurückgeben</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (item.IstVerliehen)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Benutzer)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ExemplarId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BuchTitel)
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                        Aktion
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a asp-action="Verlaengern" asp-route-id="@item.Id">verlängern</a></li>
+                                        <li><a asp-action="Zurueckgeben" asp-route-id="@item.Id">zurückgeben</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert" style="font-size:medium">Momentan sind keine Bücher verliehen.</div>
+    }
+
+
 </div>

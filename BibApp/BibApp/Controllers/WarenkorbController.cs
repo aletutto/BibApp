@@ -30,7 +30,6 @@ namespace BibApp.Controllers
             return View(context.Warenkoerbe.ToList());
         }
 
-
         // GET: Warenkorb/RemoveFromKorb
         public async Task<IActionResult> RemoveFromKorb(int? id)
         {

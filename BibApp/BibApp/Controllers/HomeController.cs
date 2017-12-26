@@ -4,21 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using BibApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Dynamic;
 using System.Collections.Generic;
 using System;
 using BibApp.Models.Warenkorb;
 using BibApp.Models.Buch;
+using Microsoft.AspNetCore.Identity;
+using BibApp.Models.Benutzer;
 
 namespace BibApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly BibContext context;
+        private readonly UserManager<Benutzer> userManager;
 
-        public HomeController(BibContext context)
+        public HomeController(BibContext context, UserManager<Benutzer> userManager)
         {
             this.context = context;
+            this.userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string sortOrder, string searchString, string searchString2)
@@ -61,63 +64,118 @@ namespace BibApp.Controllers
                     break;
             }
 
-            ViewData["NameSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "name_desc2" : "";
-            ViewData["BuchSortParm2"] = sortOrder == "Buch2" ? "buch_desc2" : "Buch2";
-            ViewData["ISBNSortParm2"] = sortOrder == "ISBN2" ? "isbn_desc2" : "ISBN2";
-            ViewData["CurrentFilter2"] = searchString2;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["BuchSortParm"] = sortOrder == "Buch" ? "buch_desc" : "Buch";
+            ViewData["ISBNSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
+            ViewData["CurrentFilter"] = searchString;
 
-            var books2 = from s in context.Buecher
-                        select s;
+
+            // NEU
+            var exemplareAbgelaufen = context.Exemplare.Where(e =>
+                e.EntliehenBis != null
+                && (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                books2 = books2.Where(s =>
-                s.Titel.Contains(searchString)
-                || s.Autor.Contains(searchString)
+                exemplareAbgelaufen = context.Exemplare.Where(e =>
+                    e.EntliehenBis != null &&
+                    (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0
+                    && e.EntliehenBis.ToString().Contains(searchString));
+
+                books = books.Where(s =>
+                s.Benutzer.Contains(searchString)
+                || s.BuchTitel.Contains(searchString)
                 || s.ISBN.Contains(searchString));
             }
             switch (sortOrder)
             {
-                case "buch_desc2":
-                    books2 = books2.OrderByDescending(s => s.Titel);
+                case "buch_desc":
+                    books = books.OrderByDescending(s => s.BuchTitel);
                     break;
-                case "Buch2":
-                    books2 = books2.OrderBy(s => s.Titel);
+                case "Buch":
+                    books = books.OrderBy(s => s.BuchTitel);
                     break;
-                case "name_desc2":
-                    books2 = books2.OrderByDescending(s => s.Autor);
+                case "name_desc":
+                    books = books.OrderByDescending(s => s.Benutzer);
                     break;
-                case "isbn_desc2":
-                    books2 = books2.OrderByDescending(s => s.ISBN);
+                case "isbn_desc":
+                    books = books.OrderByDescending(s => s.ISBN);
                     break;
-                case "ISBN2":
-                    books2 = books2.OrderBy(s => s.ISBN);
+                case "ISBN":
+                    books = books.OrderBy(s => s.ISBN);
                     break;
                 default:
-                    books2 = books2.OrderBy(s => s.Autor);
+                    books = books.OrderBy(s => s.Benutzer);
                     break;
             }
 
-            var exemplareFrist = context.Exemplare.Where(e =>
-            e.EntliehenBis != null &&
-            (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
 
-            var dic = new Dictionary<AdminKorb, Exemplar>();
 
-            if (exemplareFrist != null)
+            // ADMIN: Abgelaufene Exemplare
+
+            var exemplareAbgelaufenDic = new Dictionary<AdminKorb, Exemplar>();
+
+            if (exemplareAbgelaufen != null)
             {
-                foreach (var item in exemplareFrist)
+                foreach (var item in exemplareAbgelaufen)
                 {
                     var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId );
-                    dic.Add(adminKorb, item);
-
-                    Debug.WriteLine("HIER: " + (DateTime.Now.Date - item.EntliehenBis.Value).TotalDays);
+                    exemplareAbgelaufenDic.Add(adminKorb, item);
                 }
             }
 
-            model.Dictionary = dic;
-            model.Buecher = await books2.AsNoTracking().ToListAsync();
-            model.AdminKoerbe = await books.AsNoTracking().ToListAsync();
+            // ADMIN: Bald ablaufende Exemplare
+            var exemplareLaufenBaldAb = context.Exemplare.Where(e =>
+                e.EntliehenBis != null
+                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays < 7
+                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0 );
+
+            var exemplareLaufenBaldAbDic = new Dictionary<AdminKorb, Exemplar>();
+
+            if (exemplareLaufenBaldAb != null)
+            {
+                foreach (var item in exemplareLaufenBaldAb)
+                {
+                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    exemplareLaufenBaldAbDic.Add(adminKorb, item);
+                }
+            }
+
+            // USER: Entliehende Exemplare
+            var user = await userManager.GetUserAsync(User);
+            var exemplareEntliehen = context.AdminWarenkoerbe.Where(a =>
+                a.Benutzer.Equals(user.UserName)
+                && a.IstVerliehen == true);
+            var exemplareEntliehenDic = new Dictionary<AdminKorb, Exemplar>();
+
+            if (exemplareEntliehen != null)
+            {
+                foreach (var item in exemplareEntliehen)
+                {
+                    var exemplar = context.Exemplare.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    exemplareEntliehenDic.Add(item, exemplar);
+                }
+            }
+
+            // USER: Leihaufträge versendet Exemplare
+            var exemplareLeihauftragVersendet = context.AdminWarenkoerbe.Where(a =>
+                a.Benutzer.Equals(user.UserName)
+                && a.IstVerliehen == false);
+            var exemplareLeihauftragVersendetDic = new Dictionary<AdminKorb, Exemplar>();
+
+            if (exemplareLeihauftragVersendet != null)
+            {
+                foreach (var item in exemplareLeihauftragVersendet)
+                {
+                    var exemplar = context.Exemplare.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    exemplareLeihauftragVersendetDic.Add(item, exemplar);
+                }
+            }
+
+            model.ExemplareAbgelaufen = exemplareAbgelaufenDic;
+            model.ExemplareLaufenBaldAb = exemplareLaufenBaldAbDic;
+            model.ExemplareEntliehen = exemplareEntliehenDic;
+            model.ExemplareLeihauftragVersendet = exemplareLeihauftragVersendetDic;
             return View(model);
         }
 

@@ -16,6 +16,8 @@ namespace BibApp.Models.Warenkorb
         BibContext bibContext;
         string BenutzerName { get; set; }
 
+        public Warenkorb() { }
+
         public Warenkorb(BibContext bibContext)
         {
             this.bibContext = bibContext;
@@ -102,7 +104,7 @@ namespace BibApp.Models.Warenkorb
         }
 
         // TODO: Alle Bücher im Warenkorb zählen und im Layout anzeigen z.B. -> Warenkorb (2)
-        public int CountAllItems(Benutzer.Benutzer benutzer)
+        public int CountAllItems()
         {
             return bibContext.Warenkoerbe.Count(
             c => c.Benutzer == BenutzerName);

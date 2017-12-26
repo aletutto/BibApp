@@ -1,9 +1,8 @@
 ﻿@model BibApp.Models.Buch.BuchExemplar
-@using BibApp.Models.Warenkorb
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
-@{
-    ViewData["Title"] = "Index";
+@{ 
+    ViewData["Title"] = "Bücher";
 }
 
 <style type="text/css">
@@ -16,6 +15,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    .blue{
+        color:blue;
+    }
+    .white {
+        color: white;
+    }
 </style>
 
 <h2>Bücher</h2>
@@ -24,7 +30,7 @@
     <div class="form-actions no-color">
         <div style="padding:0px;">
             <div class="input-group">
-                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
+                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
                     <button type="submit" class="btn btn-primary"> Search</button>
                 </span>
             </div>
@@ -95,9 +101,10 @@
                 <td class="hideextra">
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit"></i></a> <span>|</span>
-                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign"></i></a> <span>|</span>
-                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash"></i></a>
+                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span>|</span>
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
+
                     }
                 </td>
             </tr>
@@ -116,16 +123,25 @@
                                 <td>
                                     <span style="color:forestgreen">verfügbar</span>
                                 </td>
-                                
+                                 
+                                if (User.IsInRole("Admin"))
+                                {
+                                    <td></td>
+                                }
+
                             }
 
-                            else
+                            else if (!exemplar.Verfügbarkeit)
                             {
                                 <td>
                                     <span style="color:red">entliehen bis:</span>
                                     <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
                                 </td>
-                                
+
+                                if (User.IsInRole("Admin"))
+                                {
+                                    <td></td>
+                                }
                             }
                         
                         
@@ -134,12 +150,11 @@
                             <td class="hideextra">
                                 <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
                             </td>
-                         }
+                        }
 
                         @if (!User.IsInRole("Admin") && !exemplar.Verfügbarkeit)
                         {
-                            <td>
-                            </td>
+                            <td></td>
                         }
 
                         <td></td><td></td><td></td><td></td><td></td>

@@ -2,15 +2,16 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Personen";
 }
+
 <h2>Personen</h2>
 
 <form asp-action="Index" method="get" class="form-search form-inline">
     <div class="form-actions no-color">
         <div style="padding:0px;">
             <div class="input-group">
-                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
+                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
                     <button type="submit" class="btn btn-primary"> Search</button>
                 </span>
             </div>

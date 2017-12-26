@@ -1,35 +1,57 @@
 ﻿@model IEnumerable<BibApp.Models.Warenkorb.Korb>
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
+@{
+    ViewData["Title"] = "Warenkorb";
+}
+
 <h2>Warenkorb</h2>
 
-<table class="table table-hover" style="border: 1px solid #808080">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BuchTitel)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            @if (User.Identity.Name.Equals(item.Benutzer))
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BuchTitel)
-                    </td>
-                    <td>
-                        <a  asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>
-                    </td>
-                </tr>
-            }
-        }
+@foreach (var item in Model)
+{
+    @if (User.Identity.Name.Equals(item.Benutzer))
+    {
+        ViewData["tabelleNichtLeer"] = "true";
+        break;
+    }
+}
 
-    </tbody>
-</table>
-<input type="button" class="btn btn-success" value="Leihauftrag senden" onclick="location.href='@Url.Action("LeihauftragSenden", "Warenkorb")'" />
-<input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("RemoveAllFromKorb", "Warenkorb")'" />
+@if (ViewData["tabelleNichtLeer"] != null && ViewData["tabelleNichtLeer"].Equals("true"))
+{
+    <table class="table table-hover" style="border: 1px solid #808080">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.BuchTitel)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                @if (User.Identity.Name.Equals(item.Benutzer))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BuchTitel)
+                        </td>
+                        <td>
+                            <a asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-success" value="Leihauftrag senden" onclick="location.href='@Url.Action("LeihauftragSenden", "Warenkorb")'" />
+    <input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("RemoveAllFromKorb", "Warenkorb")'" />
+}
+else
+{
+    <div class="alert alert-info" role="alert" style="font-size:medium">Sie haben momentan keine Bücher in Ihrem Warenkorb.</div>
+}
+
+
 

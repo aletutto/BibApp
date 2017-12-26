@@ -1,113 +1,208 @@
 ﻿@model BibApp.Models.HomeIndexData
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
+@{
+    ViewData["Title"] = "Startseite";
+}
+
 @* ADMIN *@
 
-<h2>Leihaufträge</h2>
+@if (User.IsInRole("Admin"))
+{
+    <h2>Abgelaufenes Leihfristende</h2>
 
-<form asp-action="Index" method="get" class="form-search form-inline">
-    <div class="form-actions no-color">
-        <div style="padding:0px;">
-                <div class="input-group">
-                    <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." /> <span class="input-group-btn">
-                        <button type="submit" class="btn btn-primary"> Search</button>
-                    </span>
-                </div>
-        </div>
-    </div>
-</form>
-<br />
-
-<div class="row">
-    <div class="col-sm-12">
-        <table class="table table-hover" style="border: 1px solid #808080">
-            <thead>
-                <tr>
-                    <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
-                    </th>
-                    <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["BuchSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)</a>
-                    </th>
-                    <th class="col-xs-2">
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["ISBNSortParm"]">@Html.DisplayNameFor(model => model.AdminKorb.ISBN)</a>
-                    </th>
-                </tr>
-            </thead>
-       
-            <tbody>
-                    @foreach (var item in Model.AdminKoerbe)
-                   {
+    <div class="row">
+        <div class="col-sm-12">
+            @if (Model.ExemplareAbgelaufen.Count != 0)
+            {
+                <table class="table" style="border: 1px solid #808080; overflow: auto">
+                    <thead>
                         <tr>
-                            <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.Benutzer)
-                            </td>
-                            <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.BuchTitel)
-                            </td>
-                            <td class="col-xs-2">
-                                @Html.DisplayFor(modelItem => item.ISBN)
-                            </td>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Abgelaufen am</a>
+                            </th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-</div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExemplareAbgelaufen)
+                    {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.Benutzer)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.ISBN)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                </td>
+                                <td style="color:red">
+                                    @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-success" role="alert" style="font-size:medium">Alle entliehenden Bücher wurden fristgerecht zurückgegeben.</div>
+            }
 
-<h2>Abgelaufenes Leihfristende</h2>
-
-<form asp-action="Index" method="get" class="form-search form-inline">
-    <div class="form-actions no-color">
-        <div style="padding:0px;">
-            <div class="input-group">
-                <input type="text" class="form-control search-query" name="SearchString2" value="@ViewData["currentFilter2"]" placeholder="Search..." /> <span class="input-group-btn">
-                    <button type="submit" class="btn btn-primary"> Search</button>
-                </span>
-            </div>
         </div>
     </div>
-</form>
-<br />
 
-<div class="row">
-    <div class="col-sm-12">
-        <table class="table" style="border: 1px solid #808080">
-            <thead>
-                <tr>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
-                    </th>
-                    <th>
-                        <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Abgelaufen am</a>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Dictionary)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Key.Benutzer)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Key.ISBN)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Key.BuchTitel)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <h2>In Kürze ablaufendes Leihfristende</h2>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @if (Model.ExemplareLaufenBaldAb.Count != 0)
+            {
+                <table class="table" style="border: 1px solid #808080">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Läuft ab am</a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExemplareLaufenBaldAb)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.Benutzer)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.ISBN)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-success" role="alert" style="font-size:medium">Es laufen in Kürze keine Leihfristen ab.</div>
+            }
+
+        </div>
     </div>
-</div>
+
+}
+
+@*USER*@
+
+else
+{
+
+    <h2>Ausgeliehene Bücher</h2>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @if (Model.ExemplareEntliehen.Count != 0)
+            {
+                <table class="table" style="border: 1px solid #808080">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Zurückzugeben am</a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExemplareEntliehen)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.ISBN)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert" style="font-size:medium">Sie haben momentan keine Bücher entliehen.</div>
+            }
+
+        </div>
+    </div>
+
+    <h2>Versendete Leihaufträge</h2>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @if (Model.ExemplareLeihauftragVersendet.Count != 0)
+            {
+                <table class="table" style="border: 1px solid #808080">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExemplareLeihauftragVersendet)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.ISBN)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert" style="font-size:medium">Sie haben momentan keine Leihaufträge versendet.</div>
+            }
+        </div>
+    </div>
+
+}

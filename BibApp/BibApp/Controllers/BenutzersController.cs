@@ -2,12 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using System;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 using System.Linq;
 using BibApp.Models.Benutzer;
 using BibApp.Models;
@@ -17,10 +14,10 @@ namespace BibApp.Controllers
 {
     public class BenutzersController : Controller
     {
-        private readonly BibContext _context;
-        private readonly UserManager<Benutzer> _userManager;
-        private readonly SignInManager<Benutzer> _signInManager;
-        private readonly IToastNotification _toastNotification;
+        private readonly BibContext bibContext;
+        private readonly UserManager<Benutzer> userManager;
+        private readonly SignInManager<Benutzer> signInManager;
+        private readonly IToastNotification toastNotification;
 
         public BenutzersController(
             UserManager<Benutzer> userManager,
@@ -28,10 +25,10 @@ namespace BibApp.Controllers
             IToastNotification toastNotification,
             BibContext context)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _toastNotification = toastNotification;
-            _context = context;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.toastNotification = toastNotification;
+            this.bibContext = context;
         }
 
         [Authorize(Roles = "Admin")]
@@ -41,7 +38,7 @@ namespace BibApp.Controllers
             ViewData["RoleSortParm"] = sortOrder == "Role" ? "role_desc" : "Role";
             ViewData["CurrentFilter"] = searchString;
 
-            var benutzer = from s in _context.Benutzers
+            var benutzer = from s in bibContext.Benutzers
                            select s;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -69,7 +66,7 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
-            var usr = await _context.Benutzers
+            var usr = await bibContext.Benutzers
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
             {
@@ -87,7 +84,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
+            var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
             {
                 return NotFound();
@@ -107,11 +104,11 @@ namespace BibApp.Controllers
             {
                 try
                 {
-                    var user = await _userManager.FindByIdAsync(id);
+                    var user = await userManager.FindByIdAsync(id);
                     var newName = user.UserName;
                     if (model.UserName != newName)
                     {
-                        var setNameResult = await _userManager.SetUserNameAsync(user, model.UserName);
+                        var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
                         if (!setNameResult.Succeeded)
                         {
                             throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
@@ -124,11 +121,11 @@ namespace BibApp.Controllers
                     }
                     if (Role == "King")
                     {
-                        await _userManager.AddToRoleAsync(user, "Admin");
+                        await userManager.AddToRoleAsync(user, "Admin");
                         user.Role = "Admin";
-                        _context.Update(user);
-                        _context.SaveChanges();
-                        _toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        bibContext.Update(user);
+                        bibContext.SaveChanges();
+                        toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
                         {
                             PositionClass = ToastPositions.TopCenter
                         });
@@ -136,11 +133,11 @@ namespace BibApp.Controllers
                     }
                     if (Role == "Pawn")
                     {
-                        await _userManager.AddToRoleAsync(user, "Member");
+                        await userManager.AddToRoleAsync(user, "Member");
                         user.Role = "Member";
-                        _context.Update(user);
-                        _context.SaveChanges();
-                        _toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        bibContext.Update(user);
+                        bibContext.SaveChanges();
+                        toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
                         {
                             PositionClass = ToastPositions.TopCenter
                         });
@@ -159,7 +156,7 @@ namespace BibApp.Controllers
 
         private bool BenutzerExists(String id)
         {
-            return _context.Benutzers.Any(e => e.Id == id);
+            return bibContext.Benutzers.Any(e => e.Id == id);
         }
 
         [Authorize(Roles = "Admin")]
@@ -170,7 +167,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var usr = await _context.Benutzers
+            var usr = await bibContext.Benutzers
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
             {
@@ -185,10 +182,10 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(String id)
         {
-            var usr = await _context.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Benutzers.Remove(usr);
-            await _context.SaveChangesAsync();
-            _toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde erfolgreich gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+            var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
+            bibContext.Benutzers.Remove(usr);
+            await bibContext.SaveChangesAsync();
+            toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde erfolgreich gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -205,14 +202,10 @@ namespace BibApp.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Benutzername,
+                var result = await signInManager.PasswordSignInAsync(model.Benutzername,
                     model.Passwort, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _toastNotification.AddToastMessage("", "Login erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
-                    {
-                        PositionClass = ToastPositions.TopCenter
-                    });
                     return RedirectToLocal(returnUrl);
                 }
                 if (result.IsLockedOut)
@@ -233,10 +226,10 @@ namespace BibApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ManageBenutzer()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
             var model = new ManageBenutzerModel
@@ -255,15 +248,15 @@ namespace BibApp.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
             var newName = user.UserName;
             if (model.Benutzername != newName)
             {
-                var setNameResult = await _userManager.SetUserNameAsync(user, model.Benutzername);
+                var setNameResult = await userManager.SetUserNameAsync(user, model.Benutzername);
                 if (!setNameResult.Succeeded)
                 {
                     throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
@@ -276,13 +269,13 @@ namespace BibApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangePassword()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            var hasPassword = await userManager.HasPasswordAsync(user);
             var model = new ChangePasswordModel();
             return View(model);
         }
@@ -296,20 +289,20 @@ namespace BibApp.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
                 AddErrors(changePasswordResult);
                 return View(model);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Home");
         }
 
@@ -347,30 +340,26 @@ namespace BibApp.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var userCheck = await _context.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
+                var userCheck = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
                 if (userCheck == null)
                 {
                     var user = new Benutzer { UserName = model.Benutzername };
-                    var result = await _userManager.CreateAsync(user, model.Password);
-                    await _userManager.AddToRoleAsync(user, "Member");
+                    var result = await userManager.CreateAsync(user, model.Password);
+                    await userManager.AddToRoleAsync(user, "Member");
                     user.Role = "Member";
-                    _context.Update(user);
-                    _context.SaveChanges();
+                    bibContext.Update(user);
+                    bibContext.SaveChanges();
                     if (result.Succeeded)
                     {
 
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _toastNotification.AddToastMessage("", "Registrierung erfolgreich! Willkommen " + model.Benutzername + "!", ToastEnums.ToastType.Success, new ToastOption()
-                        {
-                            PositionClass = ToastPositions.TopCenter
-                        });
+                        await signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToLocal(returnUrl);
                     }
                     AddErrors(result);
                 }
                 else
                 {
-                    _toastNotification.AddToastMessage("", "Registrierung fehlgeschlagen!", ToastEnums.ToastType.Success, new ToastOption()
+                    toastNotification.AddToastMessage("Registrierung fehlgeschlagen", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
@@ -383,11 +372,7 @@ namespace BibApp.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            _toastNotification.AddToastMessage("", "Sie wurden erfolgreich ausgeloggt!", ToastEnums.ToastType.Info, new ToastOption()
-            {
-                PositionClass = ToastPositions.TopCenter
-            });
+            await signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
 
@@ -396,9 +381,6 @@ namespace BibApp.Controllers
         {
             return View();
         }
-
-
-
 
         #region Helpers
 

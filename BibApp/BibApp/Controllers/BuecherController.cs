@@ -11,6 +11,7 @@ using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using NToastNotify;
+using Microsoft.AspNetCore.Http;
 
 namespace BibApp.Controllers
 {
@@ -333,6 +334,7 @@ namespace BibApp.Controllers
         // GET: Buecher/AddToCart
         public async Task<IActionResult> AddToCart(int? id)
         {
+            
 
             if (id == null)
             {

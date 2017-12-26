@@ -10,18 +10,18 @@ namespace BibApp.Data
 {
     public class DbInitializer
     {
-        private readonly BibContext _context;
-        private readonly UserManager<Benutzer> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly BibContext bibContext;
+        private readonly UserManager<Benutzer> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         public DbInitializer(
-        BibContext context,
+        BibContext bibContext,
         UserManager<Benutzer> userManager,
         RoleManager<IdentityRole> roleManager)
         {
-            _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
+            this.bibContext = bibContext;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
         }
 
         public async Task Initialize()
@@ -33,15 +33,15 @@ namespace BibApp.Data
             // Look for Roles.
             foreach (var roleName in roleNames)
             {
-                var roleExist = await _roleManager.RoleExistsAsync(roleName);
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
 
             // Look for any users.
-            if (!_context.Benutzers.Any())
+            if (!bibContext.Benutzers.Any())
             {
                 var poweruser = new Benutzer
                 {
@@ -58,29 +58,29 @@ namespace BibApp.Data
 
                 string userPWD = "dude";
                 string testPWD = "member";
-                var _user = await _userManager.FindByEmailAsync("dude2000@gmail.com");
-                var _test = await _userManager.FindByEmailAsync("member@gmail.com");
+                var _user = await userManager.FindByEmailAsync("dude2000@gmail.com");
+                var _test = await userManager.FindByEmailAsync("member@gmail.com");
 
                 if (_user == null)
                 {
-                    var createPowerUser = await _userManager.CreateAsync(poweruser, userPWD);
-                    var createTestUser = await _userManager.CreateAsync(testuser, testPWD);
+                    var createPowerUser = await userManager.CreateAsync(poweruser, userPWD);
+                    var createTestUser = await userManager.CreateAsync(testuser, testPWD);
                     if (createPowerUser.Succeeded)
                     {
-                        await _userManager.AddToRoleAsync(poweruser, "Admin");
-                        await _userManager.AddToRoleAsync(testuser, "Member");
+                        await userManager.AddToRoleAsync(poweruser, "Admin");
+                        await userManager.AddToRoleAsync(testuser, "Member");
                     }
                 }
             }
 
-            if (!_context.Buecher.Any())
+            if (!bibContext.Buecher.Any())
             {
                 var buecher = new Buch[]
 {
-                new Buch{ISBN="1234-567-8910", Titel="Deutsch 1", Autor="Max H.", Erscheinungsjahr=2010, Regal=4, Reihe=1, Verlag="Beuth Verlag", AnzahlExemplare=1},
-                new Buch{ISBN="1235-567-8910", Titel="ITIL V3", Autor="Max B.", Erscheinungsjahr=2009, Regal=2, Reihe=4, Verlag="Beuth Verlag", AnzahlExemplare=2},
-                new Buch{ISBN="1236-567-8910", Titel="Java für Dummies", Autor="Max D.", Erscheinungsjahr=2000, Regal=1, Reihe=3, Verlag="Kühlen Verlag", AnzahlExemplare=1},
-                new Buch{ISBN="1237-567-8910", Titel="SQL Datenbanken", Autor="Max A.", Erscheinungsjahr=2015, Regal=3, Reihe=2, Verlag="CARLSEN Verlag", AnzahlExemplare=3},
+                new Buch{ISBN="1234-567-8910", Titel="Deutsch 1", Autor="Max H.", Erscheinungsjahr=2010, Regal=4, Reihe=1, Verlag="Beuth", AnzahlExemplare=1},
+                new Buch{ISBN="1235-567-8910", Titel="ITIL V3", Autor="Max B.", Erscheinungsjahr=2009, Regal=2, Reihe=4, Verlag="Beuth", AnzahlExemplare=2},
+                new Buch{ISBN="1236-567-8910", Titel="Java für Dummies", Autor="Max D.", Erscheinungsjahr=2000, Regal=1, Reihe=3, Verlag="Kühlen", AnzahlExemplare=1},
+                new Buch{ISBN="1237-567-8910", Titel="SQL Datenbanken", Autor="Max A.", Erscheinungsjahr=2015, Regal=3, Reihe=2, Verlag="Carlsen", AnzahlExemplare=3},
 
                 new Buch{ISBN="978-3470430287", Titel="Kompendium Wirtschaftsrecht", Autor="Brunhilde Steckler, Dimitra Tekidou-Kühlke", Erscheinungsjahr=2016, Regal=4, Reihe=1, Verlag="NWB", AnzahlExemplare=2},
                 new Buch{ISBN="978-3933070661", Titel="Andersens Märchen", Autor="Hans Christian Andersen", Erscheinungsjahr=2007, Regal=1, Reihe=2, Verlag="Edition Lempers ", AnzahlExemplare=3},
@@ -88,7 +88,7 @@ namespace BibApp.Data
                 new Buch{ISBN="978-3596900732", Titel="Vater Goriot", Autor="Honoré de Balzac", Erscheinungsjahr=2008, Regal=22, Reihe=3, Verlag="Fischer", AnzahlExemplare=4},
                 new Buch{ISBN="978-3866473720", Titel="Das Dekameron", Autor="Giovanni Boccaccio", Erscheinungsjahr=2009, Regal=6, Reihe=2, Verlag="Anaconda", AnzahlExemplare=5},
                 new Buch{ISBN="978-3518456729", Titel="Drei Romane. Molloy. Malone stirbt. Der Namenlose", Autor="Samuel Beckett", Erscheinungsjahr=2005, Regal=10, Reihe=4, Verlag="Suhrkamp", AnzahlExemplare=1},
-                new Buch{ISBN="978-3499221897", Titel="Der Fremde", Autor="Albert Camus", Erscheinungsjahr=1996, Regal=13, Reihe=2, Verlag="Rowohlt Taschenbuch Verlag", AnzahlExemplare=2},
+                new Buch{ISBN="978-3499221897", Titel="Der Fremde", Autor="Albert Camus", Erscheinungsjahr=1996, Regal=13, Reihe=2, Verlag="Rowohlt", AnzahlExemplare=2},
 
                 new Buch{ISBN="978-3518456651", Titel="Die Gedichte. Kommentierte Gesamtausgabe", Autor="Paul Celan", Erscheinungsjahr=2005, Regal=15, Reihe=3, Verlag="Suhrkamp", AnzahlExemplare=3},
                 new Buch{ISBN="978-3499236587", Titel="Reise ans Ende der Nacht", Autor="Louis-Ferdinand Céline", Erscheinungsjahr=2004, Regal=14, Reihe=2, Verlag="Rowohlt", AnzahlExemplare=2},
@@ -126,7 +126,7 @@ namespace BibApp.Data
                 new Buch{ISBN="978-3250104650", Titel="Sakuntala - Ein Drama in sieben Akten", Autor="Kalidasa", Erscheinungsjahr=2004, Regal=4, Reihe=1, Verlag="Ammann", AnzahlExemplare=2},
                 new Buch{ISBN="978-3423112970", Titel="Ein Kirschbaum im Winter", Autor="Yasunari Kawabata", Erscheinungsjahr=1990, Regal=7, Reihe=3, Verlag="Deutscher Taschenbuch Verlag", AnzahlExemplare=2},
                 new Buch{ISBN="978-3866472976", Titel="Alexis Sorbas", Autor="Nikos Kazantzakis", Erscheinungsjahr=2008, Regal=2, Reihe=4, Verlag="Anaconda", AnzahlExemplare=2},
-                new Buch{ISBN="978-3499142123", Titel="Söhne und Liebhaber", Autor="D. H. Lawrence", Erscheinungsjahr=1967, Regal=3, Reihe=1, Verlag="Rowohlt Taschenbuch Verlag", AnzahlExemplare=2},
+                new Buch{ISBN="978-3499142123", Titel="Söhne und Liebhaber", Autor="D. H. Lawrence", Erscheinungsjahr=1967, Regal=3, Reihe=1, Verlag="Rowohlt", AnzahlExemplare=2},
                 new Buch{ISBN="978-3882438581", Titel="Sein eigener Herr", Autor="Halldór Laxness", Erscheinungsjahr=2002, Regal=6, Reihe=2, Verlag="Steidl Göttingen", AnzahlExemplare=4},
                 new Buch{ISBN="978-3596253968", Titel="Das goldene Notizbuch", Autor="Doris Lessing", Erscheinungsjahr=1989, Regal=12, Reihe=3, Verlag="Fischer", AnzahlExemplare=4},
                 new Buch{ISBN="978-3789129445", Titel="Pippi Langstrumpf", Autor="Astrid Lindgren", Erscheinungsjahr=1987, Regal=16, Reihe=2, Verlag="Oetinger Verlag", AnzahlExemplare=4},
@@ -191,16 +191,16 @@ namespace BibApp.Data
 };
                 foreach (Buch buch in buecher)
                 {
-                    _context.Buecher.Add(buch);
+                    bibContext.Buecher.Add(buch);
 
                     for (int i = 1; i <= buch.AnzahlExemplare; i++)
                     {
                         var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
-                        _context.Exemplare.Add(exemplar);
+                        bibContext.Exemplare.Add(exemplar);
                     }
 
                 }
-                _context.SaveChanges();
+                bibContext.SaveChanges();
             }
         }
     }

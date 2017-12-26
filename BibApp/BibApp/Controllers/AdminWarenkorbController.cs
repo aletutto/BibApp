@@ -28,6 +28,7 @@ namespace BibApp.Controllers
             this.userManager = userManager;
             this.toastNotification = toastNotification;
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Index(string searchString)
         {
@@ -57,6 +58,15 @@ namespace BibApp.Controllers
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
             var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+
+            if (buch == null)
+            {
+                toastNotification.AddToastMessage("", "Dieses Buch existiert nicht mehr in der Datenbank. Bitte löschen Sie den Leihauftrag.", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+                return RedirectToAction(nameof(Index));
+            }
 
             if (!exemplar.Verfügbarkeit)
             {
