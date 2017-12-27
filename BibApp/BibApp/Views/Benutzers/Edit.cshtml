@@ -1,4 +1,5 @@
 ﻿@model BibApp.Models.Benutzer.Benutzer
+@await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
     ViewData["Title"] = "Edit";
@@ -22,8 +23,8 @@
                 {
                     @Html.DropDownList("Role",
                   new List<SelectListItem> {
-                       new SelectListItem { Value = "King" , Text = "Admin" },
-                       new SelectListItem { Value = "Pawn" , Text = "Member" }
+                       new SelectListItem { Value = "Admin" , Text = "Admin" },
+                       new SelectListItem { Value = "Member" , Text = "Member" }
                         },
                   new { @class = "form-control" })
 
@@ -32,8 +33,8 @@
                 {
                     @Html.DropDownList("Role",
                   new List<SelectListItem> {
-                      new SelectListItem { Value = "King" , Text = "Member" },
-                       new SelectListItem { Value = "Pawn" , Text = "Admin" }
+                      new SelectListItem { Value = "Member" , Text = "Member" },
+                       new SelectListItem { Value = "Admin" , Text = "Admin" }
                         },
                   new { @class = "form-control" })
 

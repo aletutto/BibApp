@@ -19,16 +19,16 @@
                     <thead>
                         <tr>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
+                                @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                                @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                                @Html.DisplayNameFor(model => model.Buch.Titel)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Abgelaufen am</a>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["DatumSortParm"]">Abgelaufen am</a>
                             </th>
                         </tr>
                     </thead>
@@ -71,16 +71,16 @@
                     <thead>
                         <tr>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.AdminKorb.Benutzer)</a>
+                                @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                                @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                                @Html.DisplayNameFor(model => model.Buch.Titel)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Läuft ab am</a>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["DatumSortParm2"]">Läuft ab am</a>
                             </th>
                         </tr>
                     </thead>
@@ -115,7 +115,7 @@
 
 }
 
-@*USER*@
+    @*USER*@
 
 else
 {
@@ -130,13 +130,16 @@ else
                     <thead>
                         <tr>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                                @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                                @Html.DisplayNameFor(model => model.Buch.Titel)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm2"]">Zurückzugeben am</a>
+                                @Html.DisplayNameFor(model => model.Exemplar.ExemplarId)
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["DatumSortParm3"]">Zurückzugeben am</a>
                             </th>
                         </tr>
                     </thead>
@@ -149,6 +152,9 @@ else
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.ExemplarId)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
@@ -176,10 +182,13 @@ else
                     <thead>
                         <tr>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                                @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th>
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm2"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                                @Html.DisplayNameFor(model => model.Buch.Titel)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Exemplar.ExemplarId)
                             </th>
                         </tr>
                     </thead>
@@ -188,10 +197,13 @@ else
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Key.ISBN)
+                                    @Html.DisplayFor(modelItem => item.ISBN)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                                    @Html.DisplayFor(modelItem => item.BuchTitel)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExemplarId)
                                 </td>
                             </tr>
                         }

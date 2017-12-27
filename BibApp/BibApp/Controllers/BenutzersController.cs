@@ -106,42 +106,63 @@ namespace BibApp.Controllers
                 {
                     var user = await userManager.FindByIdAsync(id);
                     var newName = user.UserName;
-                    if (model.UserName != newName)
-                    {
-                        var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
-                        if (!setNameResult.Succeeded)
-                        {
-                            throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                        }
-                    }
 
-                    if (Role == "")
+                    if (model.UserName == null)
                     {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    if (Role == "King")
-                    {
-                        await userManager.AddToRoleAsync(user, "Admin");
-                        user.Role = "Admin";
-                        bibContext.Update(user);
-                        bibContext.SaveChanges();
-                        toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
                         {
                             PositionClass = ToastPositions.TopCenter
                         });
-                        return RedirectToAction(nameof(Index));
+
+                        return RedirectToAction(nameof(Edit));
                     }
-                    if (Role == "Pawn")
+                    else
                     {
-                        await userManager.AddToRoleAsync(user, "Member");
-                        user.Role = "Member";
-                        bibContext.Update(user);
-                        bibContext.SaveChanges();
-                        toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurde erfolgreich geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                        if (model.UserName != newName)
                         {
-                            PositionClass = ToastPositions.TopCenter
-                        });
-                        return RedirectToAction(nameof(Index));
+                            var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.UserName);
+
+                            if (userExist != null)
+                            {
+                                toastNotification.AddToastMessage("", "Der Benutzername \"" + model.UserName + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
+                                {
+                                    PositionClass = ToastPositions.TopCenter
+                                });
+
+                                return RedirectToAction(nameof(Edit));
+                            }
+
+                            var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
+                            if (!setNameResult.Succeeded)
+                            {
+                                throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                            }
+                        }
+
+                        if (Role == "Admin")
+                        {
+                            await userManager.AddToRoleAsync(user, "Admin");
+                            user.Role = "Admin";
+                            bibContext.Update(user);
+                            bibContext.SaveChanges();
+                            toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
+                            {
+                                PositionClass = ToastPositions.TopCenter
+                            });
+                            return RedirectToAction(nameof(Index));
+                        }
+                        if (Role == "Member")
+                        {
+                            await userManager.AddToRoleAsync(user, "Member");
+                            user.Role = "Member";
+                            bibContext.Update(user);
+                            bibContext.SaveChanges();
+                            toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
+                            {
+                                PositionClass = ToastPositions.TopCenter
+                            });
+                            return RedirectToAction(nameof(Index));
+                        }
                     }
                     return RedirectToAction(nameof(Index));
 
@@ -382,7 +403,7 @@ namespace BibApp.Controllers
             return View();
         }
 
-        #region Helpers
+#region Helpers
 
         private void AddErrors(IdentityResult result)
         {
@@ -404,6 +425,6 @@ namespace BibApp.Controllers
             }
         }
 
-        #endregion
+#endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model BibApp.Models.Buch.BuchExemplar
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
-@{ 
+@{
     ViewData["Title"] = "Bücher";
 }
 
@@ -15,14 +15,20 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-    .blue{
-        color:blue;
-    }
-    .white {
-        color: white;
-    }
 </style>
+
+@if (User.IsInRole("Admin"))
+{
+    <style type="text/css">
+        i {
+            color: #222223;
+        }
+
+            i:hover {
+                color: #494949;
+            }
+    </style>
+}
 
 <h2>Bücher</h2>
 
@@ -55,7 +61,7 @@
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
             </th>
-            <th >
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["IsbnSortParm"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
             </th>
             <th>
@@ -101,8 +107,8 @@
                 <td class="hideextra">
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span>|</span>
-                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span>|</span>
+                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span>&nbsp;</span>
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span>&nbsp;</span>
                         <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
 
                     }
@@ -113,40 +119,40 @@
             {
                 @if (item.ISBN.Equals(exemplar.ISBN))
                 {
-                    <tr class="child">
+                    <tr class="child" style="background-color: #d9edf7">
                         <td>
                             - Exemplar @exemplar.ExemplarId
-                         </td>
+                        </td>
 
-                            @if (exemplar.Verfügbarkeit)
+                        @if (exemplar.Verfügbarkeit)
+                        {
+                            <td>
+                                <span style="color:forestgreen">verfügbar</span>
+                            </td>
+
+                            if (User.IsInRole("Admin"))
                             {
-                                <td>
-                                    <span style="color:forestgreen">verfügbar</span>
-                                </td>
-                                 
-                                if (User.IsInRole("Admin"))
-                                {
-                                    <td></td>
-                                }
-
+                                <td></td>
                             }
 
-                            else if (!exemplar.Verfügbarkeit)
-                            {
-                                <td>
-                                    <span style="color:red">entliehen bis:</span>
-                                    <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
-                                </td>
+                        }
 
-                                if (User.IsInRole("Admin"))
-                                {
-                                    <td></td>
-                                }
+                        else if (!exemplar.Verfügbarkeit)
+                        {
+                            <td>
+                                <span style="color:red">entliehen bis:</span>
+                                <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
+                            </td>
+
+                            if (User.IsInRole("Admin"))
+                            {
+                                <td></td>
                             }
-                        
-                        
+                        }
+
+
                         @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
-                        {      
+                        {
                             <td class="hideextra">
                                 <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
                             </td>
@@ -157,7 +163,11 @@
                             <td></td>
                         }
 
-                        <td></td><td></td><td></td><td></td><td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 }
             }
@@ -166,7 +176,7 @@
 </table>
 
 @section Scripts
-{
+    {
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -182,8 +192,6 @@
             }
 
             $('.parent').on('click', function () {
-
-                // $('.parent').css("background-color", "black");
 
                 if ($(this).css("background-color") == "rgb(255, 255, 255)") {
 

@@ -24,94 +24,25 @@ namespace BibApp.Controllers
             this.userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string sortOrder, string searchString, string searchString2)
+        public async Task<IActionResult> Index(string sortOrder, string sortOrder2)
         {
             HomeIndexData model = new HomeIndexData();
 
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["BuchSortParm"] = sortOrder == "Buch" ? "buch_desc" : "Buch";
-            ViewData["ISBNSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
-            ViewData["CurrentFilter"] = searchString;
-
-            var books = from s in context.AdminWarenkoerbe
-                        select s;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                books = books.Where(s =>
-                s.Benutzer.Contains(searchString)
-                || s.BuchTitel.Contains(searchString)
-                || s.ISBN.Contains(searchString));
-            }
-            switch (sortOrder)
-            {
-                case "buch_desc":
-                    books = books.OrderByDescending(s => s.BuchTitel);
-                    break;
-                case "Buch":
-                    books = books.OrderBy(s => s.BuchTitel);
-                    break;
-                case "name_desc":
-                    books = books.OrderByDescending(s => s.Benutzer);
-                    break;
-                case "isbn_desc":
-                    books = books.OrderByDescending(s => s.ISBN);
-                    break;
-                case "ISBN":
-                    books = books.OrderBy(s => s.ISBN);
-                    break;
-                default:
-                    books = books.OrderBy(s => s.Benutzer);
-                    break;
-            }
-
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["BuchSortParm"] = sortOrder == "Buch" ? "buch_desc" : "Buch";
-            ViewData["ISBNSortParm"] = sortOrder == "ISBN" ? "isbn_desc" : "ISBN";
-            ViewData["CurrentFilter"] = searchString;
-
-
-            // NEU
+            // ADMIN: Abgelaufene Exemplare
             var exemplareAbgelaufen = context.Exemplare.Where(e =>
                 e.EntliehenBis != null
                 && (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
+            ViewData["DatumSortParm"] = String.IsNullOrEmpty(sortOrder) ? "datum_desc" : "";
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                exemplareAbgelaufen = context.Exemplare.Where(e =>
-                    e.EntliehenBis != null &&
-                    (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0
-                    && e.EntliehenBis.ToString().Contains(searchString));
-
-                books = books.Where(s =>
-                s.Benutzer.Contains(searchString)
-                || s.BuchTitel.Contains(searchString)
-                || s.ISBN.Contains(searchString));
-            }
             switch (sortOrder)
             {
-                case "buch_desc":
-                    books = books.OrderByDescending(s => s.BuchTitel);
-                    break;
-                case "Buch":
-                    books = books.OrderBy(s => s.BuchTitel);
-                    break;
-                case "name_desc":
-                    books = books.OrderByDescending(s => s.Benutzer);
-                    break;
-                case "isbn_desc":
-                    books = books.OrderByDescending(s => s.ISBN);
-                    break;
-                case "ISBN":
-                    books = books.OrderBy(s => s.ISBN);
+                case "datum_desc":
+                    exemplareAbgelaufen = exemplareAbgelaufen.OrderByDescending(s => s.EntliehenBis);
                     break;
                 default:
-                    books = books.OrderBy(s => s.Benutzer);
+                    exemplareAbgelaufen = exemplareAbgelaufen.OrderBy(s => s.EntliehenBis);
                     break;
             }
-
-
-
-            // ADMIN: Abgelaufene Exemplare
 
             var exemplareAbgelaufenDic = new Dictionary<AdminKorb, Exemplar>();
 
@@ -119,7 +50,7 @@ namespace BibApp.Controllers
             {
                 foreach (var item in exemplareAbgelaufen)
                 {
-                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId );
+                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
                     exemplareAbgelaufenDic.Add(adminKorb, item);
                 }
             }
@@ -128,7 +59,19 @@ namespace BibApp.Controllers
             var exemplareLaufenBaldAb = context.Exemplare.Where(e =>
                 e.EntliehenBis != null
                 && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays < 7
-                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0 );
+                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0);
+
+            ViewData["DatumSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "datum2_desc" : "";
+
+            switch (sortOrder)
+            {
+                case "datum2_desc":
+                    exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderByDescending(s => s.EntliehenBis);
+                    break;
+                default:
+                    exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderBy(s => s.EntliehenBis);
+                    break;
+            }
 
             var exemplareLaufenBaldAbDic = new Dictionary<AdminKorb, Exemplar>();
 
@@ -146,6 +89,7 @@ namespace BibApp.Controllers
             var exemplareEntliehen = context.AdminWarenkoerbe.Where(a =>
                 a.Benutzer.Equals(user.UserName)
                 && a.IstVerliehen == true);
+
             var exemplareEntliehenDic = new Dictionary<AdminKorb, Exemplar>();
 
             if (exemplareEntliehen != null)
@@ -157,25 +101,35 @@ namespace BibApp.Controllers
                 }
             }
 
+            ViewData["DatumSortParm3"] = String.IsNullOrEmpty(sortOrder) ? "datum3_desc" : "";
+
+            Dictionary<AdminKorb, Exemplar> sorted = new Dictionary<AdminKorb, Exemplar>();
+
+            switch (sortOrder)
+            {
+                case "datum3_desc":
+                    foreach (var ex in exemplareEntliehenDic.OrderByDescending(s => s.Value.EntliehenBis.Value))
+                    {
+                        sorted.Add(ex.Key, ex.Value);
+                    }
+                    break;
+                default:
+                    foreach (var ex in exemplareEntliehenDic.OrderBy(s => s.Value.EntliehenBis.Value))
+                    {
+                        sorted.Add(ex.Key, ex.Value);
+                    }
+                    break;
+            }
+
             // USER: Leihaufträge versendet Exemplare
             var exemplareLeihauftragVersendet = context.AdminWarenkoerbe.Where(a =>
                 a.Benutzer.Equals(user.UserName)
                 && a.IstVerliehen == false);
-            var exemplareLeihauftragVersendetDic = new Dictionary<AdminKorb, Exemplar>();
-
-            if (exemplareLeihauftragVersendet != null)
-            {
-                foreach (var item in exemplareLeihauftragVersendet)
-                {
-                    var exemplar = context.Exemplare.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
-                    exemplareLeihauftragVersendetDic.Add(item, exemplar);
-                }
-            }
 
             model.ExemplareAbgelaufen = exemplareAbgelaufenDic;
             model.ExemplareLaufenBaldAb = exemplareLaufenBaldAbDic;
-            model.ExemplareEntliehen = exemplareEntliehenDic;
-            model.ExemplareLeihauftragVersendet = exemplareLeihauftragVersendetDic;
+            model.ExemplareEntliehen = sorted;
+            model.ExemplareLeihauftragVersendet = await exemplareLeihauftragVersendet.ToListAsync();
             return View(model);
         }
 
@@ -191,7 +145,7 @@ namespace BibApp.Controllers
             ViewData["Message"] = "Your contact page.";
 
             return View();
-        }     
+        }
 
         public IActionResult Error()
         {

@@ -22,7 +22,13 @@
         <thead>
             <tr>
                 <th>
+                    @Html.DisplayNameFor(model => model.ISBN)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.BuchTitel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ExemplarId)
                 </th>
                 <th></th>
             </tr>
@@ -34,7 +40,13 @@
                 {
                     <tr>
                         <td>
+                            @Html.DisplayFor(modelItem => item.ISBN)
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.BuchTitel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExemplarId)
                         </td>
                         <td>
                             <a asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>

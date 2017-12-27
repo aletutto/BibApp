@@ -25,6 +25,6 @@ namespace BibApp.Models
 
         // USER
         public Dictionary<AdminKorb, Exemplar> ExemplareEntliehen { get; set; }
-        public Dictionary<AdminKorb, Exemplar> ExemplareLeihauftragVersendet { get; set; }
+        public List<AdminKorb> ExemplareLeihauftragVersendet { get; set; }
     }
 }
