@@ -35,15 +35,8 @@
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-default">Einloggen</button>
+            <button type="button" class="btn btn-default" onclick="location.href='@Url.Action("Register", "Benutzers")'">Registrieren</button>
         </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <p>
-                <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Registrieren</a>
-            </p>
-         </div>
     </div>
 </form>
 

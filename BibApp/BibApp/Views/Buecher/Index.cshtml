@@ -48,7 +48,7 @@
 @if (User.IsInRole("Admin"))
 {
     <p>
-        <a asp-action="Create">Create New</a>
+        <button type="button" class="btn btn-default" onclick="location.href='@Url.Action("Create", "Buecher")'">Buch hinzufügen</button>
     </p>
 }
 
