@@ -7,16 +7,7 @@
 
 <h2>Warenkorb</h2>
 
-@foreach (var item in Model)
-{
-    @if (User.Identity.Name.Equals(item.Benutzer))
-    {
-        ViewData["tabelleNichtLeer"] = "true";
-        break;
-    }
-}
-
-@if (ViewData["tabelleNichtLeer"] != null && ViewData["tabelleNichtLeer"].Equals("true"))
+@if (Model.Count() != 0)
 {
     <table class="table table-hover" style="border: 1px solid #808080">
         <thead>
@@ -36,23 +27,20 @@
         <tbody>
             @foreach (var item in Model)
             {
-                @if (User.Identity.Name.Equals(item.Benutzer))
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ISBN)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BuchTitel)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ExemplarId)
-                        </td>
-                        <td>
-                            <a asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>
-                        </td>
-                    </tr>
-                }
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ISBN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BuchTitel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ExemplarId)
+                    </td>
+                    <td>
+                        <a asp-action="RemoveFromKorb" asp-route-id="@item.Id">Remove</a>
+                    </td>
+                </tr>
             }
 
         </tbody>
@@ -64,6 +52,3 @@ else
 {
     <div class="alert alert-info" role="alert" style="font-size:medium">Sie haben momentan keine Bücher in Ihrem Warenkorb.</div>
 }
-
-
-

@@ -1,32 +1,14 @@
-﻿@model IEnumerable<BibApp.Models.Warenkorb.AdminKorb>
+﻿@model BibApp.Models.Warenkorb.AdminWarenkorbModel
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
     ViewData["Title"] = "Leihaufträge";
 }
 
-
-@foreach (var item in Model)
-{
-    @if (!item.IstVerliehen)
-    {
-        ViewData["leihaufträgeNichtLeer"] = "true";
-    }
-    @if (item.IstVerliehen)
-    {
-        ViewData["verliehenNichtLeer"] = "true";
-    }
-     
-    @if (ViewData["verliehenNichtLeer"] != null && ViewData["leihaufträgeNichtLeer"] != null)
-    {
-        break;
-    }
-}
-
 <div class="col-sm-6">
     <h2>Ausleihen</h2>
 
-    @if (ViewData["leihaufträgeNichtLeer"] != null)
+    @if ((ViewData["currentFilter"] != null && Model.Ausleihen.Count == 0) || (Model.Ausleihen.Count != 0))
     {
         <form asp-action="Index" method="get" class="form-search form-inline">
             <div class="form-actions no-color">
@@ -40,74 +22,75 @@
             </div>
         </form>
         <br />
+    }
 
+    @if (Model.Ausleihen.Count != 0)
+    {
         <table class="table table-hover" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer)
+                        @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.ExemplarId)
+                        @Html.DisplayNameFor(model => model.AdminKorb.ExemplarId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.BuchTitel)
+                        @Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Ausleihen)
                 {
-                    @if (!item.IstVerliehen)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Benutzer)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ExemplarId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.BuchTitel)
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                        Aktion
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
-                                        <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Benutzer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExemplarId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BuchTitel)
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Aktion
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
+                                    <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
                 }
-
             </tbody>
         </table>
     }
-    else
+    else if (ViewData["currentFilter"] != null)
+    {
+        <div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
+    }
+    else if (ViewData["currentFilter"] == null && Model.Ausleihen.Count == 0)
     {
         <div class="alert alert-info" role="alert" style="font-size:medium">Momentan möchte keiner ein Buch ausleihen.</div>
     }
-
-
 </div>
 
 <div class="col-sm-6">
     <h2>Zurückgeben</h2>
 
-    @if (ViewData["verliehenNichtLeer"] != null)
+    @if ((ViewData["currentFilter2"] != null && Model.Zurückgeben.Count == 0) || (Model.Zurückgeben.Count != 0))
     {
         <form asp-action="Index" method="get" class="form-search form-inline">
             <div class="form-actions no-color">
                 <div style="padding:0px;">
                     <div class="input-group">
-                        <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
+                        <input type="text" class="form-control search-query" name="SearchString2" value="@ViewData["currentFilter2"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
                             <button type="submit" class="btn btn-primary"> Search</button>
                         </span>
                     </div>
@@ -115,60 +98,68 @@
             </div>
         </form>
         <br />
+    }
 
+    @if (Model.Zurückgeben.Count != 0)
+    {
         <table class="table table-hover" style="border: 1px solid #808080">
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Benutzer)
+                        @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.ExemplarId)
+                        @Html.DisplayNameFor(model => model.AdminKorb.ExemplarId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.BuchTitel)
+                        @Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Exemplar.EntliehenBis)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Zurückgeben)
                 {
-                    @if (item.IstVerliehen)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Benutzer)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ExemplarId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.BuchTitel)
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                        Aktion
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a asp-action="Verlaengern" asp-route-id="@item.Id">verlängern</a></li>
-                                        <li><a asp-action="Zurueckgeben" asp-route-id="@item.Id">zurückgeben</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.Benutzer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.ExemplarId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.BuchTitel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Aktion
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-action="Verlaengern" asp-route-id="@item.Key.Id">verlängern</a></li>
+                                    <li><a asp-action="Zurueckgeben" asp-route-id="@item.Key.Id">zurückgeben</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
                 }
 
             </tbody>
         </table>
     }
-    else
+    else if (ViewData["currentFilter2"] != null)
+    {
+        <div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
+    }
+    else if (ViewData["currentFilter2"] == null && Model.Zurückgeben.Count == 0)
     {
         <div class="alert alert-info" role="alert" style="font-size:medium">Momentan sind keine Bücher verliehen.</div>
     }
-
-
 </div>

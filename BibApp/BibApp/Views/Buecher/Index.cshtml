@@ -24,9 +24,9 @@
             color: #222223;
         }
 
-            i:hover {
-                color: #494949;
-            }
+        i:hover {
+            color: #494949;
+        }
     </style>
 }
 
@@ -52,128 +52,136 @@
     </p>
 }
 
-<table class="table table-hover" style="border: 1px solid #808080">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["IsbnSortParm"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ErschSortParm"]">@Html.DisplayNameFor(model => model.Buch.Erscheinungsjahr)</a>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Buch.Regal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Buch.Reihe)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Buecher)
-        {
-            <tr class="parent" style="background-color:white">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Titel)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Autor)
-                </td>
-                <td class="hideextra">
-                    @Html.DisplayFor(modelItem => item.ISBN)
-                </td>
-                <td class="hideextra">
-                    @Html.DisplayFor(modelItem => item.Verlag)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Erscheinungsjahr)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Regal)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Reihe)
-                </td>
-                <td class="hideextra">
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span>&nbsp;</span>
-                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span>&nbsp;</span>
-                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
-
-                    }
-                </td>
+@if (Model.Buecher.Count != 0)
+{
+    <table class="table table-hover" style="border: 1px solid #808080">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Buch.Titel)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AutSortParm"]">@Html.DisplayNameFor(model => model.Buch.Autor)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["IsbnSortParm"]">@Html.DisplayNameFor(model => model.Buch.ISBN)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["VerlagSortParm"]">@Html.DisplayNameFor(model => model.Buch.Verlag)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["ErschSortParm"]">@Html.DisplayNameFor(model => model.Buch.Erscheinungsjahr)</a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Buch.Regal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Buch.Reihe)
+                </th>
+                <th></th>
             </tr>
-
-            @foreach (var exemplar in Model.Exemplare)
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Buecher)
             {
-                @if (item.ISBN.Equals(exemplar.ISBN))
+                <tr class="parent" style="background-color:white">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Titel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Autor)
+                    </td>
+                    <td class="hideextra">
+                        @Html.DisplayFor(modelItem => item.ISBN)
+                    </td>
+                    <td class="hideextra">
+                        @Html.DisplayFor(modelItem => item.Verlag)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Erscheinungsjahr)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Regal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Reihe)
+                    </td>
+                    <td class="hideextra">
+                        @if (User.IsInRole("Admin"))
+                    {
+                            <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
+                            <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
+                            <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
+
+                        }
+                    </td>
+                </tr>
+
+                @foreach (var exemplar in Model.Exemplare.OrderBy(e => e.ExemplarId))
                 {
-                    <tr class="child" style="background-color: #d9edf7">
-                        <td>
-                            - Exemplar @exemplar.ExemplarId
-                        </td>
-
-                        @if (exemplar.Verfügbarkeit)
-                        {
+                    @if (item.ISBN.Equals(exemplar.ISBN))
+                    {
+                        <tr class="child" style="background-color: #d9edf7">
                             <td>
-                                <span style="color:forestgreen">verfügbar</span>
+                                - Exemplar @exemplar.ExemplarId
                             </td>
 
-                            if (User.IsInRole("Admin"))
+                            @if (exemplar.Verfügbarkeit)
+                            {
+                                <td>
+                                    <span style="color:forestgreen">verfügbar</span>
+                                </td>
+
+                                if (User.IsInRole("Admin"))
+                                {
+                                    <td></td>
+                                }
+
+                            }
+
+                            else if (!exemplar.Verfügbarkeit)
+                            {
+                                <td>
+                                    <span style="color:red">entliehen bis:</span>
+                                    <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
+                                </td>
+
+                                if (User.IsInRole("Admin"))
+                                {
+                                    <td></td>
+                                }
+                            }
+
+
+                            @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
+                            {
+                                <td class="hideextra">
+                                    <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
+                                </td>
+                            }
+
+                            @if (!User.IsInRole("Admin") && !exemplar.Verfügbarkeit)
                             {
                                 <td></td>
                             }
 
-                        }
-
-                        else if (!exemplar.Verfügbarkeit)
-                        {
-                            <td>
-                                <span style="color:red">entliehen bis:</span>
-                                <span>@exemplar.EntliehenBis.Value.ToString("dd.MM.yyyy")</span>
-                            </td>
-
-                            if (User.IsInRole("Admin"))
-                            {
-                                <td></td>
-                            }
-                        }
-
-
-                        @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
-                        {
-                            <td class="hideextra">
-                                <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
-                            </td>
-                        }
-
-                        @if (!User.IsInRole("Admin") && !exemplar.Verfügbarkeit)
-                        {
                             <td></td>
-                        }
-
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    }
                 }
             }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
+}
+
 
 @section Scripts
     {

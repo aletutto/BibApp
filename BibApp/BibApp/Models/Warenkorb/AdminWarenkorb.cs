@@ -1,9 +1,5 @@
 ﻿using BibApp.Models.Buch;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace BibApp.Models.Warenkorb
@@ -11,17 +7,15 @@ namespace BibApp.Models.Warenkorb
     public class AdminWarenkorb
     {
         BibContext bibContext;
-        string BenutzerName { get; set; }
 
-        public AdminWarenkorb(BibContext context)
+        public AdminWarenkorb(BibContext bibContext)
         {
-            this.bibContext = context;
+            this.bibContext = bibContext;
         }
 
-        public static AdminWarenkorb GetKorb(Benutzer.Benutzer benutzer, BibContext bibContext)
+        public static AdminWarenkorb GetKorb(BibContext bibContext)
         {
             var cart = new AdminWarenkorb(bibContext);
-            cart.BenutzerName = benutzer.UserName;
             return cart;
         }
 

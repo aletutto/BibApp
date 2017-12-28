@@ -45,7 +45,7 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Key.BuchTitel)
                                 </td>
-                                <td style="color:red">
+                                <td style="color:red; font-weight: bold">
                                     @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
                                 </td>
                             </tr>
@@ -115,7 +115,7 @@
 
 }
 
-    @*USER*@
+@*USER*@
 
 else
 {
@@ -156,9 +156,24 @@ else
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Key.ExemplarId)
                                 </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
-                                </td>
+                                @if (item.Value.EntliehenBis <= DateTime.Now)
+                                {
+                                    <td style="color: red; font-weight: bold">
+                                        @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                    </td>
+                                }
+                                else if ((item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays <= 7 && (item.Value.EntliehenBis.Value- DateTime.Now.Date).TotalDays >= 0 )
+                                {
+                                    <td style="color: darkorange; font-weight: bold">
+                                        @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>

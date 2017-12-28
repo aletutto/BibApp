@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using BibApp.Models.Buch;
+using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {
@@ -30,21 +30,45 @@ namespace BibApp.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Index(string searchString)
+        public IActionResult Index(string searchString, string searchString2)
         {
-            var adminWarenkoerbe = from s in context.AdminWarenkoerbe
-                        select s;
+            AdminWarenkorbModel model = new AdminWarenkorbModel();
 
+            var adminWarenkoerbeAusleihen = context.AdminWarenkoerbe.Where(e => e.IstVerliehen == false);
+            var adminWarenkoerbeZurückgeben = context.AdminWarenkoerbe.Where(e => e.IstVerliehen == true);
+
+            // Suchfeld Ausleihen
             if (!String.IsNullOrEmpty(searchString))
             {
-                adminWarenkoerbe = adminWarenkoerbe.Where(s =>
+                adminWarenkoerbeAusleihen = adminWarenkoerbeAusleihen.Where(s =>
                 s.Benutzer.Contains(searchString)
                 || s.BuchTitel.Contains(searchString)
                 || s.ISBN.Contains(searchString));
             }
             ViewData["currentFilter"] = searchString;
 
-            return View(adminWarenkoerbe.AsNoTracking().ToList()); 
+            // Suchfeld Zurückgeben
+            if (!String.IsNullOrEmpty(searchString2))
+            {
+                adminWarenkoerbeZurückgeben = adminWarenkoerbeZurückgeben.Where(s =>
+                s.Benutzer.Contains(searchString2)
+                || s.BuchTitel.Contains(searchString2)
+                || s.ISBN.Contains(searchString2));
+            }
+            ViewData["currentFilter2"] = searchString2;
+
+            var zurückgebenDic = new Dictionary<AdminKorb, Exemplar>();
+
+            foreach (var item in adminWarenkoerbeZurückgeben)
+            {
+                var exemplar = context.Exemplare.SingleOrDefault(e => e.ISBN == item.ISBN && e.ExemplarId == item.ExemplarId);
+                zurückgebenDic.Add(item, exemplar);
+            }
+            
+            model.Ausleihen = adminWarenkoerbeAusleihen.AsNoTracking().ToList();
+            model.Zurückgeben = zurückgebenDic;
+
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -87,10 +111,7 @@ namespace BibApp.Controllers
                 if (gesuchtesExemplar != null)
                 {
                     var oldExemplarId = exemplar.ExemplarId;
-
-                    var user = await userManager.GetUserAsync(User);
-                    var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
-
+                    var adminWarenkorb = AdminWarenkorb.GetKorb(context);
                     adminKorbExemplar.ExemplarId = gesuchtesExemplar.ExemplarId;
 
                     await adminWarenkorb.Ausleihen(gesuchtesExemplar, adminKorbExemplar);
@@ -112,8 +133,7 @@ namespace BibApp.Controllers
             }
             else
             {
-                var user = await userManager.GetUserAsync(User);
-                var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+                var adminWarenkorb = AdminWarenkorb.GetKorb(context);
 
                 await adminWarenkorb.Ausleihen(exemplar, adminKorbExemplar);
 
@@ -132,12 +152,11 @@ namespace BibApp.Controllers
             var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
                 c => c.Id == id);
 
-            var user = await userManager.GetUserAsync(User);
-            var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
 
             await adminWarenkorb.Loeschen(adminKorbExemplar);
 
-            toastNotification.AddToastMessage("Entfernt", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\", welches von \"" + user.UserName + "\" ausgliehen werden wollte, wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Entfernt", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\", welches von \"" + adminKorbExemplar.Benutzer + "\" ausgliehen werden wollte, wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -155,12 +174,11 @@ namespace BibApp.Controllers
                 c => c.ISBN == adminKorbExemplar.ISBN
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var user = await userManager.GetUserAsync(User);
-            var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
 
             await adminWarenkorb.Zurueckgeben(exemplar, adminKorbExemplar);
 
-            toastNotification.AddToastMessage("Zurückgegeben", "Das Buch\"" + adminKorbExemplar.BuchTitel + "\" wurde vom Benutzer \"" + user.UserName + "\" zurückgegeben!", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Zurückgegeben", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\" wurde vom Benutzer \"" + adminKorbExemplar.Benutzer + "\" zurückgegeben!", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -178,12 +196,11 @@ namespace BibApp.Controllers
                 c => c.ISBN == adminKorbExemplar.ISBN
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var user = await userManager.GetUserAsync(User);
-            var adminWarenkorb = AdminWarenkorb.GetKorb(user, context);
+            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
 
             await adminWarenkorb.Verlaengern(exemplar);
 
-            toastNotification.AddToastMessage("Verlängert", "Das Buch\"" + adminKorbExemplar.BuchTitel + "\" des Benutzers \"" + user.UserName + "\" wurde verlängert!", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Verlängert", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\" des Benutzers \"" + adminKorbExemplar.Benutzer + "\" wurde verlängert!", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });

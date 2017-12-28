@@ -27,7 +27,8 @@ namespace BibApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(context.Warenkoerbe.ToList());
+            var warenkorb = context.Warenkoerbe.Where(w => w.Benutzer.Equals(User.Identity.Name));
+            return View(await warenkorb.ToListAsync());
         }
 
         // GET: Warenkorb/RemoveFromKorb

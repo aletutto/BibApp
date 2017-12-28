@@ -1,15 +1,12 @@
 ﻿using BibApp.Models.Buch;
 using BibApp.Models.Warenkorb;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BibApp.Models
 {
     public class HomeIndexData
     {
+        // TODO: LÖSCHEN
         public List<Exemplar> Exemplare { get; set; }
         public Exemplar Exemplar { get; set; }
 
