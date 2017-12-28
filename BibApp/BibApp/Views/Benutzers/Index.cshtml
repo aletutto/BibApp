@@ -21,52 +21,51 @@
     <div class="form-actions no-color">
         <div style="padding:0px;">
             <div class="input-group">
-                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
-                    <button type="submit" class="btn btn-primary"> Search</button>
+                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Suche..." autofocus /> <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"> Suche</button>
                 </span>
             </div>
         </div>
     </div>
 </form>
 <br />
-
 @if (Model.Count() != 0)
 {
-    <table class="table table-hover" style="border: 1px solid #808080">
-        <thead>
-            <tr>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.UserName)</a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm"]">@Html.DisplayNameFor(model => model.Role)</a>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Role)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
-                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
-                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<table class="table table-hover" style="border: 1px solid #808080">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData[" NameSortParm"]">@Html.DisplayNameFor(model => model.UserName)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData[" RoleSortParm"]">@Html.DisplayNameFor(model => model.Role)</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
+                <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
+                <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
 
 }
 else
 {
-    <div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
+<div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
 
 }

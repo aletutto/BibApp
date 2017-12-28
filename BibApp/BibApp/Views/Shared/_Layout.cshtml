@@ -38,8 +38,8 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Stammdaten <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
-                                <li><a asp-area="" asp-controller="Benutzers" asp-action="Index">Personen</a></li>
+                                <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                                <li><a asp-area="" asp-controller="Benutzers" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Personen</a></li>
                             </ul>
                         </li>
                         <li><a asp-area="" asp-controller="AdminWarenkorb" asp-action="Index">Leihaufträge</a></li>
@@ -47,7 +47,7 @@
                     }
                     else
                     {
-                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index">Bücher</a></li>
+                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
                         <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb </a></li>
                     }
                 </ul>
@@ -55,7 +55,7 @@
                 <ul class="nav navbar-nav navbar-right">           
                   @if (User.Identity.IsAuthenticated)
                   {
-                    <li><a asp-area="" asp-controller="Benutzers" asp-action="ManageBenutzer">Mein Account</a> </li>
+                    <li><a asp-area="" asp-controller="Benutzers" asp-action="ManageBenutzer">Mein Benutzerkonto</a> </li>
                       
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
                   }
