@@ -14,9 +14,6 @@ namespace BibApp.Models
         [Required]
         [DataType(DataType.Password)]
         public string Passwort { get; set; }
-
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
     }
 }
 

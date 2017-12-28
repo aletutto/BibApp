@@ -365,7 +365,7 @@ namespace BibApp.Controllers
                 if (userCheck == null)
                 {
                     var user = new Benutzer { UserName = model.Benutzername };
-                    var result = await userManager.CreateAsync(user, model.Password);
+                    var result = await userManager.CreateAsync(user, model.Passwort);
                     await userManager.AddToRoleAsync(user, "Member");
                     user.Role = "Member";
                     bibContext.Update(user);

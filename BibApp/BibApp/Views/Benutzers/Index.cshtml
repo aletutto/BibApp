@@ -11,8 +11,8 @@
     <div class="form-actions no-color">
         <div style="padding:0px;">
             <div class="input-group">
-                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Search..." autofocus /> <span class="input-group-btn">
-                    <button type="submit" class="btn btn-primary"> Search</button>
+                <input type="text" class="form-control search-query" name="SearchString" value="@ViewData["currentFilter"]" placeholder="Suche..." autofocus /> <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"> Suche</button>
                 </span>
             </div>
         </div>
@@ -43,9 +43,9 @@
                     @Html.DisplayFor(modelItem => item.Role)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit"></i></a> <span>|</span>
-                    <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign"></i></a> <span>|</span>
-                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span>|</span>
+                    <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
                 </td>
             </tr>
         }
