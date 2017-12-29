@@ -24,6 +24,8 @@ namespace BibApp.Controllers
             this.userManager = userManager;
         }
 
+        // GET: Home/Index
+        // Suchfeld
         public async Task<IActionResult> Index(string sortOrder, string sortOrder2)
         {
             HomeIndexData model = new HomeIndexData();

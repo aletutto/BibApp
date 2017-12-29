@@ -31,6 +31,7 @@ namespace BibApp.Controllers
             this.bibContext = context;
         }
 
+        // Suchfeld
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
@@ -63,6 +64,7 @@ namespace BibApp.Controllers
             return View(await benutzer.AsNoTracking().ToListAsync());
         }
 
+        // GET: Benutzers/Details
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
@@ -76,6 +78,7 @@ namespace BibApp.Controllers
             return View(usr);
         }
 
+        // GET: Benutzers/Edit
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id)
         {
@@ -95,6 +98,7 @@ namespace BibApp.Controllers
             return View(usr);
         }
 
+        // POST: Benutzers/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -180,6 +184,7 @@ namespace BibApp.Controllers
             return bibContext.Benutzers.Any(e => e.Id == id);
         }
 
+        // GET: Benutzers/Delete
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(String id)
         {
@@ -198,6 +203,7 @@ namespace BibApp.Controllers
             return View(usr);
         }
 
+        // POST: Benutzers/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -213,6 +219,19 @@ namespace BibApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Benutzers/Login
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        // POST: Benutzers/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -244,6 +263,7 @@ namespace BibApp.Controllers
             return View("Login");
         }
 
+        // GET: Benutzers/ManageBenutzer
         [HttpGet]
         public async Task<IActionResult> ManageBenutzer()
         {
@@ -261,6 +281,7 @@ namespace BibApp.Controllers
             return View(model);
         }
 
+        // POST: Benutzers/ManageBenutzer
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManageBenutzer(ManageBenutzerModel model)
@@ -287,6 +308,7 @@ namespace BibApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // GET: Benutzers/ChangePassword
         [HttpGet]
         public async Task<IActionResult> ChangePassword()
         {
@@ -301,6 +323,7 @@ namespace BibApp.Controllers
             return View(model);
         }
 
+        // POST: Benutzers/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
@@ -327,16 +350,6 @@ namespace BibApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -345,6 +358,7 @@ namespace BibApp.Controllers
             return View();
         }
 
+        // GET: Benutzers/Register
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
@@ -353,6 +367,7 @@ namespace BibApp.Controllers
             return View();
         }
 
+        // POST: Benutzers/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -391,6 +406,7 @@ namespace BibApp.Controllers
             return View(model);
         }
 
+        // Logout
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();

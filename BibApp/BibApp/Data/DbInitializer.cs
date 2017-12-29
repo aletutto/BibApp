@@ -134,7 +134,7 @@ namespace BibApp.Data
                 new Buch{ISBN="978-3293200500", Titel="Die Kinder unseres Viertels", Autor="Nagib Machfus, Naguib Mahfouz", Erscheinungsjahr=2006, Regal=19, Reihe=3, Verlag="Unionsverlag", AnzahlExemplare=2},
                 new Buch{ISBN="978-3596294312", Titel="Buddenbrooks. Verfall einer Familie", Autor="Thomas Mann", Erscheinungsjahr=2008, Regal=20, Reihe=2, Verlag="Fischer", AnzahlExemplare=3},
 
-                new Buch{ISBN=" 978-3596294336", Titel="Der Zauberberg", Autor="Thomas Mann", Erscheinungsjahr=1991, Regal=5, Reihe=1, Verlag="Fischer", AnzahlExemplare=2},
+                new Buch{ISBN="978-3596294336", Titel="Der Zauberberg", Autor="Thomas Mann", Erscheinungsjahr=1991, Regal=5, Reihe=1, Verlag="Fischer", AnzahlExemplare=2},
                 new Buch{ISBN="978-3800054794", Titel="Moby Dick", Autor="Herman Melville", Erscheinungsjahr=2009, Regal=6, Reihe=2, Verlag="Ueberreuter", AnzahlExemplare=1},
                 new Buch{ISBN="978-3938484401", Titel="Die Essais", Autor="Michel de Montaigne", Erscheinungsjahr=2005, Regal=7, Reihe=3, Verlag="Anaconda", AnzahlExemplare=1},
                 new Buch{ISBN="978-3492245647", Titel="La Storia", Autor="Elsa Morante", Erscheinungsjahr=2005, Regal=8, Reihe=4, Verlag="Piper", AnzahlExemplare=5},
