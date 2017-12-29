@@ -1,7 +1,8 @@
 ﻿@model ManageBenutzerModel
+@await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "ManageBenutzer";
+    ViewData["Title"] = "Mein Benutzerkonto";
 }
 
 <h4>Mein Benutzerkonto</h4>
@@ -13,9 +14,11 @@
                 <label asp-for="Benutzername"></label>
                 <input asp-for="Benutzername" class="form-control" />
             </div>
-            <button type="submit" class="btn btn-default">speichern</button>
+            <button type="submit" class="btn btn-success">Speichern</button>
         </form>
     </div>
 </div>
 
-<a asp-action="ChangePassword" asp-controller="Benutzers">Passwort aktualisieren</a>
+<br />
+
+<a asp-action="ChangePassword" asp-controller="Benutzers">Passwort ändern</a>

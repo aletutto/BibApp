@@ -132,7 +132,24 @@ namespace BibApp.Controllers
                                 return RedirectToAction(nameof(Edit));
                             }
 
+                            // Alle bisherigern Referenzen auf den Namen mitändern
+                            var warenkorb = bibContext.Warenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                            foreach (var item in warenkorb)
+                            {
+                                item.Benutzer = model.UserName;
+                                bibContext.Warenkoerbe.Update(item);
+                            }
+
+                            var adminKorb = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                            foreach (var item in adminKorb)
+                            {
+                                item.Benutzer = model.UserName;
+                                bibContext.AdminWarenkoerbe.Update(item);
+                            }
+
+                            await bibContext.SaveChangesAsync();
                             var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
+
                             if (!setNameResult.Succeeded)
                             {
                                 throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
@@ -204,13 +221,37 @@ namespace BibApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(String id)
         {
             var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-            bibContext.Benutzers.Remove(usr);
-            await bibContext.SaveChangesAsync();
-            toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde erfolgreich gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+
+            var adminKorbZurückgeben = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == true);
+            var adminKorbAusleihen = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == false);
+
+            if (adminKorbZurückgeben.Count() != 0)
             {
-                PositionClass = ToastPositions.TopCenter
-            });
-            return RedirectToAction(nameof(Index));
+
+                toastNotification.AddToastMessage("", "Der Benutzer \"" + usr.UserName + "\" kann nicht gelöscht werden, da er noch Bücher ausgeliehen hat.", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+                return RedirectToAction(nameof(Index));
+            }
+            else if (adminKorbAusleihen.Count() != 0)
+            {
+                toastNotification.AddToastMessage("", "Der Benutzer \"" + usr.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                bibContext.Benutzers.Remove(usr);
+                await bibContext.SaveChangesAsync();
+                toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde gelöscht.", ToastEnums.ToastType.Success, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
@@ -269,18 +310,67 @@ namespace BibApp.Controllers
             {
                 return View(model);
             }
+
             var user = await userManager.GetUserAsync(User);
+            var newName = user.UserName;
+
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
-            var newName = user.UserName;
-            if (model.Benutzername != newName)
+
+            if (model.Benutzername == null)
             {
-                var setNameResult = await userManager.SetUserNameAsync(user, model.Benutzername);
-                if (!setNameResult.Succeeded)
+                toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
                 {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                    PositionClass = ToastPositions.TopCenter
+                });
+
+                return RedirectToAction(nameof(ManageBenutzer));
+            }
+            else
+            {
+                if (model.Benutzername != newName)
+                {
+                    var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.Benutzername);
+
+                    if (userExist != null)
+                    {
+                        toastNotification.AddToastMessage("", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
+                        {
+                            PositionClass = ToastPositions.TopCenter
+                        });
+
+                        return RedirectToAction(nameof(ManageBenutzer));
+                    }
+
+                    // Alle bisherigern Referenzen auf den Namen mitändern
+                    var warenkorb = bibContext.Warenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                    foreach (var item in warenkorb)
+                    {
+                        item.Benutzer = model.Benutzername;
+                        bibContext.Warenkoerbe.Update(item);
+                    }
+
+                    var adminKorb = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                    foreach (var item in adminKorb)
+                    {
+                        item.Benutzer = model.Benutzername;
+                        bibContext.AdminWarenkoerbe.Update(item);
+                    }
+
+                    await bibContext.SaveChangesAsync();
+                    var setNameResult = await userManager.SetUserNameAsync(user, model.Benutzername);
+
+                    toastNotification.AddToastMessage("", "Der Benutzername wurde in \"" + model.Benutzername + "\" geändert.", ToastEnums.ToastType.Success, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
+
+                    if (!setNameResult.Succeeded)
+                    {
+                        throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                    }
                 }
             }
 

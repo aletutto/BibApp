@@ -9,46 +9,51 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-2">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <label asp-for="Role" class="control-label"></label>
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="UserName" class="control-label"></label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <label asp-for="Role" class="control-label"></label>
                 @if (ViewData["role"].Equals("Admin"))
                 {
                     @Html.DropDownList("Role",
-                  new List<SelectListItem> {
-                       new SelectListItem { Value = "Admin" , Text = "Admin" },
-                       new SelectListItem { Value = "Member" , Text = "Member" }
-                        },
-                  new { @class = "form-control" })
+                new List<SelectListItem> {
+                    new SelectListItem { Value = "Admin" , Text = "Admin" },
+                    new SelectListItem { Value = "Member" , Text = "Member" }
+                    },
+                new { @class = "form-control" })
 
                 }
                 else
                 {
                     @Html.DropDownList("Role",
-                  new List<SelectListItem> {
-                      new SelectListItem { Value = "Member" , Text = "Member" },
-                       new SelectListItem { Value = "Admin" , Text = "Admin" }
-                        },
-                  new { @class = "form-control" })
+                new List<SelectListItem> {
+                    new SelectListItem { Value = "Member" , Text = "Member" },
+                    new SelectListItem { Value = "Admin" , Text = "Admin" }
+                    },
+                new { @class = "form-control" })
 
                 }
-
-            <br />
-            <div class="form-group">
-                <input type="submit" value="speichern" class="btn btn-default" />
             </div>
-        </form>
-    </div>
-</div>
-<div>
-    <a asp-action="Index">Zurück zur Liste</a>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-success" value="Speichern" />
+                    <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Benutzers")'">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {

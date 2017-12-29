@@ -1,8 +1,6 @@
 ﻿using BibApp.Models.Benutzer;
 using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,9 +13,9 @@ namespace BibApp.Data
         private readonly RoleManager<IdentityRole> roleManager;
 
         public DbInitializer(
-        BibContext bibContext,
-        UserManager<Benutzer> userManager,
-        RoleManager<IdentityRole> roleManager)
+            BibContext bibContext,
+            UserManager<Benutzer> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             this.bibContext = bibContext;
             this.userManager = userManager;
@@ -49,10 +47,46 @@ namespace BibApp.Data
                     Email = "dude2000@gmail.com",
                     Role = "Admin"
                 };
+
                 var testuser = new Benutzer
                 {
                     UserName = "member",
                     Email = "member@gmail.com",
+                    Role = "Member"
+                };
+
+                var user1 = new Benutzer
+                {
+                    UserName = "pedid001",
+                    Email = "peter.diedrich@stud.hn.de",
+                    Role = "Member"
+                };
+
+                var user2 = new Benutzer
+                {
+                    UserName = "hamue001",
+                    Email = "hans.müller@stud.hn.de",
+                    Role = "Member"
+                };
+
+                var user3 = new Benutzer
+                {
+                    UserName = "readl001",
+                    Email = "rene.adler@stud.hn.de",
+                    Role = "Member"
+                };
+
+                var user4 = new Benutzer
+                {
+                    UserName = "reaug001",
+                    Email = "renato.augusto@stud.hn.de",
+                    Role = "Member"
+                };
+
+                var user5 = new Benutzer
+                {
+                    UserName = "reaug001",
+                    Email = "michael.schumacher@stud.hn.de",
                     Role = "Member"
                 };
 
@@ -77,11 +111,6 @@ namespace BibApp.Data
             {
                 var buecher = new Buch[]
 {
-                new Buch{ISBN="1234-567-8910", Titel="Deutsch 1", Autor="Max H.", Erscheinungsjahr=2010, Regal=4, Reihe=1, Verlag="Beuth", AnzahlExemplare=1},
-                new Buch{ISBN="1235-567-8910", Titel="ITIL V3", Autor="Max B.", Erscheinungsjahr=2009, Regal=2, Reihe=4, Verlag="Beuth", AnzahlExemplare=2},
-                new Buch{ISBN="1236-567-8910", Titel="Java für Dummies", Autor="Max D.", Erscheinungsjahr=2000, Regal=1, Reihe=3, Verlag="Kühlen", AnzahlExemplare=1},
-                new Buch{ISBN="1237-567-8910", Titel="SQL Datenbanken", Autor="Max A.", Erscheinungsjahr=2015, Regal=3, Reihe=2, Verlag="Carlsen", AnzahlExemplare=3},
-
                 new Buch{ISBN="978-3470430287", Titel="Kompendium Wirtschaftsrecht", Autor="Brunhilde Steckler, Dimitra Tekidou-Kühlke", Erscheinungsjahr=2016, Regal=4, Reihe=1, Verlag="NWB", AnzahlExemplare=2},
                 new Buch{ISBN="978-3933070661", Titel="Andersens Märchen", Autor="Hans Christian Andersen", Erscheinungsjahr=2007, Regal=1, Reihe=2, Verlag="Edition Lempers ", AnzahlExemplare=3},
                 new Buch{ISBN="978-3866471788", Titel="Stolz und Vorurteil", Autor="Jane Austen", Erscheinungsjahr=2007, Regal=4, Reihe=1, Verlag="Anaconda", AnzahlExemplare=1},
@@ -198,7 +227,6 @@ namespace BibApp.Data
                         var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
                         bibContext.Exemplare.Add(exemplar);
                     }
-
                 }
                 bibContext.SaveChanges();
             }

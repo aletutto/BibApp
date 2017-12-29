@@ -54,14 +54,11 @@
                 <span asp-validation-for="AnzahlExemplare" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="speichern" class="btn btn-default" />
+                <input type="submit" class="btn btn-success" value="Speichern"/>
+                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Buecher")'">Abbrechen</button>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Zurück zur Liste</a>
 </div>
 
 @section Scripts {
