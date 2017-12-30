@@ -12,11 +12,15 @@
         <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
             <h4>Erstelle ein neues Benutzerkonto.</h4>
             <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Benutzername"></label>
                 <input asp-for="Benutzername" class="form-control" />
                 <span asp-validation-for="Benutzername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Passwort"></label>

@@ -8,7 +8,7 @@
 <h2>Benutzerkonto bearbeiten</h2>
 
 <hr />
-<div class="row">
+<div class="row" style="padding-left: 15px">
     <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
@@ -19,31 +19,36 @@
                     <input asp-for="UserName" class="form-control" />
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
-                <label asp-for="Role" class="control-label"></label>
-                @if (ViewData["role"].Equals("Admin"))
-                {
-                    @Html.DropDownList("Role",
-                new List<SelectListItem> {
-                    new SelectListItem { Value = "Admin" , Text = "Admin" },
-                    new SelectListItem { Value = "Member" , Text = "Member" }
-                    },
-                new { @class = "form-control" })
-
-                }
-                else
-                {
-                    @Html.DropDownList("Role",
-                new List<SelectListItem> {
-                    new SelectListItem { Value = "Member" , Text = "Member" },
-                    new SelectListItem { Value = "Admin" , Text = "Admin" }
-                    },
-                new { @class = "form-control" })
-
-                }
+                <div class="form-group">
+                    <label asp-for="Role" class="control-label"></label>
+                    @if (ViewData["role"].Equals("Admin"))
+                    {
+                        @Html.DropDownList("Role",
+                            new List<SelectListItem> {
+                                new SelectListItem { Value = "Admin" , Text = "Admin" },
+                                new SelectListItem { Value = "Member" , Text = "Member" }
+                            },
+                            new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.DropDownList("Role",
+                            new List<SelectListItem> {
+                                new SelectListItem { Value = "Member" , Text = "Member" },
+                                new SelectListItem { Value = "Admin" , Text = "Admin" }
+                            },
+                            new { @class = "form-control" })
+                    }
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
             </div>
         </div>
 
-        <br />
+
 
         <div class="row">
             <div class="col-md-4">

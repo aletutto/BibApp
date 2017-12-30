@@ -36,6 +36,7 @@ namespace BibApp.Controllers
         {
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["RoleSortParm"] = sortOrder == "Role" ? "role_desc" : "Role";
+            ViewData["EmailSortParm"] = sortOrder == "Email" ? "email_desc" : "Email";
             ViewData["CurrentFilter"] = searchString;
 
             var benutzer = from s in bibContext.Benutzers
@@ -55,6 +56,12 @@ namespace BibApp.Controllers
                     break;
                 case "Role":
                     benutzer = benutzer.OrderBy(s => s.Role);
+                    break;
+                case "email_desc":
+                    benutzer = benutzer.OrderByDescending(s => s.Email);
+                    break;
+                case "Email":
+                    benutzer = benutzer.OrderBy(s => s.Email);
                     break;
                 default:
                     benutzer = benutzer.OrderBy(s => s.UserName);
@@ -276,7 +283,10 @@ namespace BibApp.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    toastNotification.AddToastMessage("", "Benutzername oder Passwort falsch.", ToastEnums.ToastType.Error, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
                     return View(model);
                 }
             }
@@ -286,6 +296,7 @@ namespace BibApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ManageBenutzer()
         {
             var user = await userManager.GetUserAsync(User);
@@ -297,7 +308,7 @@ namespace BibApp.Controllers
             var model = new ManageBenutzerModel
             {
                 Benutzername = user.UserName,
-
+                Email = user.Email
             };
             return View(model);
         }
@@ -378,6 +389,7 @@ namespace BibApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var user = await userManager.GetUserAsync(User);
@@ -454,7 +466,7 @@ namespace BibApp.Controllers
                 var userCheck = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
                 if (userCheck == null)
                 {
-                    var user = new Benutzer { UserName = model.Benutzername };
+                    var user = new Benutzer { UserName = model.Benutzername, Email = model.Email };
                     var result = await userManager.CreateAsync(user, model.Passwort);
                     await userManager.AddToRoleAsync(user, "Member");
                     user.Role = "Member";

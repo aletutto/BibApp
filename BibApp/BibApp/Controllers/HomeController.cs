@@ -10,6 +10,7 @@ using BibApp.Models.Warenkorb;
 using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
 using BibApp.Models.Benutzer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BibApp.Controllers
 {
@@ -24,6 +25,7 @@ namespace BibApp.Controllers
             this.userManager = userManager;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string sortOrder2)
         {
             HomeIndexData model = new HomeIndexData();
