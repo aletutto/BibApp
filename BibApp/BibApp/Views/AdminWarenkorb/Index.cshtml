@@ -133,9 +133,24 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.Key.BuchTitel)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
-                        </td>
+                        @if (item.Value.EntliehenBis <= DateTime.Now)
+                        {
+                            <td style="color: red; font-weight: bold">
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
+                        else if ((item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays <= 7 && (item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays >= 0)
+                        {
+                            <td style="color: darkorange; font-weight: bold">
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
                         <td>
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
@@ -143,7 +158,14 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-action="Verlaengern" asp-route-id="@item.Key.Id"> <i class="glyphicon glyphicon-repeat"></i> Verlängern</a></li>
+                                    @if ((item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays <= 7 && (item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays >= 0)
+                                    {
+                                        <li><a asp-action="Verlaengern" asp-route-id="@item.Key.Id"> <i class="glyphicon glyphicon-repeat"></i> Verlängern</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li style="color: darkgrey">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="glyphicon glyphicon-repeat"></i> Verlängern</li>
+                                    }
                                     <li><a asp-action="Zurueckgeben" asp-route-id="@item.Key.Id"> <i class="glyphicon glyphicon-arrow-left"></i> Zurückgeben</a></li>
                                 </ul>
                             </div>
