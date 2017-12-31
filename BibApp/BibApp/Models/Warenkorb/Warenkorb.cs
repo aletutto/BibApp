@@ -53,39 +53,12 @@ namespace BibApp.Models.Warenkorb
             }
         }
 
-        // TODO: Wenn das Buch schon dem Warenkorb hinzugefügt wurde, dann sollte man einen Hinweis erhalten das das Buch bereits im Warenkorb ist wenn man nochmal versucht es hinzuzufügen
-        public bool CheckIfAlreadyAdded(Buch.Exemplar exemplar)
-        {
-            var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
-            c => c.Benutzer == BenutzerName
-            && c.ISBN == exemplar.ISBN
-            && c.ExemplarId == exemplar.ExemplarId);
-
-            if (cartItem == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public async Task RemoveFromKorb(Korb korb)
         {
             var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
             c => c.Benutzer == BenutzerName
             && c.ISBN == korb.ISBN
             && c.ExemplarId == korb.ExemplarId);
-
-            bibContext.Warenkoerbe.Remove(cartItem);
-            await bibContext.SaveChangesAsync();
-        }
-
-        public async Task RemoveFromKorb(Exemplar exemplar)
-        {
-            var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
-            c => c.Benutzer == BenutzerName
-            && c.ISBN == exemplar.ISBN
-            && c.ExemplarId == exemplar.ExemplarId);
 
             bibContext.Warenkoerbe.Remove(cartItem);
             await bibContext.SaveChangesAsync();
@@ -101,13 +74,6 @@ namespace BibApp.Models.Warenkorb
                 bibContext.Warenkoerbe.Remove(cartItem);
             }
             await bibContext.SaveChangesAsync();
-        }
-
-        // TODO: Alle Bücher im Warenkorb zählen und im Layout anzeigen z.B. -> Warenkorb (2)
-        public int CountAllItems()
-        {
-            return bibContext.Warenkoerbe.Count(
-            c => c.Benutzer == BenutzerName);
         }
 
         public async Task LeihauftragSenden()

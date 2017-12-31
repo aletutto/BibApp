@@ -61,8 +61,8 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-action="Ausleihen" asp-route-id="@item.Id">ausleihen</a></li>
-                                    <li><a asp-action="Loeschen" asp-route-id="@item.Id">löschen</a></li>
+                                    <li><a asp-action="Ausleihen" asp-route-id="@item.Id"> <i class="glyphicon glyphicon-arrow-right"></i> Ausleihen</a> </li>
+                                    <li><a asp-action="Loeschen" asp-route-id="@item.Id"> <i class="glyphicon glyphicon-trash"></i> Löschen</a></li>
                                 </ul>
                             </div>
                         </td>
@@ -90,7 +90,7 @@
             <div class="form-actions no-color">
                 <div style="padding:0px;">
                     <div class="input-group">
-                        <input type="text" class="form-control search-query" name="SearchString2" value="@ViewData["currentFilter2"]" placeholder="Suche..." autofocus /> <span class="input-group-btn">
+                        <input type="text" class="form-control search-query" name="SearchString2" value="@ViewData["currentFilter2"]" placeholder="Suche..."/> <span class="input-group-btn">
                             <button type="submit" class="btn btn-primary">suchen</button>
                         </span>
                     </div>
@@ -133,9 +133,24 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.Key.BuchTitel)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
-                        </td>
+                        @if (item.Value.EntliehenBis <= DateTime.Now)
+                        {
+                            <td style="color: red; font-weight: bold">
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
+                        else if ((item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays <= 7 && (item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays >= 0)
+                        {
+                            <td style="color: darkorange; font-weight: bold">
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
+                            </td>
+                        }
                         <td>
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
@@ -143,8 +158,15 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-action="Verlaengern" asp-route-id="@item.Key.Id">verlängern</a></li>
-                                    <li><a asp-action="Zurueckgeben" asp-route-id="@item.Key.Id">zurückgeben</a></li>
+                                    @if ((item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays <= 7 && (item.Value.EntliehenBis.Value - DateTime.Now.Date).TotalDays >= 0)
+                                    {
+                                        <li><a asp-action="Verlaengern" asp-route-id="@item.Key.Id"> <i class="glyphicon glyphicon-repeat"></i> Verlängern</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li style="color: darkgrey">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="glyphicon glyphicon-repeat"></i> Verlängern</li>
+                                    }
+                                    <li><a asp-action="Zurueckgeben" asp-route-id="@item.Key.Id"> <i class="glyphicon glyphicon-arrow-left"></i> Zurückgeben</a></li>
                                 </ul>
                             </div>
                         </td>

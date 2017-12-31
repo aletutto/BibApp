@@ -21,7 +21,6 @@ namespace BibApp.Models.Warenkorb
 
         public async Task Ausleihen(Exemplar exemplar, AdminKorb adminKorb)
         {
-            exemplar.EntliehenVom = DateTime.Now;
             exemplar.EntliehenBis = DateTime.Now.AddDays(30);
             exemplar.Verfügbarkeit = false;
 
@@ -40,7 +39,6 @@ namespace BibApp.Models.Warenkorb
 
         public async Task Zurueckgeben(Exemplar exemplar, AdminKorb adminKorb)
         {
-            exemplar.EntliehenVom = null;
             exemplar.EntliehenBis = null;
             exemplar.Verfügbarkeit = true;
 

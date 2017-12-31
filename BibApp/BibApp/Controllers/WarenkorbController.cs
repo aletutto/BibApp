@@ -6,6 +6,7 @@ using BibApp.Models.Benutzer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BibApp.Controllers
 {
@@ -25,9 +26,10 @@ namespace BibApp.Controllers
             this.toastNotification = toastNotification;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var warenkorb = context.Warenkoerbe.Where(w => w.Benutzer.Equals(User.Identity.Name));
+            var warenkorb = context.Warenkoerbe.Where(w => w.Benutzer.Equals(userManager.GetUserAsync(User).Result.UserName));
             return View(await warenkorb.ToListAsync());
         }
 
@@ -73,11 +75,6 @@ namespace BibApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Warenkorb/Abschicken
-        /* TODO: WICHTIG: Nur Bücher in den Warenkorb einfügen können, welche verfügbar, also noch nicht ausgeliehen worden sind.
-         * Nur Bücher verschicken können, welche noch nicht im AdminWarenkorb vorhanden sind.
-         * 
-        */
         public async Task<IActionResult> LeihauftragSenden()
         {
             var user = await userManager.GetUserAsync(User);

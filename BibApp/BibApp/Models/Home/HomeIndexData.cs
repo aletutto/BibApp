@@ -6,14 +6,8 @@ namespace BibApp.Models
 {
     public class HomeIndexData
     {
-        // TODO: LÖSCHEN
-        public List<Exemplar> Exemplare { get; set; }
         public Exemplar Exemplar { get; set; }
-
-        public List<Buch.Buch> Buecher { get; set; }
         public Buch.Buch Buch { get; set; }
-
-        public List<AdminKorb> AdminKoerbe { get; set; }
         public AdminKorb AdminKorb { get; set; }
 
         // ADMIN

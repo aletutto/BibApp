@@ -7,7 +7,6 @@
 <h2>Buch Details</h2>
 
 <div>
-    <h4>Buch</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -61,6 +60,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Bearbeiten</a> |
-    <a asp-action="Index">Zurück zur Liste</a>
+     <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Bearbeiten</a>
+    <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Buecher")'">Zurück</button>
 </div>

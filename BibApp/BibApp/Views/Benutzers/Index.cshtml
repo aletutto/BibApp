@@ -35,10 +35,13 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData[" NameSortParm"]">@Html.DisplayNameFor(model => model.UserName)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.UserName)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData[" RoleSortParm"]">@Html.DisplayNameFor(model => model.Role)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm"]">@Html.DisplayNameFor(model => model.Role)</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["EmailSortParm"]">@Html.DisplayNameFor(model => model.Email)</a>
             </th>
             <th></th>
         </tr>
@@ -54,6 +57,9 @@
                 @Html.DisplayFor(modelItem => item.Role)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
                 <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
                 <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
@@ -66,6 +72,5 @@
 }
 else
 {
-<div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
-
+    <div class="alert alert-danger" role="alert" style="font-size:medium">Ihre Suche ergab keine Ergebnisse.</div>
 }

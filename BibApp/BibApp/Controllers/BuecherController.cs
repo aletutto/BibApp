@@ -28,8 +28,6 @@ namespace BibApp.Controllers
             this.toastNotification = toastNotification;
         }
 
-        // GET: Buecher/Index
-        // Suchfeld Buecher
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             BuchExemplar model = new BuchExemplar();
@@ -42,15 +40,15 @@ namespace BibApp.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var books = from s in context.Buecher
-                           select s;
+                        select s;
 
             var exemplare = from s in context.Exemplare
-                           select s;
+                            select s;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                books = books.Where(s => 
-                s.Titel.Contains(searchString) 
+                books = books.Where(s =>
+                s.Titel.Contains(searchString)
                 || s.Autor.Contains(searchString)
                 || s.Verlag.Contains(searchString));
             }
@@ -92,9 +90,10 @@ namespace BibApp.Controllers
             model.Buecher = await books.AsNoTracking().ToListAsync();
 
             return View(model);
+            
         }
 
-        // GET: Buecher/Details
+        // GET: Buecher/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -135,7 +134,7 @@ namespace BibApp.Controllers
 
                     for (int i = 1; i <= buch.AnzahlExemplare; i++)
                     {
-                        var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
+                        var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true };
                         context.Exemplare.Add(exemplar);
                     }
 
@@ -203,7 +202,7 @@ namespace BibApp.Controllers
 
                         for (int i = 1; i <= Differenz; i++)
                         {
-                            var exemplar = new Exemplar { ExemplarId = AnzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true, IstVorgemerkt = false };
+                            var exemplar = new Exemplar { ExemplarId = AnzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true };
                             context.Exemplare.Add(exemplar);
                         }
 
@@ -372,37 +371,5 @@ namespace BibApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // TODO: Noch einbauen
-        public async Task<IActionResult> RemoveFromCart(int? id)
-        {
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.Id == id);
-
-            if (exemplar == null)
-            {
-                return NotFound();
-            }
-
-            var user = await userManager.GetUserAsync(User);
-            var korb = Warenkorb.GetKorb(user, context);
-
-            await korb.RemoveFromKorb(exemplar);
-
-            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
-
-            toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde vom Warenkorb entfernt!", ToastEnums.ToastType.Success, new ToastOption()
-            {
-                PositionClass = ToastPositions.TopCenter
-            });
-
-            return RedirectToAction(nameof(Index));
-        }
-
     }
 }

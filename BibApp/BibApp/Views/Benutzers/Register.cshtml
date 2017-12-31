@@ -10,13 +10,17 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-            <h4>Erstelle einen neuen Account.</h4>
+            <h4>Erstelle ein neues Benutzerkonto.</h4>
             <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Benutzername"></label>
                 <input asp-for="Benutzername" class="form-control" />
                 <span asp-validation-for="Benutzername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Passwort"></label>
@@ -28,7 +32,7 @@
                 <input asp-for="ConfirmPasswort" class="form-control" />
                 <span asp-validation-for="ConfirmPasswort" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-default">speichern</button>
+            <button type="submit" class="btn btn-success">Registrieren</button>
         </form>
     </div>
 </div>
