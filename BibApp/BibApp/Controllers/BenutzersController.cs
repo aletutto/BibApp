@@ -31,10 +31,11 @@ namespace BibApp.Controllers
             this.bibContext = context;
         }
 
-        // Suchfeld
+        // GET: Benutzers/Index
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
+            // Suchfeld Sortierungsdaten
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["RoleSortParm"] = sortOrder == "Role" ? "role_desc" : "Role";
             ViewData["EmailSortParm"] = sortOrder == "Email" ? "email_desc" : "Email";
@@ -75,6 +76,7 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
+            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
             var usr = await bibContext.Benutzers
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
@@ -94,6 +96,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
+            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
             var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
             {
@@ -118,6 +121,7 @@ namespace BibApp.Controllers
                     var user = await userManager.FindByIdAsync(id);
                     var newName = user.UserName;
 
+                    // Fall: Benutzername darf nicht leer sein.
                     if (model.UserName == null)
                     {
                         toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
@@ -129,10 +133,12 @@ namespace BibApp.Controllers
                     }
                     else
                     {
+                        // Fall: Der neue Benutzername darf nicht identisch mit dem alten sein.
                         if (model.UserName != newName)
                         {
                             var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.UserName);
 
+                            // Fall: Der neue Benutzername existiert bereits in der Datenbank.
                             if (userExist != null)
                             {
                                 toastNotification.AddToastMessage("", "Der Benutzername \"" + model.UserName + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
@@ -143,7 +149,7 @@ namespace BibApp.Controllers
                                 return RedirectToAction(nameof(Edit));
                             }
 
-                            // Alle bisherigern Referenzen auf den Namen mitändern
+                            // Alle bisherigern Referenzen auf den neuen Namen mitändern
                             var warenkorb = bibContext.Warenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
                             foreach (var item in warenkorb)
                             {
@@ -167,12 +173,12 @@ namespace BibApp.Controllers
                             }
                         }
 
-
                         if (user.Email != model.Email)
                         {
                             await userManager.SetEmailAsync(user, model.Email);
                         }
 
+                        // Rolle des Benutzers wird für die Datenbank aktualisiert. Sonst besitzt dieser keine gültige Rolle mehr.
                         if (Role == "Admin")
                         {
                             await userManager.AddToRoleAsync(user, "Admin");
@@ -224,6 +230,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
+            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
             var usr = await bibContext.Benutzers
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (usr == null)
@@ -240,11 +247,13 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(String id)
         {
+            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
             var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
 
             var adminKorbZurückgeben = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == true);
             var adminKorbAusleihen = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == false);
 
+            // Fall: Benutzer hat noch Bücher ausgeliehen.
             if (adminKorbZurückgeben.Count() != 0)
             {
 
@@ -254,6 +263,8 @@ namespace BibApp.Controllers
                 });
                 return RedirectToAction(nameof(Index));
             }
+
+            // Fall: Benutzer hat noch offene Leihaufträge.
             else if (adminKorbAusleihen.Count() != 0)
             {
                 toastNotification.AddToastMessage("", "Der Benutzer \"" + usr.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
@@ -262,6 +273,7 @@ namespace BibApp.Controllers
                 });
                 return RedirectToAction(nameof(Index));
             }
+            // Der Benutzer wird aus der Datenbank gelöscht.
             else
             {
                 bibContext.Benutzers.Remove(usr);
@@ -292,11 +304,9 @@ namespace BibApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                // Prüft, ob die Logindaten richtig sind.
                 var result = await signInManager.PasswordSignInAsync(model.Benutzername,
                     model.Passwort, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
@@ -358,6 +368,7 @@ namespace BibApp.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
+            // Fall: Benutzernamefeld ist leer.
             if (model.Benutzername == null)
             {
                 toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
@@ -369,10 +380,12 @@ namespace BibApp.Controllers
             }
             else
             {
+                // Fall: Neuer Benutzername ist nicht identisch mit dem alten Benutzernamen 
                 if (model.Benutzername != newName)
                 {
                     var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.Benutzername);
 
+                    // Prüft, ob der Benutzername schon bereits in der Datenbank vorhanden ist.
                     if (userExist != null)
                     {
                         toastNotification.AddToastMessage("", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
@@ -448,6 +461,7 @@ namespace BibApp.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
+            // Passwort wird mit dem Usermanager geändert.
             var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
@@ -455,6 +469,7 @@ namespace BibApp.Controllers
                 return View(model);
             }
 
+            // Benutzer wird eingeloggt und auf die Hauptseite verwiesen.
             await signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Home");
         }
@@ -482,18 +497,21 @@ namespace BibApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var userCheck = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
+
+                // Prüft, ob der Benutzername schon vorhanden ist.
                 if (userCheck == null)
                 {
                     var user = new Benutzer { UserName = model.Benutzername, Email = model.Email };
+                    // Erstellt einen neuen Benutzer mit dem Usermanager und fügt eine Rolle hinzu.
                     var result = await userManager.CreateAsync(user, model.Passwort);
                     await userManager.AddToRoleAsync(user, "Member");
                     user.Role = "Member";
                     bibContext.Update(user);
                     bibContext.SaveChanges();
+                    // Prüft, ob beim Erstellen alles erfolgreich war.
                     if (result.Succeeded)
                     {
 

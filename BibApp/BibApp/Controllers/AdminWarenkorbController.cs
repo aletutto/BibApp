@@ -29,6 +29,7 @@ namespace BibApp.Controllers
             this.toastNotification = toastNotification;
         }
 
+        // GET: AdminWarenkorb/Index
         [Authorize(Roles = "Admin")]
         public IActionResult Index(string searchString, string searchString2)
         {
@@ -74,6 +75,7 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Ausleihen(int? id)
         {
+            // Sucht der ID nach zugehörigen Warenkorb heraus.
             var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
                 c => c.Id == id);
 
