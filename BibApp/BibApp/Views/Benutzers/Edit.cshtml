@@ -2,7 +2,7 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Bearbeiten";
 }
 
 <h2>Benutzerkonto bearbeiten</h2>
@@ -13,33 +13,41 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label asp-for="UserName" class="control-label"></label>
+                    <label asp-for="Benutzername" class="control-label"></label>
                     <input asp-for="UserName" class="form-control" />
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label asp-for="Role" class="control-label"></label>
                     @if (ViewData["role"].Equals("Admin"))
                     {
                         @Html.DropDownList("Role",
-                            new List<SelectListItem> {
-                                new SelectListItem { Value = "Admin" , Text = "Admin" },
-                                new SelectListItem { Value = "Member" , Text = "Member" }
-                            },
-                            new { @class = "form-control" })
+                    new List<SelectListItem> {
+                        new SelectListItem { Value = "Admin" , Text = "Admin" },
+                        new SelectListItem { Value = "Member" , Text = "Member" }
+                    },
+                    new { @class = "form-control" })
                     }
                     else
                     {
                         @Html.DropDownList("Role",
-                            new List<SelectListItem> {
-                                new SelectListItem { Value = "Member" , Text = "Member" },
-                                new SelectListItem { Value = "Admin" , Text = "Admin" }
-                            },
-                            new { @class = "form-control" })
+                    new List<SelectListItem> {
+                        new SelectListItem { Value = "Member" , Text = "Member" },
+                        new SelectListItem { Value = "Admin" , Text = "Admin" }
+                    },
+                    new { @class = "form-control" })
                     }
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label asp-for="Email" class="control-label"></label>
                     <input asp-for="Email" class="form-control" />
@@ -47,9 +55,6 @@
                 </div>
             </div>
         </div>
-
-
-
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">

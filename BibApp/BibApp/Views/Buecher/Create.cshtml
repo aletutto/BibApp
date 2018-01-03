@@ -2,15 +2,16 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Hinzufügen";
 }
 
 <h2>Buch hinzufügen</h2>
 
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+
+<form asp-action="Create">
+    <div class="row">
+        <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -33,6 +34,10 @@
                 <input asp-for="Verlag" class="form-control" />
                 <span asp-validation-for="Verlag" class="text-danger"></span>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
             <div class="form-group">
                 <label asp-for="Erscheinungsjahr" class="control-label"></label>
                 <input asp-for="Erscheinungsjahr" class="form-control" />
@@ -53,13 +58,18 @@
                 <input asp-for="AnzahlExemplare" class="form-control" />
                 <span asp-validation-for="AnzahlExemplare" class="text-danger"></span>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
             <div class="form-group">
-                <input type="submit" class="btn btn-success" value="Hinzufügen"/>
+                <input type="submit" class="btn btn-success" value="Hinzufügen" />
                 <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Buecher")'">Abbrechen</button>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+</form>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

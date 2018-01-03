@@ -109,7 +109,7 @@ namespace BibApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(String id, [Bind("UserName")] Benutzer model, String Role)
+        public async Task<IActionResult> Edit(String id, [Bind("UserName, Email")] Benutzer model, String Role)
         {
             if (ModelState.IsValid)
             {
@@ -160,11 +160,17 @@ namespace BibApp.Controllers
 
                             await bibContext.SaveChangesAsync();
                             var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
-
+                            
                             if (!setNameResult.Succeeded)
                             {
                                 throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                             }
+                        }
+
+
+                        if (user.Email != model.Email)
+                        {
+                            await userManager.SetEmailAsync(user, model.Email);
                         }
 
                         if (Role == "Admin")
@@ -191,6 +197,7 @@ namespace BibApp.Controllers
                             });
                             return RedirectToAction(nameof(Index));
                         }
+
                     }
                     return RedirectToAction(nameof(Index));
 

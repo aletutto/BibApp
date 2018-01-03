@@ -1,7 +1,7 @@
 ﻿@model BibApp.Models.Buch.Buch
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Löschen";
 }
 
 <h2>Buch löschen</h2>
@@ -51,6 +51,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Reihe)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AnzahlExemplare)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AnzahlExemplare)
         </dd> 
     </dl>
     
