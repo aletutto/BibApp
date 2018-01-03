@@ -177,8 +177,6 @@ namespace BibApp.Controllers
                         {
                             await userManager.SetEmailAsync(user, model.Email);
                         }
-
-                        // Rolle des Benutzers wird für die Datenbank aktualisiert. Sonst besitzt dieser keine gültige Rolle mehr.
                         if (Role == "Admin")
                         {
                             await userManager.AddToRoleAsync(user, "Admin");
