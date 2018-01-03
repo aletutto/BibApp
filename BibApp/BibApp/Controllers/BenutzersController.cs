@@ -177,6 +177,7 @@ namespace BibApp.Controllers
                         {
                             await userManager.SetEmailAsync(user, model.Email);
                         }
+
                         if (Role == "Admin")
                         {
                             await userManager.AddToRoleAsync(user, "Admin");
