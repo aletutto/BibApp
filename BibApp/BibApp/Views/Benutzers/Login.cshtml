@@ -16,23 +16,23 @@
 
 <form class="form-horizontal" method="post" asp-action="Login">
     <div class="form-group">
-        <label class="control-label col-sm-2" asp-for="Benutzername"></label>
-        <div class="col-sm-3">
+        <label class="control-label col-sm-5" asp-for="Benutzername"></label>
+        <div class="col-sm-4">
             <input asp-for="Benutzername" class="form-control" placeholder="Benutzername eingeben">
             <span asp-validation-for="Benutzername" class="text-danger"></span>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-sm-2" asp-for="Passwort"></label>
-        <div class="col-sm-3">
+        <label class="control-label col-sm-5" asp-for="Passwort"></label>
+        <div class="col-sm-4">
             <input asp-for="Passwort" class="form-control" placeholder="Passwort eingeben">
             <span asp-validation-for="Passwort" class="text-danger"></span>
         </div>
     </div>
     
     <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-5 col-sm-10">
             <button type="submit" class="btn btn-success">Einloggen</button>
             <button type="button" class="btn btn-info" onclick="location.href='@Url.Action("Register", "Benutzers")'">Registrieren</button>
         </div>

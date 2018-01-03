@@ -57,13 +57,12 @@
 }
 
 .table-fixedheader > tbody {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 200px;
 }
 
     
 .table-fixedheader > thead > tr > th,
 .table-fixedheader > tbody > tr > td {
-    width: 25%;
     float: left;
 }
