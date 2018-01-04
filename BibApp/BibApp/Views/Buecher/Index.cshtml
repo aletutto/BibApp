@@ -117,11 +117,10 @@
                         </td>
                         <td class="hideextra">
                             @if (User.IsInRole("Admin"))
-                    {
+                            {
                                 <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
                                 <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
                                 <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
-
                             }
                         </td>
                     </tr>
@@ -136,7 +135,7 @@
                                 </td>
 
                                 @if (exemplar.Verfügbarkeit)
-                            {
+                                {
                                     <td>
                                         <span style="color:forestgreen">verfügbar</span>
                                     </td>
@@ -145,7 +144,6 @@
                                     {
                                         <td></td>
                                     }
-
                                 }
 
                                 else if (!exemplar.Verfügbarkeit)
@@ -163,14 +161,14 @@
 
 
                                 @if (!User.IsInRole("Admin") && exemplar.Verfügbarkeit)
-                            {
+                                {
                                     <td class="hideextra">
-                                        <a asp-action="AddToCart" asp-route-id="@exemplar.Id">In den Warenkorb</a>
+                                        <a asp-action="InDenWarenkorb" asp-route-id="@exemplar.Id">In den Warenkorb</a>
                                     </td>
                                 }
 
                                 @if (!User.IsInRole("Admin") && !exemplar.Verfügbarkeit)
-                            {
+                                {
                                     <td></td>
                                 }
 
@@ -196,7 +194,7 @@
 
 
 @section Scripts
-    {
+{
     <script type="text/javascript">
         $(document).ready(function () {
 

@@ -28,6 +28,7 @@ namespace BibApp.Controllers
             this.toastNotification = toastNotification;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             BuchExemplar model = new BuchExemplar();
@@ -94,6 +95,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Buecher/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -330,31 +332,17 @@ namespace BibApp.Controllers
             return context.Buecher.Any(e => e.Id == id);
         }
 
-        // GET: Buecher/AddToCart
-        public async Task<IActionResult> AddToCart(int? id)
+        public async Task<IActionResult> InDenWarenkorb(int? id)
         {
-            
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.Id == id);
-
-            if (exemplar == null)
-            {
-                return NotFound();
-            }
-
             var user = await userManager.GetUserAsync(User);
             var buchVorhanden = context.Warenkoerbe.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
             var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
             if (buchVorhanden == null)
             {
-                var korb = Warenkorb.GetKorb(user, context);
-                await korb.AddToKorb(exemplar);
+                var korb = Warenkorb.GetWarenkorb(user, context);
+                await korb.InDenWarenkorb(exemplar);
 
                 toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde dem Warenkorb hinzugefügt!", ToastEnums.ToastType.Success, new ToastOption()
                 {

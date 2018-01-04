@@ -25,6 +25,7 @@ namespace BibApp.Controllers
             this.userManager = userManager;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string sortOrder2)
         {
             HomeIndexData model = new HomeIndexData();

@@ -13,88 +13,93 @@ namespace BibApp.Models.Warenkorb
 {
     public class Warenkorb
     {
-        BibContext bibContext;
+        private readonly BibContext bibContext;
         string BenutzerName { get; set; }
-
-        public Warenkorb() { }
 
         public Warenkorb(BibContext bibContext)
         {
             this.bibContext = bibContext;
         }
-        public static Warenkorb GetKorb(Benutzer.Benutzer benutzer, BibContext bibContext)
+
+        public static Warenkorb GetWarenkorb(Benutzer.Benutzer benutzer, BibContext bibContext)
         {
-            var cart = new Warenkorb(bibContext);
-            cart.BenutzerName = benutzer.UserName;
-            return cart;
+            var warenkorb = new Warenkorb(bibContext)
+            {
+                BenutzerName = benutzer.UserName
+            };
+            return warenkorb;
         }
 
-        public async Task AddToKorb(Buch.Exemplar exemplar)
+        // Fügt ein Exemplar dem Warenkorb des eingeloggten Benutzers hinzu
+        public async Task InDenWarenkorb(Buch.Exemplar exemplar)
         {
-            var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
+            var warenkorbExemplar = bibContext.Warenkoerbe.SingleOrDefault(
                 c => c.Benutzer == BenutzerName
                 && c.ISBN == exemplar.ISBN
                 && c.ExemplarId == exemplar.ExemplarId);
 
-            if (cartItem == null)
+            if (warenkorbExemplar == null)
             {
                 var buch = bibContext.Buecher.SingleOrDefault(
                     c => c.ISBN == exemplar.ISBN);
 
-                cartItem = new Korb()
+                warenkorbExemplar = new Korb()
                 {
                     Benutzer = BenutzerName,
                     ISBN = exemplar.ISBN,
                     ExemplarId = exemplar.ExemplarId,
                     BuchTitel = buch.Titel
                 };
-                bibContext.Add(cartItem);
+                bibContext.Add(warenkorbExemplar);
                 await bibContext.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveFromKorb(Korb korb)
+        // Entfernt ein Exemplar aus dem Warenkorb des eingeloggten Benutzers
+        public async Task EntferneVonWarenkorb(Korb korb)
         {
-            var cartItem = bibContext.Warenkoerbe.SingleOrDefault(
+            var warenkorbExemplar = bibContext.Warenkoerbe.SingleOrDefault(
             c => c.Benutzer == BenutzerName
             && c.ISBN == korb.ISBN
             && c.ExemplarId == korb.ExemplarId);
 
-            bibContext.Warenkoerbe.Remove(cartItem);
+            bibContext.Warenkoerbe.Remove(warenkorbExemplar);
             await bibContext.SaveChangesAsync();
         }
 
-        public async Task RemoveAllFromKorb()
+        // Leert den Warenkorb und entfernt somit alle Exemplar aus dem Warenkorb des eingeloggten Benutzers
+        public async Task WarenkorbLeeren()
         {
-            var cartItems = bibContext.Warenkoerbe.Where(
+            var warenkorbExemplare = bibContext.Warenkoerbe.Where(
             c => c.Benutzer == BenutzerName);
 
-            foreach (var cartItem in cartItems)
+            foreach (var warenkorbExemplar in warenkorbExemplare)
             {
-                bibContext.Warenkoerbe.Remove(cartItem);
+                bibContext.Warenkoerbe.Remove(warenkorbExemplar);
             }
             await bibContext.SaveChangesAsync();
         }
 
+        // Sendet einen Leihauftrag an den Bibliothekar
         public async Task LeihauftragSenden()
         {
-            var cartItems = bibContext.Warenkoerbe.Where(
+            var warenkorbExemplare = bibContext.Warenkoerbe.Where(
             c => c.Benutzer == BenutzerName);
 
-            foreach (var cartItem in cartItems)
+            foreach (var warenkorbExemplar in warenkorbExemplare)
             {
-                AdminKorb cart = new AdminKorb
+                AdminKorb leihauftrag = new AdminKorb
                 {
-                    ISBN = cartItem.ISBN,
-                    BuchTitel = cartItem.BuchTitel,
-                    Benutzer = cartItem.Benutzer,
-                    ExemplarId = cartItem.ExemplarId,
+                    ISBN = warenkorbExemplar.ISBN,
+                    BuchTitel = warenkorbExemplar.BuchTitel,
+                    Benutzer = warenkorbExemplar.Benutzer,
+                    ExemplarId = warenkorbExemplar.ExemplarId,
                     IstVerliehen = false
                 };
-                bibContext.AdminWarenkoerbe.Add(cart);
+                bibContext.AdminWarenkoerbe.Add(leihauftrag);
             }
             await bibContext.SaveChangesAsync();
-            await RemoveAllFromKorb();
+            await WarenkorbLeeren();
         }
     }
 }

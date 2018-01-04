@@ -38,7 +38,7 @@
                         @Html.DisplayFor(modelItem => item.ExemplarId)
                     </td>
                     <td>
-                        <a asp-action="RemoveFromKorb" asp-route-id="@item.Id">entfernen</a>
+                        <a asp-action="EntferneVonWarenkorb" asp-route-id="@item.Id" style="color:red"> <i class="glyphicon glyphicon-remove"></i> Entfernen </a>
                     </td>
                 </tr>
             }
@@ -46,7 +46,7 @@
         </tbody>
     </table>
     <input type="button" class="btn btn-success" value="Leihauftrag senden" onclick="location.href='@Url.Action("LeihauftragSenden", "Warenkorb")'" />
-    <input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("RemoveAllFromKorb", "Warenkorb")'" />
+    <input type="button" class="btn btn-danger" value="Warenkorb leeren" onclick="location.href='@Url.Action("WarenkorbLeeren", "Warenkorb")'" />
 }
 else
 {
