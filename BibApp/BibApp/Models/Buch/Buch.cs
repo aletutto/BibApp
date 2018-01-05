@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace BibApp.Models.Buch
@@ -37,6 +34,7 @@ namespace BibApp.Models.Buch
 
         [Required(ErrorMessage = "Das Anzahl Exemplare-Feld ist erforderlich.")]
         [Display(Name = "Anzahl Exemplare")]
+        [Range(0, 50)]
         public int AnzahlExemplare { get; set; }
     }
 }

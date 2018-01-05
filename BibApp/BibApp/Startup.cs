@@ -4,10 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using BibApp.Models.Benutzer;
 using System;
-using System.Threading.Tasks;
 using BibApp.Data;
 using NToastNotify;
 
@@ -61,7 +59,7 @@ namespace BibApp
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(150);
                 options.LoginPath = "/Benutzers/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
-                options.LogoutPath = "/Benutzers/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
+                options.LogoutPath = "/Benutzers/Login"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Login
                 options.AccessDeniedPath = "/Benutzers/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
             });

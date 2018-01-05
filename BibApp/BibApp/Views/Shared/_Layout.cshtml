@@ -19,64 +19,54 @@
     @Html.Partial("_Favicons")
 </head>
 
-@using BibApp.Models.Benutzer
-
- 
-
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+        <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BibApp</a> 
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BibApp</a> 
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    @if (User.IsInRole("Admin"))
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Stammdaten <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                                <li><a asp-area="" asp-controller="Benutzers" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Personen</a></li>
-                            </ul>
-                        </li>
-                        <li><a asp-area="" asp-controller="AdminWarenkorb" asp-action="Index">Leihaufträge</a></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Stammdaten <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                                    <li><a asp-area="" asp-controller="Benutzers" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Benutzer</a></li>
+                                </ul>
+                            </li>
+                            <li><a asp-area="" asp-controller="Leihauftraege" asp-action="Index">Leihaufträge</a></li>
 
-                    }
-                    else
-                    {
-                        <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                        <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb </a></li>
+                        }
+                        else
+                        {
+                            <li><a asp-area="" asp-controller="Buecher" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                            <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb</a></li>
+                        }
+
                     }
                 </ul>
-
                 <ul class="nav navbar-nav navbar-right">           
-                  @if (User.Identity.IsAuthenticated)
-                  {
+                    @if (User.Identity.IsAuthenticated)
+                    {
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="ManageBenutzer">Mein Benutzerkonto</a> </li>
                       
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="Logout">Logout</a> </li>
-                  }
-                  else
-                  {
+                    }
+                    else
+                    {
                     <li><a asp-area="" asp-controller="Benutzers" asp-action="Login">Login</a></li>
-
-                  }  
- 
+                    }  
                 </ul>
-              </div>
             </div>
-          
+        </div>
     </nav>
 
 
-    <div class="container body-content">
+    <div class="container-fluid" style="max-width: 1300px">
         @RenderBody()
         <hr />
         <footer>

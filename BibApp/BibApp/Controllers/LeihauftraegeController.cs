@@ -13,13 +13,13 @@ using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {
-    public class AdminWarenkorbController : Controller
+    public class LeihauftraegeController : Controller
     {
         private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
         private readonly IToastNotification toastNotification;
 
-        public AdminWarenkorbController(
+        public LeihauftraegeController(
             BibContext context,
             UserManager<Benutzer> userManager,
             IToastNotification toastNotification)

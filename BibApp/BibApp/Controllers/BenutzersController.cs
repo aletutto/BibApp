@@ -181,6 +181,8 @@ namespace BibApp.Controllers
                         // Rolle des Benutzers wird für die Datenbank aktualisiert. Sonst besitzt dieser keine gültige Rolle mehr.
                         if (Role == "Admin")
                         {
+                            var roles = await userManager.GetRolesAsync(user);
+                            await userManager.RemoveFromRolesAsync(user, roles);
                             await userManager.AddToRoleAsync(user, "Admin");
                             user.Role = "Admin";
                             bibContext.Update(user);
@@ -193,6 +195,8 @@ namespace BibApp.Controllers
                         }
                         if (Role == "Member")
                         {
+                            var roles = await userManager.GetRolesAsync(user);
+                            await userManager.RemoveFromRolesAsync(user, roles);
                             await userManager.AddToRoleAsync(user, "Member");
                             user.Role = "Member";
                             bibContext.Update(user);
@@ -361,7 +365,7 @@ namespace BibApp.Controllers
             }
 
             var user = await userManager.GetUserAsync(User);
-            var newName = user.UserName;
+            var oldName = user.UserName;
 
             if (user == null)
             {
@@ -380,8 +384,10 @@ namespace BibApp.Controllers
             }
             else
             {
-                // Fall: Neuer Benutzername ist nicht identisch mit dem alten Benutzernamen 
-                if (model.Benutzername != newName)
+                string message = "";
+
+                // Fall: Neuer Benutzername ist nicht identisch mit dem alten Benutzernamen
+                if (model.Benutzername != oldName)
                 {
                     var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.Benutzername);
 
@@ -414,15 +420,29 @@ namespace BibApp.Controllers
                     await bibContext.SaveChangesAsync();
                     var setNameResult = await userManager.SetUserNameAsync(user, model.Benutzername);
 
-                    toastNotification.AddToastMessage("", "Der Benutzername wurde in \"" + model.Benutzername + "\" geändert.", ToastEnums.ToastType.Success, new ToastOption()
-                    {
-                        PositionClass = ToastPositions.TopCenter
-                    });
+                    message += "Der Benutzername wurde in \"" + model.Benutzername + "\" geändert.";
 
                     if (!setNameResult.Succeeded)
                     {
                         throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                     }
+                }
+
+                var oldEmail = user.Email;
+
+                if (model.Email != oldEmail)
+                {
+                    await userManager.SetEmailAsync(user, model.Email);
+
+                    message += " Die Email wurde in \"" + model.Email + "\" geändert.";
+                }
+
+                if (model.Benutzername != oldName || model.Email != oldEmail)
+                {
+                    toastNotification.AddToastMessage("Benutzerdaten geändert", message, ToastEnums.ToastType.Success, new ToastOption()
+                    {
+                        PositionClass = ToastPositions.TopCenter
+                    });
                 }
             }
 
@@ -461,6 +481,16 @@ namespace BibApp.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
             }
 
+            var result = await userManager.CheckPasswordAsync(user, model.OldPassword);
+
+            if (!result)
+            {
+                toastNotification.AddToastMessage("Passwort falsch", "Das aktuelle Passwort wurde falsch eingegeben.", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
+            }
+
             // Passwort wird mit dem Usermanager geändert.
             var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
@@ -471,17 +501,15 @@ namespace BibApp.Controllers
 
             // Benutzer wird eingeloggt und auf die Hauptseite verwiesen.
             await signInManager.SignInAsync(user, isPersistent: false);
+
+            toastNotification.AddToastMessage("Passwort geändert", "Das Passwort wurde geändert.", ToastEnums.ToastType.Success, new ToastOption()
+            {
+                PositionClass = ToastPositions.TopCenter
+            });
+
             return RedirectToAction("Index", "Home");
         }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Lockout()
-        {
-            return View();
-        }
-
+        
         // GET: Benutzers/Register
         [HttpGet]
         [AllowAnonymous]

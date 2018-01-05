@@ -3,14 +3,11 @@ using BibApp.Models.Buch;
 using BibApp.Models.Warenkorb;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 public class BibContext : IdentityDbContext<Benutzer>
 {
-    public BibContext(DbContextOptions<BibContext> options) : base(options)
-    {}
+    public BibContext(DbContextOptions<BibContext> options) : base(options) {}
 
-    // Mehrere Models möglich!
     public DbSet<Benutzer> Benutzers { get; set; }
     public DbSet<Buch> Buecher { get; set; }
     public DbSet<Korb> Warenkoerbe { get; set; }
@@ -20,9 +17,6 @@ public class BibContext : IdentityDbContext<Benutzer>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        //builder.Entity<Exemplar>()
-        //    .HasKey(c => new { c.ExemplarId, c.ISBN });
 
         builder.Entity<Benutzer>(entity =>
             {
