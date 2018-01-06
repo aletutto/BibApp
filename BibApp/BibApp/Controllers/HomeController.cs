@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BibApp.Models;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +30,10 @@ namespace BibApp.Controllers
             HomeIndexData model = new HomeIndexData();
 
             // ADMIN: Abgelaufene Exemplare
-            var exemplareAbgelaufen = context.Exemplare.Where(e =>
+            var exemplareAbgelaufen = context.Exemplar.Where(e =>
                 e.EntliehenBis != null
                 && (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
+
             ViewData["DatumSortParm"] = String.IsNullOrEmpty(sortOrder) ? "datum_desc" : "";
 
             switch (sortOrder)
@@ -46,19 +46,19 @@ namespace BibApp.Controllers
                     break;
             }
 
-            var exemplareAbgelaufenDic = new Dictionary<AdminKorb, Exemplar>();
+            var exemplareAbgelaufenDic = new Dictionary<Leihauftrag, Exemplar>();
 
             if (exemplareAbgelaufen != null)
             {
                 foreach (var item in exemplareAbgelaufen)
                 {
-                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    var adminKorb = context.Leihauftrag.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
                     exemplareAbgelaufenDic.Add(adminKorb, item);
                 }
             }
 
             // ADMIN: Bald ablaufende Exemplare
-            var exemplareLaufenBaldAb = context.Exemplare.Where(e =>
+            var exemplareLaufenBaldAb = context.Exemplar.Where(e =>
                 e.EntliehenBis != null
                 && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays < 7
                 && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0);
@@ -75,37 +75,37 @@ namespace BibApp.Controllers
                     break;
             }
 
-            var exemplareLaufenBaldAbDic = new Dictionary<AdminKorb, Exemplar>();
+            var exemplareLaufenBaldAbDic = new Dictionary<Leihauftrag, Exemplar>();
 
             if (exemplareLaufenBaldAb != null)
             {
                 foreach (var item in exemplareLaufenBaldAb)
                 {
-                    var adminKorb = context.AdminWarenkoerbe.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    var adminKorb = context.Leihauftrag.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
                     exemplareLaufenBaldAbDic.Add(adminKorb, item);
                 }
             }
 
             // USER: Entliehende Exemplare
             var user = await userManager.GetUserAsync(User);
-            var exemplareEntliehen = context.AdminWarenkoerbe.Where(a =>
+            var exemplareEntliehen = context.Leihauftrag.Where(a =>
                 a.Benutzer.Equals(user.UserName)
                 && a.IstVerliehen == true);
 
-            var exemplareEntliehenDic = new Dictionary<AdminKorb, Exemplar>();
+            var exemplareEntliehenDic = new Dictionary<Leihauftrag, Exemplar>();
 
             if (exemplareEntliehen != null)
             {
                 foreach (var item in exemplareEntliehen)
                 {
-                    var exemplar = context.Exemplare.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
+                    var exemplar = context.Exemplar.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
                     exemplareEntliehenDic.Add(item, exemplar);
                 }
             }
 
             ViewData["DatumSortParm3"] = String.IsNullOrEmpty(sortOrder) ? "datum3_desc" : "";
 
-            Dictionary<AdminKorb, Exemplar> sorted = new Dictionary<AdminKorb, Exemplar>();
+            Dictionary<Leihauftrag, Exemplar> sorted = new Dictionary<Leihauftrag, Exemplar>();
 
             switch (sortOrder)
             {
@@ -124,7 +124,7 @@ namespace BibApp.Controllers
             }
 
             // USER: Leihaufträge versendet Exemplare
-            var exemplareLeihauftragVersendet = context.AdminWarenkoerbe.Where(a =>
+            var exemplareLeihauftragVersendet = context.Leihauftrag.Where(a =>
                 a.Benutzer.Equals(user.UserName)
                 && a.IstVerliehen == false);
 
@@ -133,11 +133,6 @@ namespace BibApp.Controllers
             model.ExemplareEntliehen = sorted;
             model.ExemplareLeihauftragVersendet = await exemplareLeihauftragVersendet.ToListAsync();
             return View(model);
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

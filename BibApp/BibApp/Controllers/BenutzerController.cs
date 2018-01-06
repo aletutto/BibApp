@@ -12,14 +12,14 @@ using NToastNotify;
 
 namespace BibApp.Controllers
 {
-    public class BenutzersController : Controller
+    public class BenutzerController : Controller
     {
         private readonly BibContext bibContext;
         private readonly UserManager<Benutzer> userManager;
         private readonly SignInManager<Benutzer> signInManager;
         private readonly IToastNotification toastNotification;
 
-        public BenutzersController(
+        public BenutzerController(
             UserManager<Benutzer> userManager,
             SignInManager<Benutzer> signInManager,
             IToastNotification toastNotification,
@@ -31,17 +31,17 @@ namespace BibApp.Controllers
             this.bibContext = context;
         }
 
-        // GET: Benutzers/Index
+        // GET: Benutzer/Index
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            // Suchfeld Sortierungsdaten
+            // Suchfeld und Sortierungsdaten
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["RoleSortParm"] = sortOrder == "Role" ? "role_desc" : "Role";
             ViewData["EmailSortParm"] = sortOrder == "Email" ? "email_desc" : "Email";
             ViewData["CurrentFilter"] = searchString;
 
-            var benutzer = from s in bibContext.Benutzers
+            var benutzer = from s in bibContext.Benutzer
                            select s;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -72,43 +72,29 @@ namespace BibApp.Controllers
             return View(await benutzer.AsNoTracking().ToListAsync());
         }
 
-        // GET: Benutzers/Details
+        // GET: Benutzer/Details
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
-            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
-            var usr = await bibContext.Benutzers
+            // Suche den ausgewählten Benutzer in der Datenbank anhand der ID
+            var user = await bibContext.Benutzer
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (usr == null)
-            {
-                return NotFound();
-            }
 
-            return View(usr);
+            return View(user);
         }
 
         // GET: Benutzers/Edit
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            // Suche den ausgewählten Benutzer in der Datenbank anhand der ID
+            var user = await bibContext.Benutzer.SingleOrDefaultAsync(m => m.Id == id);
+            ViewData["role"] = user.Role;
 
-            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
-            var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-            if (usr == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["role"] = usr.Role;
-
-            return View(usr);
+            return View(user);
         }
 
-        // POST: Benutzers/Edit
+        // POST: Benutzer/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -133,10 +119,10 @@ namespace BibApp.Controllers
                     }
                     else
                     {
-                        // Fall: Der neue Benutzername darf nicht identisch mit dem alten sein.
+                        // Fall: Der Benutzername wurde geändert.
                         if (model.UserName != newName)
                         {
-                            var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.UserName);
+                            var userExist = bibContext.Benutzer.SingleOrDefault(b => b.UserName == model.UserName);
 
                             // Fall: Der neue Benutzername existiert bereits in der Datenbank.
                             if (userExist != null)
@@ -149,30 +135,27 @@ namespace BibApp.Controllers
                                 return RedirectToAction(nameof(Edit));
                             }
 
-                            // Alle bisherigern Referenzen auf den neuen Namen mitändern
-                            var warenkorb = bibContext.Warenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
-                            foreach (var item in warenkorb)
+                            // Alle bisherigern Referenzen auf den neuen Namen ändern
+                            var warenkorb = bibContext.Warenkorb.Where(e => e.Benutzer.Equals(user.UserName));
+                            foreach (var warenkorbExemplar in warenkorb)
                             {
-                                item.Benutzer = model.UserName;
-                                bibContext.Warenkoerbe.Update(item);
+                                warenkorbExemplar.Benutzer = model.UserName;
+                                bibContext.Warenkorb.Update(warenkorbExemplar);
                             }
 
-                            var adminKorb = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
-                            foreach (var item in adminKorb)
+                            var leihauftraege = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName));
+                            foreach (var leihauftrag in leihauftraege)
                             {
-                                item.Benutzer = model.UserName;
-                                bibContext.AdminWarenkoerbe.Update(item);
+                                leihauftrag.Benutzer = model.UserName;
+                                bibContext.Leihauftrag.Update(leihauftrag);
                             }
 
                             await bibContext.SaveChangesAsync();
                             var setNameResult = await userManager.SetUserNameAsync(user, model.UserName);
                             
-                            if (!setNameResult.Succeeded)
-                            {
-                                throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                            }
                         }
 
+                        // Fall: Die Email-Adresse wurde geändert
                         if (user.Email != model.Email)
                         {
                             await userManager.SetEmailAsync(user, model.Email);
@@ -181,8 +164,8 @@ namespace BibApp.Controllers
                         // Rolle des Benutzers wird für die Datenbank aktualisiert. Sonst besitzt dieser keine gültige Rolle mehr.
                         if (Role == "Admin")
                         {
-                            var roles = await userManager.GetRolesAsync(user);
-                            await userManager.RemoveFromRolesAsync(user, roles);
+                            var role = await userManager.GetRolesAsync(user);
+                            await userManager.RemoveFromRolesAsync(user, role);
                             await userManager.AddToRoleAsync(user, "Admin");
                             user.Role = "Admin";
                             bibContext.Update(user);
@@ -195,8 +178,8 @@ namespace BibApp.Controllers
                         }
                         if (Role == "Member")
                         {
-                            var roles = await userManager.GetRolesAsync(user);
-                            await userManager.RemoveFromRolesAsync(user, roles);
+                            var role = await userManager.GetRolesAsync(user);
+                            await userManager.RemoveFromRolesAsync(user, role);
                             await userManager.AddToRoleAsync(user, "Member");
                             user.Role = "Member";
                             bibContext.Update(user);
@@ -207,8 +190,8 @@ namespace BibApp.Controllers
                             });
                             return RedirectToAction(nameof(Index));
                         }
-
                     }
+
                     return RedirectToAction(nameof(Index));
 
                 }
@@ -220,85 +203,66 @@ namespace BibApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BenutzerExists(String id)
-        {
-            return bibContext.Benutzers.Any(e => e.Id == id);
-        }
-
-        // GET: Benutzers/Delete
+        // GET: Benutzer/Delete
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(String id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
-            var usr = await bibContext.Benutzers
+            // Suche den ausgewählten Benutzer in der Datenbank anhand der ID
+            var user = await bibContext.Benutzer
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (usr == null)
-            {
-                return NotFound();
-            }
 
-            return View(usr);
+            return View(user);
         }
 
-        // POST: Benutzers/Delete
+        // POST: Benutzer/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(String id)
         {
-            // Suche das Benutzerkonto in der Datenbank mit der mitgegebenen ID.
-            var usr = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.Id == id);
-
-            var adminKorbZurückgeben = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == true);
-            var adminKorbAusleihen = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(usr.UserName) && e.IstVerliehen == false);
-
-            // Fall: Benutzer hat noch Bücher ausgeliehen.
-            if (adminKorbZurückgeben.Count() != 0)
+            var user = await bibContext.Benutzer.SingleOrDefaultAsync(m => m.Id == id);
+            var zurueckgeben = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName) && e.IstVerliehen == true);
+            var ausleihen = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName) && e.IstVerliehen == false);
+                        
+            if (zurueckgeben.Count() != 0) // Fall: Benutzer hat noch Bücher ausgeliehen.
             {
-
-                toastNotification.AddToastMessage("", "Der Benutzer \"" + usr.UserName + "\" kann nicht gelöscht werden, da er noch Bücher ausgeliehen hat.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Bücher ausgeliehen hat.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
                 return RedirectToAction(nameof(Index));
             }
-
-            // Fall: Benutzer hat noch offene Leihaufträge.
-            else if (adminKorbAusleihen.Count() != 0)
+            else if (ausleihen.Count() != 0) // Fall: Benutzer hat noch offene Leihaufträge.
             {
-                toastNotification.AddToastMessage("", "Der Benutzer \"" + usr.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
                 return RedirectToAction(nameof(Index));
             }
-            // Der Benutzer wird aus der Datenbank gelöscht.
-            else
+            else // Der Benutzer wird aus der Datenbank gelöscht.
             {
-                bibContext.Benutzers.Remove(usr);
+                bibContext.Benutzer.Remove(user);
                 await bibContext.SaveChangesAsync();
-                toastNotification.AddToastMessage("", "Der Benutzer von \"" + usr.UserName + "\" wurde gelöscht.", ToastEnums.ToastType.Success, new ToastOption()
+
+                toastNotification.AddToastMessage("", "Der Benutzer von \"" + user.UserName + "\" wurde gelöscht.", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
+
                 return RedirectToAction(nameof(Index));
             }
         }
 
-        // GET: Benutzers/Login
+        // GET: Benutzer/Login
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            // Clear the existing external cookie to ensure a clean login process
+            // Der existierende externe Cookie wird gecleart um einen sauberen Login Prozess zu gewährleisten
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
             ViewData["ReturnUrl"] = returnUrl;
+
             return View();
         }
 
@@ -317,16 +281,13 @@ namespace BibApp.Controllers
                 {
                     return RedirectToLocal(returnUrl);
                 }
-                if (result.IsLockedOut)
-                {
-                    return View("Lockout");
-                }
                 else
                 {
                     toastNotification.AddToastMessage("", "Benutzername oder Passwort falsch.", ToastEnums.ToastType.Error, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
+
                     return View(model);
                 }
             }
@@ -389,7 +350,7 @@ namespace BibApp.Controllers
                 // Fall: Neuer Benutzername ist nicht identisch mit dem alten Benutzernamen
                 if (model.Benutzername != oldName)
                 {
-                    var userExist = bibContext.Benutzers.SingleOrDefault(b => b.UserName == model.Benutzername);
+                    var userExist = bibContext.Benutzer.SingleOrDefault(b => b.UserName == model.Benutzername);
 
                     // Prüft, ob der Benutzername schon bereits in der Datenbank vorhanden ist.
                     if (userExist != null)
@@ -403,18 +364,18 @@ namespace BibApp.Controllers
                     }
 
                     // Alle bisherigern Referenzen auf den Namen mitändern
-                    var warenkorb = bibContext.Warenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                    var warenkorb = bibContext.Warenkorb.Where(e => e.Benutzer.Equals(user.UserName));
                     foreach (var item in warenkorb)
                     {
                         item.Benutzer = model.Benutzername;
-                        bibContext.Warenkoerbe.Update(item);
+                        bibContext.Warenkorb.Update(item);
                     }
 
-                    var adminKorb = bibContext.AdminWarenkoerbe.Where(e => e.Benutzer.Equals(user.UserName));
+                    var adminKorb = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName));
                     foreach (var item in adminKorb)
                     {
                         item.Benutzer = model.Benutzername;
-                        bibContext.AdminWarenkoerbe.Update(item);
+                        bibContext.Leihauftrag.Update(item);
                     }
 
                     await bibContext.SaveChangesAsync();
@@ -495,7 +456,7 @@ namespace BibApp.Controllers
             var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                AddErrors(changePasswordResult);
+                // AddErrors(changePasswordResult);
                 return View(model);
             }
 
@@ -527,7 +488,7 @@ namespace BibApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userCheck = await bibContext.Benutzers.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
+                var userCheck = await bibContext.Benutzer.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
 
                 // Prüft, ob der Benutzername schon vorhanden ist.
                 if (userCheck == null)

@@ -8,14 +8,14 @@ namespace BibApp.Models
     {
         public Exemplar Exemplar { get; set; }
         public Buch.Buch Buch { get; set; }
-        public AdminKorb AdminKorb { get; set; }
+        public Leihauftrag AdminKorb { get; set; }
 
         // ADMIN
-        public Dictionary<AdminKorb, Exemplar> ExemplareAbgelaufen { get; set; }
-        public Dictionary<AdminKorb, Exemplar> ExemplareLaufenBaldAb { get; set; }
+        public Dictionary<Leihauftrag, Exemplar> ExemplareAbgelaufen { get; set; }
+        public Dictionary<Leihauftrag, Exemplar> ExemplareLaufenBaldAb { get; set; }
 
         // USER
-        public Dictionary<AdminKorb, Exemplar> ExemplareEntliehen { get; set; }
-        public List<AdminKorb> ExemplareLeihauftragVersendet { get; set; }
+        public Dictionary<Leihauftrag, Exemplar> ExemplareEntliehen { get; set; }
+        public List<Leihauftrag> ExemplareLeihauftragVersendet { get; set; }
     }
 }

@@ -6,11 +6,11 @@
 }
 
 <style type="text/css">
-    i {
+    i.tabelle {
         color: #222223;
     }
 
-    i:hover {
+    i.tabelle:hover {
         color: #494949;
     }
 </style>
@@ -61,9 +61,9 @@
                         @Html.DisplayFor(modelItem => item.Email)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
-                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
-                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
+                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit tabelle" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign tabelle" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash tabelle" data-toggle="tooltip" title="Löschen"></i></a>
                     </td>
                 </tr>
             }

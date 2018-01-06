@@ -13,13 +13,13 @@ using System.Collections.Generic;
 
 namespace BibApp.Controllers
 {
-    public class LeihauftraegeController : Controller
+    public class LeihauftragController : Controller
     {
         private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
         private readonly IToastNotification toastNotification;
 
-        public LeihauftraegeController(
+        public LeihauftragController(
             BibContext context,
             UserManager<Benutzer> userManager,
             IToastNotification toastNotification)
@@ -33,10 +33,10 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Index(string searchString, string searchString2)
         {
-            AdminWarenkorbModel model = new AdminWarenkorbModel();
+            LeihauftragExemplar model = new LeihauftragExemplar();
 
-            var adminWarenkoerbeAusleihen = context.AdminWarenkoerbe.Where(e => e.IstVerliehen == false);
-            var adminWarenkoerbeZurückgeben = context.AdminWarenkoerbe.Where(e => e.IstVerliehen == true);
+            var adminWarenkoerbeAusleihen = context.Leihauftrag.Where(e => e.IstVerliehen == false);
+            var adminWarenkoerbeZurückgeben = context.Leihauftrag.Where(e => e.IstVerliehen == true);
 
             // Suchfeld Ausleihen
             if (!String.IsNullOrEmpty(searchString))
@@ -58,11 +58,11 @@ namespace BibApp.Controllers
             }
             ViewData["currentFilter2"] = searchString2;
 
-            var zurückgebenDic = new Dictionary<AdminKorb, Exemplar>();
+            var zurückgebenDic = new Dictionary<Leihauftrag, Exemplar>();
 
             foreach (var item in adminWarenkoerbeZurückgeben)
             {
-                var exemplar = context.Exemplare.SingleOrDefault(e => e.ISBN == item.ISBN && e.ExemplarId == item.ExemplarId);
+                var exemplar = context.Exemplar.SingleOrDefault(e => e.ISBN == item.ISBN && e.ExemplarId == item.ExemplarId);
                 zurückgebenDic.Add(item, exemplar);
             }
             
@@ -76,14 +76,14 @@ namespace BibApp.Controllers
         public async Task<IActionResult> Ausleihen(int? id)
         {
             // Sucht der ID nach zugehörigen Warenkorb heraus.
-            var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
+            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplare.SingleOrDefault(
+            var exemplar = context.Exemplar.SingleOrDefault(
                 c => c.ISBN == adminKorbExemplar.ISBN 
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+            var buch = await context.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
             if (buch == null)
             {
@@ -97,7 +97,7 @@ namespace BibApp.Controllers
             if (!exemplar.Verfügbarkeit)
             {
 
-                var exemplare = context.Exemplare.Where(e => e.ISBN == buch.ISBN);
+                var exemplare = context.Exemplar.Where(e => e.ISBN == buch.ISBN);
 
                 Exemplar gesuchtesExemplar = null;
 
@@ -113,7 +113,7 @@ namespace BibApp.Controllers
                 if (gesuchtesExemplar != null)
                 {
                     var oldExemplarId = exemplar.ExemplarId;
-                    var adminWarenkorb = AdminWarenkorb.GetKorb(context);
+                    var adminWarenkorb = LeihauftragManager.GetKorb(context);
                     adminKorbExemplar.ExemplarId = gesuchtesExemplar.ExemplarId;
 
                     await adminWarenkorb.Ausleihen(gesuchtesExemplar, adminKorbExemplar);
@@ -135,7 +135,7 @@ namespace BibApp.Controllers
             }
             else
             {
-                var adminWarenkorb = AdminWarenkorb.GetKorb(context);
+                var adminWarenkorb = LeihauftragManager.GetKorb(context);
 
                 await adminWarenkorb.Ausleihen(exemplar, adminKorbExemplar);
 
@@ -151,10 +151,10 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Loeschen(int? id)
         {
-            var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
+            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
+            var adminWarenkorb = LeihauftragManager.GetKorb(context);
 
             await adminWarenkorb.Loeschen(adminKorbExemplar);
 
@@ -169,14 +169,14 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Zurueckgeben(int? id)
         {
-            var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
+            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplare.SingleOrDefault(
+            var exemplar = context.Exemplar.SingleOrDefault(
                 c => c.ISBN == adminKorbExemplar.ISBN
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
+            var adminWarenkorb = LeihauftragManager.GetKorb(context);
 
             await adminWarenkorb.Zurueckgeben(exemplar, adminKorbExemplar);
 
@@ -191,14 +191,14 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Verlaengern(int? id)
         {
-            var adminKorbExemplar = context.AdminWarenkoerbe.SingleOrDefault(
+            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplare.SingleOrDefault(
+            var exemplar = context.Exemplar.SingleOrDefault(
                 c => c.ISBN == adminKorbExemplar.ISBN
                 && c.ExemplarId == adminKorbExemplar.ExemplarId);
 
-            var adminWarenkorb = AdminWarenkorb.GetKorb(context);
+            var adminWarenkorb = LeihauftragManager.GetKorb(context);
 
             await adminWarenkorb.Verlaengern(exemplar);
 

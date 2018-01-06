@@ -20,11 +20,11 @@
 @if (User.IsInRole("Admin"))
 {
     <style type="text/css">
-        i {
+        i.tabelle {
             color: #222223;
         }
 
-        i:hover {
+        i.tabelle:hover {
             color: #494949;
         }
     </style>
@@ -53,7 +53,7 @@
         @if (User.IsInRole("Admin"))
         {
             <p>
-                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Create", "Buecher")'"><img src="~/book-with-add-button.png" height="20" /> Buch hinzufügen</button>
+                <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("Create", "Buch")'"><img src="~/book-with-add-button.png" height="20" /> Buch hinzufügen</button>
             </p>
         }
 
@@ -118,9 +118,9 @@
                         <td class="hideextra">
                             @if (User.IsInRole("Admin"))
                             {
-                                <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
-                                <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
-                                <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash" data-toggle="tooltip" title="Löschen"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id"><i class="glyphicon glyphicon-edit tabelle" data-toggle="tooltip" title="Bearbeiten"></i></a> <span style="color: black">|</span>
+                                <a asp-action="Details" asp-route-id="@item.Id"><i class="glyphicon glyphicon-info-sign tabelle" data-toggle="tooltip" title="Details"></i></a> <span style="color: black">|</span>
+                                <a asp-action="Delete" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash tabelle" data-toggle="tooltip" title="Löschen"></i></a>
                             }
                         </td>
                     </tr>

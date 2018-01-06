@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BibApp.Models.Benutzer;
 using BibApp.Models.Warenkorb;
@@ -11,17 +9,16 @@ using BibApp.Models.Buch;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using NToastNotify;
-using Microsoft.AspNetCore.Http;
 
 namespace BibApp.Controllers
 {
-    public class BuecherController : Controller
+    public class BuchController : Controller
     {
         private readonly BibContext context;
         private readonly UserManager<Benutzer> userManager;
         private readonly IToastNotification toastNotification;
 
-        public BuecherController(BibContext context, UserManager<Benutzer> userManager, IToastNotification toastNotification)
+        public BuchController(BibContext context, UserManager<Benutzer> userManager, IToastNotification toastNotification)
         {
             this.context = context;
             this.userManager = userManager;
@@ -40,10 +37,10 @@ namespace BibApp.Controllers
             ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from s in context.Buecher
+            var books = from s in context.Buch
                         select s;
 
-            var exemplare = from s in context.Exemplare
+            var exemplare = from s in context.Exemplar
                             select s;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -103,7 +100,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await context.Buecher
+            var buch = await context.Buch
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
@@ -128,7 +125,7 @@ namespace BibApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var buchVorhanden = await context.Buecher.SingleOrDefaultAsync(m => m.ISBN == buch.ISBN);
+                var buchVorhanden = await context.Buch.SingleOrDefaultAsync(m => m.ISBN == buch.ISBN);
 
                 if (buchVorhanden == null)
                 {
@@ -137,7 +134,7 @@ namespace BibApp.Controllers
                     for (int i = 1; i <= buch.AnzahlExemplare; i++)
                     {
                         var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true };
-                        context.Exemplare.Add(exemplar);
+                        context.Exemplar.Add(exemplar);
                     }
 
                     await context.SaveChangesAsync();
@@ -171,7 +168,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
+            var buch = await context.Buch.SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
                 return NotFound();
@@ -195,7 +192,7 @@ namespace BibApp.Controllers
                 try
                 {
 
-                    var buchVorher = await context.Buecher.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
+                    var buchVorher = await context.Buch.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
                     var AnzahlExemplareVorher = buchVorher.AnzahlExemplare;
 
                     if (AnzahlExemplareVorher < buch.AnzahlExemplare)
@@ -205,7 +202,7 @@ namespace BibApp.Controllers
                         for (int i = 1; i <= Differenz; i++)
                         {
                             var exemplar = new Exemplar { ExemplarId = AnzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true };
-                            context.Exemplare.Add(exemplar);
+                            context.Exemplar.Add(exemplar);
                         }
 
                     }
@@ -216,7 +213,7 @@ namespace BibApp.Controllers
 
                         for (int i = 0; i < Differenz; i++)
                         {
-                            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.ISBN == buchVorher.ISBN && e.ExemplarId == AnzahlExemplareVorher - i);
+                            var exemplar = await context.Exemplar.SingleOrDefaultAsync(e => e.ISBN == buchVorher.ISBN && e.ExemplarId == AnzahlExemplareVorher - i);
                             if (!exemplar.Verfügbarkeit)
                             {
                                 toastNotification.AddToastMessage("Fehler", "Das Exemplar ist noch verliehen und kann daher nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
@@ -228,14 +225,14 @@ namespace BibApp.Controllers
                             }
                             else
                             {
-                                context.Exemplare.Remove(exemplar);
+                                context.Exemplar.Remove(exemplar);
                             }
                             
                         }
 
                     }
 
-                    var exemplare = context.Exemplare.Where(e => e.ISBN == buchVorher.ISBN);
+                    var exemplare = context.Exemplar.Where(e => e.ISBN == buchVorher.ISBN);
 
                     foreach (var exemplar in exemplare)
                     {
@@ -276,7 +273,7 @@ namespace BibApp.Controllers
                 return NotFound();
             }
 
-            var buch = await context.Buecher
+            var buch = await context.Buch
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (buch == null)
             {
@@ -292,8 +289,8 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var buch = await context.Buecher.SingleOrDefaultAsync(m => m.Id == id);
-            var exemplare = context.Exemplare.Where(e => e.ISBN == buch.ISBN);
+            var buch = await context.Buch.SingleOrDefaultAsync(m => m.Id == id);
+            var exemplare = context.Exemplar.Where(e => e.ISBN == buch.ISBN);
             bool istEinExemplarVerliehen = false;
 
             foreach (var exemplar in exemplare)
@@ -307,7 +304,7 @@ namespace BibApp.Controllers
 
             if (!istEinExemplarVerliehen)
             {
-                context.Buecher.Remove(buch);
+                context.Buch.Remove(buch);
                 await context.SaveChangesAsync();
 
                 toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
@@ -329,19 +326,19 @@ namespace BibApp.Controllers
 
         private bool BuchExists(int id)
         {
-            return context.Buecher.Any(e => e.Id == id);
+            return context.Buch.Any(e => e.Id == id);
         }
 
         public async Task<IActionResult> InDenWarenkorb(int? id)
         {
-            var exemplar = await context.Exemplare.SingleOrDefaultAsync(e => e.Id == id);
+            var exemplar = await context.Exemplar.SingleOrDefaultAsync(e => e.Id == id);
             var user = await userManager.GetUserAsync(User);
-            var buchVorhanden = context.Warenkoerbe.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
-            var buch = await context.Buecher.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+            var buchVorhanden = context.Warenkorb.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
+            var buch = await context.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
             if (buchVorhanden == null)
             {
-                var korb = Warenkorb.GetWarenkorb(user, context);
+                var korb = WarenkorbManager.GetWarenkorb(user, context);
                 await korb.InDenWarenkorb(exemplar);
 
                 toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde dem Warenkorb hinzugefügt!", ToastEnums.ToastType.Success, new ToastOption()

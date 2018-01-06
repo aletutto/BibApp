@@ -41,7 +41,7 @@ namespace BibApp.Data
             }
 
             // Erstelle alle Benutzer
-            if (!bibContext.Benutzers.Any())
+            if (!bibContext.Benutzer.Any())
             {
                 var poweruser = new Benutzer
                 {
@@ -176,7 +176,7 @@ namespace BibApp.Data
             }
 
             // Alle Bücher erstellen
-            if (!bibContext.Buecher.Any())
+            if (!bibContext.Buch.Any())
             {
                 var buecher = new Buch[]
                 {
@@ -291,24 +291,24 @@ namespace BibApp.Data
                 // Erstelle die zugehörigen Exemplare
                 foreach (Buch buch in buecher)
                 {
-                    bibContext.Buecher.Add(buch);
+                    bibContext.Buch.Add(buch);
 
                     for (int i = 1; i <= buch.AnzahlExemplare; i++)
                     {
                         var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true };
-                        bibContext.Exemplare.Add(exemplar);
+                        bibContext.Exemplar.Add(exemplar);
                     }
                 }
 
                 await bibContext.SaveChangesAsync();
 
-                if (!bibContext.AdminWarenkoerbe.Any())
+                if (!bibContext.Leihauftrag.Any())
                 {
                     // 1. Buch verleihen
-                    var buch1 = bibContext.Buecher.SingleOrDefault(e => e.ISBN.Equals("978-3648073278"));
-                    var exemplar1 = bibContext.Exemplare.SingleOrDefault(e => e.ISBN.Equals("978-3648073278") && e.ExemplarId == 1);
+                    var buch1 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3648073278"));
+                    var exemplar1 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3648073278") && e.ExemplarId == 1);
                     
-                    var adminKorb1 = new AdminKorb {
+                    var adminKorb1 = new Leihauftrag {
                         Benutzer = "member",
                         ISBN = exemplar1.ISBN,
                         BuchTitel = buch1.Titel,
@@ -316,18 +316,18 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.AdminWarenkoerbe.Add(adminKorb1);
+                    bibContext.Leihauftrag.Add(adminKorb1);
 
                     exemplar1.Verfügbarkeit = false;
                     exemplar1.EntliehenBis = DateTime.Now.AddDays(-2);
 
-                    bibContext.Exemplare.Update(exemplar1);
+                    bibContext.Exemplar.Update(exemplar1);
 
                     // 2. Buch verleihen
-                    var buch2 = bibContext.Buecher.SingleOrDefault(e => e.ISBN.Equals("978-3864902611"));
-                    var exemplar2 = bibContext.Exemplare.SingleOrDefault(e => e.ISBN.Equals("978-3864902611") && e.ExemplarId == 1);
+                    var buch2 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3864902611"));
+                    var exemplar2 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3864902611") && e.ExemplarId == 1);
 
-                    var adminKorb2 = new AdminKorb
+                    var adminKorb2 = new Leihauftrag
                     {
                         Benutzer = "member",
                         ISBN = exemplar2.ISBN,
@@ -336,18 +336,18 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.AdminWarenkoerbe.Add(adminKorb2);
+                    bibContext.Leihauftrag.Add(adminKorb2);
 
                     exemplar2.Verfügbarkeit = false;
                     exemplar2.EntliehenBis = DateTime.Now.AddDays(5);
 
-                    bibContext.Exemplare.Update(exemplar2);
+                    bibContext.Exemplar.Update(exemplar2);
 
                     // 3. Buch verleihen
-                    var buch3 = bibContext.Buecher.SingleOrDefault(e => e.ISBN.Equals("978-3938484081"));
-                    var exemplar3 = bibContext.Exemplare.SingleOrDefault(e => e.ISBN.Equals("978-3938484081") && e.ExemplarId == 1);
+                    var buch3 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3938484081"));
+                    var exemplar3 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3938484081") && e.ExemplarId == 1);
 
-                    var adminKorb3 = new AdminKorb
+                    var adminKorb3 = new Leihauftrag
                     {
                         Benutzer = "misch001",
                         ISBN = exemplar3.ISBN,
@@ -356,18 +356,18 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.AdminWarenkoerbe.Add(adminKorb3);
+                    bibContext.Leihauftrag.Add(adminKorb3);
 
                     exemplar3.Verfügbarkeit = false;
                     exemplar3.EntliehenBis = DateTime.Now.AddDays(15);
 
-                    bibContext.Exemplare.Update(exemplar3);
+                    bibContext.Exemplar.Update(exemplar3);
 
                     // 4. Buch verleihen
-                    var buch4 = bibContext.Buecher.SingleOrDefault(e => e.ISBN.Equals("978-3596135103"));
-                    var exemplar4 = bibContext.Exemplare.SingleOrDefault(e => e.ISBN.Equals("978-3596135103") && e.ExemplarId == 1);
+                    var buch4 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3596135103"));
+                    var exemplar4 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3596135103") && e.ExemplarId == 1);
 
-                    var adminKorb4 = new AdminKorb
+                    var adminKorb4 = new Leihauftrag
                     {
                         Benutzer = "misch001",
                         ISBN = exemplar4.ISBN,
@@ -376,18 +376,18 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.AdminWarenkoerbe.Add(adminKorb4);
+                    bibContext.Leihauftrag.Add(adminKorb4);
 
                     exemplar4.Verfügbarkeit = false;
                     exemplar4.EntliehenBis = DateTime.Now.AddDays(4);
 
-                    bibContext.Exemplare.Update(exemplar4);
+                    bibContext.Exemplar.Update(exemplar4);
 
                     // 5. Buch verleihen
-                    var buch5 = bibContext.Buecher.SingleOrDefault(e => e.ISBN.Equals("978-3866472976"));
-                    var exemplar5 = bibContext.Exemplare.SingleOrDefault(e => e.ISBN.Equals("978-3866472976") && e.ExemplarId == 1);
+                    var buch5 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3866472976"));
+                    var exemplar5 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3866472976") && e.ExemplarId == 1);
 
-                    var adminKorb5 = new AdminKorb
+                    var adminKorb5 = new Leihauftrag
                     {
                         Benutzer = "readl001",
                         ISBN = exemplar5.ISBN,
@@ -396,12 +396,12 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.AdminWarenkoerbe.Add(adminKorb5);
+                    bibContext.Leihauftrag.Add(adminKorb5);
 
                     exemplar5.Verfügbarkeit = false;
                     exemplar5.EntliehenBis = DateTime.Now.AddDays(-4);
 
-                    bibContext.Exemplare.Update(exemplar5);
+                    bibContext.Exemplar.Update(exemplar5);
                 }
 
                 await bibContext.SaveChangesAsync();

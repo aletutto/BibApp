@@ -2,14 +2,14 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Hinzufügen";
+    ViewData["Title"] = "Bearbeiten";
 }
 
-<h2>Buch hinzufügen</h2>
+<h2>Buch bearbeiten</h2>
 
 <hr />
 
-<form asp-action="Create">
+<form asp-action="Edit">
     <div class="row">
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -63,8 +63,8 @@
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
-                <input type="submit" class="btn btn-success" value="Hinzufügen" />
-                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Buecher")'">Abbrechen</button>
+                <input type="submit" class="btn btn-success" value="Speichern" />
+                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Index", "Buch")'">Abbrechen</button>
             </div>
         </div>
     </div>

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BibApp.Models.Warenkorb
 {
-    public class Korb
+    public class Leihauftrag
     {
         [Key]
         public int Id { get; set; }
@@ -20,5 +16,7 @@ namespace BibApp.Models.Warenkorb
 
         [Display(Name = "Buch")]
         public string BuchTitel { get; set; }
+
+        public bool IstVerliehen { get; set; }
     }
 }

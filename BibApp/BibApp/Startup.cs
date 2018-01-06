@@ -29,8 +29,8 @@ namespace BibApp
                 options.UseSqlServer(Configuration.GetConnectionString("BibContextConnection")));
 
             services.AddIdentity<Benutzer, IdentityRole>()
-             .AddEntityFrameworkStores<BibContext>()
-             .AddDefaultTokenProviders();
+             .AddEntityFrameworkStores<BibContext>();
+             //.AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -58,9 +58,9 @@ namespace BibApp
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(150);
-                options.LoginPath = "/Benutzers/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
-                options.LogoutPath = "/Benutzers/Login"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Login
-                options.AccessDeniedPath = "/Benutzers/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
+                options.LoginPath = "/Benutzer/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
+                options.LogoutPath = "/Benutzer/Login"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Login
+                options.AccessDeniedPath = "/Benutzer/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
             });
             services.AddMvc();
@@ -85,7 +85,7 @@ namespace BibApp
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Benutzers}/{action=Login}/{id?}");
+                    template: "{controller=Benutzer}/{action=Login}/{id?}");
             });
             context.Database.EnsureCreated();
             ((DbInitializer)dbInitializer).Initialize().Wait();

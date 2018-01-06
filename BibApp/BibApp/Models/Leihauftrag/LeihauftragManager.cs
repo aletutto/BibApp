@@ -4,46 +4,46 @@ using System.Threading.Tasks;
 
 namespace BibApp.Models.Warenkorb
 {
-    public class AdminWarenkorb
+    public class LeihauftragManager
     {
         BibContext bibContext;
 
-        public AdminWarenkorb(BibContext bibContext)
+        public LeihauftragManager(BibContext bibContext)
         {
             this.bibContext = bibContext;
         }
 
-        public static AdminWarenkorb GetKorb(BibContext bibContext)
+        public static LeihauftragManager GetKorb(BibContext bibContext)
         {
-            var cart = new AdminWarenkorb(bibContext);
+            var cart = new LeihauftragManager(bibContext);
             return cart;
         }
 
-        public async Task Ausleihen(Exemplar exemplar, AdminKorb adminKorb)
+        public async Task Ausleihen(Exemplar exemplar, Leihauftrag adminKorb)
         {
             exemplar.EntliehenBis = DateTime.Now.AddDays(30);
             exemplar.Verfügbarkeit = false;
 
             adminKorb.IstVerliehen = true;
 
-            bibContext.Exemplare.Update(exemplar);
-            bibContext.AdminWarenkoerbe.Update(adminKorb);
+            bibContext.Exemplar.Update(exemplar);
+            bibContext.Leihauftrag.Update(adminKorb);
             await bibContext.SaveChangesAsync();
         }
 
-        public async Task Loeschen(AdminKorb adminKorb)
+        public async Task Loeschen(Leihauftrag adminKorb)
         {
-            bibContext.AdminWarenkoerbe.Remove(adminKorb);
+            bibContext.Leihauftrag.Remove(adminKorb);
             await bibContext.SaveChangesAsync();
         }
 
-        public async Task Zurueckgeben(Exemplar exemplar, AdminKorb adminKorb)
+        public async Task Zurueckgeben(Exemplar exemplar, Leihauftrag adminKorb)
         {
             exemplar.EntliehenBis = null;
             exemplar.Verfügbarkeit = true;
 
-            bibContext.Exemplare.Update(exemplar);
-            bibContext.AdminWarenkoerbe.Remove(adminKorb);
+            bibContext.Exemplar.Update(exemplar);
+            bibContext.Leihauftrag.Remove(adminKorb);
             await bibContext.SaveChangesAsync();
         }
 
@@ -51,7 +51,7 @@ namespace BibApp.Models.Warenkorb
         {
             exemplar.EntliehenBis = exemplar.EntliehenBis.Value.AddDays(30);
 
-            bibContext.Exemplare.Update(exemplar);
+            bibContext.Exemplar.Update(exemplar);
             await bibContext.SaveChangesAsync();
         }
     }
