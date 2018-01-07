@@ -2,7 +2,7 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Startseite";
+    ViewData["Title"] = "Dashboard";
 }
 
 @* ADMIN *@
@@ -19,7 +19,7 @@
                     <thead>
                         <tr>
                             <th style="width: 15%">
-                                @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.Benutzer)
                             </th>
                             <th style="width: 25%">
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
@@ -91,7 +91,7 @@
                     <thead>
                         <tr>
                             <th style="width: 15%">
-                                @Html.DisplayNameFor(model => model.AdminKorb.Benutzer)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.Benutzer)
                             </th>
                             <th style="width: 25%">
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
@@ -173,7 +173,7 @@ else
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th style="width: 35%">
-                                @Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.BuchTitel)
                             </th>
                             <th style="width: 25%">
                                 @Html.DisplayNameFor(model => model.Exemplar.ExemplarId)
@@ -275,7 +275,7 @@ else
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th style="width: 34%">
-                                @Html.DisplayNameFor(model => model.AdminKorb.BuchTitel)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.BuchTitel)
                             </th>
                             <th style="width: 33%">
                                 @Html.DisplayNameFor(model => model.Exemplar.ExemplarId)

@@ -23,15 +23,16 @@ namespace BibApp.Controllers
             UserManager<Benutzer> userManager,
             SignInManager<Benutzer> signInManager,
             IToastNotification toastNotification,
-            BibContext context)
+            BibContext bibContext)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.toastNotification = toastNotification;
-            this.bibContext = context;
+            this.bibContext = bibContext;
         }
 
         // GET: Benutzer/Index
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
@@ -73,6 +74,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Benutzer/Details
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(String id)
         {
@@ -83,7 +85,8 @@ namespace BibApp.Controllers
             return View(user);
         }
 
-        // GET: Benutzers/Edit
+        // GET: Benutzer/Edit
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(String id)
         {
@@ -107,10 +110,18 @@ namespace BibApp.Controllers
                     var user = await userManager.FindByIdAsync(id);
                     var newName = user.UserName;
 
-                    // Fall: Benutzername darf nicht leer sein.
-                    if (model.UserName == null)
+                    if (model.UserName == null) // Fall: Benutzername ist leer.
                     {
-                        toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
+                        toastNotification.AddToastMessage("Kein Benutzername eingegeben", "Es muss ein Benutzername vergeben werden.", ToastEnums.ToastType.Error, new ToastOption()
+                        {
+                            PositionClass = ToastPositions.TopCenter
+                        });
+
+                        return RedirectToAction(nameof(Edit));
+                    }
+                    else if (model.Email == null) // Fall: Email ist leer.
+                    {
+                        toastNotification.AddToastMessage("Kein Email eingegeben", "Es muss eine Email-Adresse vergeben werden.", ToastEnums.ToastType.Error, new ToastOption()
                         {
                             PositionClass = ToastPositions.TopCenter
                         });
@@ -127,7 +138,7 @@ namespace BibApp.Controllers
                             // Fall: Der neue Benutzername existiert bereits in der Datenbank.
                             if (userExist != null)
                             {
-                                toastNotification.AddToastMessage("", "Der Benutzername \"" + model.UserName + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
+                                toastNotification.AddToastMessage("Benutzername bereits vergeben", "Der Benutzername \"" + model.UserName + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
                                 {
                                     PositionClass = ToastPositions.TopCenter
                                 });
@@ -170,7 +181,7 @@ namespace BibApp.Controllers
                             user.Role = "Admin";
                             bibContext.Update(user);
                             bibContext.SaveChanges();
-                            toastNotification.AddToastMessage("", "Die Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
+                            toastNotification.AddToastMessage("Benutzerdaten geändert", "Die Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
                             {
                                 PositionClass = ToastPositions.TopCenter
                             });
@@ -184,7 +195,7 @@ namespace BibApp.Controllers
                             user.Role = "Member";
                             bibContext.Update(user);
                             bibContext.SaveChanges();
-                            toastNotification.AddToastMessage("", "Der Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
+                            toastNotification.AddToastMessage("Benutzerdaten geändert", "Der Benutzerdaten von \"" + user.UserName + "\" wurden geändert.", ToastEnums.ToastType.Success, new ToastOption()
                             {
                                 PositionClass = ToastPositions.TopCenter
                             });
@@ -204,6 +215,7 @@ namespace BibApp.Controllers
         }
 
         // GET: Benutzer/Delete
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(String id)
         {
@@ -226,7 +238,7 @@ namespace BibApp.Controllers
                         
             if (zurueckgeben.Count() != 0) // Fall: Benutzer hat noch Bücher ausgeliehen.
             {
-                toastNotification.AddToastMessage("", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Bücher ausgeliehen hat.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("Benutzer hat noch Bücher ausgeliehen", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Bücher ausgeliehen hat.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -234,7 +246,7 @@ namespace BibApp.Controllers
             }
             else if (ausleihen.Count() != 0) // Fall: Benutzer hat noch offene Leihaufträge.
             {
-                toastNotification.AddToastMessage("", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("Benutzer hat noch Leihaufträge versendet", "Der Benutzer \"" + user.UserName + "\" kann nicht gelöscht werden, da er noch Leihaufträge versendet hat.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -245,7 +257,7 @@ namespace BibApp.Controllers
                 bibContext.Benutzer.Remove(user);
                 await bibContext.SaveChangesAsync();
 
-                toastNotification.AddToastMessage("", "Der Benutzer von \"" + user.UserName + "\" wurde gelöscht.", ToastEnums.ToastType.Success, new ToastOption()
+                toastNotification.AddToastMessage("Benutzer gelöscht", "Das Benutzerkonto von \"" + user.UserName + "\" wurde gelöscht.", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -257,20 +269,19 @@ namespace BibApp.Controllers
         // GET: Benutzer/Login
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
+        public async Task<IActionResult> Login()
         {
             // Der existierende externe Cookie wird gecleart um einen sauberen Login Prozess zu gewährleisten
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            ViewData["ReturnUrl"] = returnUrl;
 
             return View();
         }
 
-        // POST: Benutzers/Login
+        // POST: Benutzer/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -279,11 +290,11 @@ namespace BibApp.Controllers
                     model.Passwort, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    toastNotification.AddToastMessage("", "Benutzername oder Passwort falsch.", ToastEnums.ToastType.Error, new ToastOption()
+                    toastNotification.AddToastMessage("Login fehlgeschlagen", "Benutzername oder Passwort falsch.", ToastEnums.ToastType.Error, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
@@ -292,20 +303,16 @@ namespace BibApp.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Wenn es bis hier hin kommt, ist etwas schief gelaufen und die Login Seite wird wieder angezeigt
             return View("Login");
         }
 
-        // GET: Benutzers/ManageBenutzer
+        // GET: Benutzer/ManageBenutzer
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> ManageBenutzer()
         {
             var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-            }
 
             var model = new ManageBenutzerModel
             {
@@ -315,28 +322,35 @@ namespace BibApp.Controllers
             return View(model);
         }
 
-        // POST: Benutzers/ManageBenutzer
+        // POST: Benutzer/ManageBenutzer
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ManageBenutzer(ManageBenutzerModel model)
+        public async Task<IActionResult> ManageBenutzer( [Bind("Benutzername, Email")] ManageBenutzerModel model)
         {
             if (!ModelState.IsValid)
             {
+                var benutzer = await userManager.GetUserAsync(User);
+                model.Benutzername = benutzer.UserName;
+                model.Email = benutzer.Email;
+
                 return View(model);
             }
 
             var user = await userManager.GetUserAsync(User);
             var oldName = user.UserName;
 
-            if (user == null)
+            if (model.Benutzername == null) // Fall: Benutzername ist leer.
             {
-                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-            }
+                toastNotification.AddToastMessage("Kein Benutzername eingegeben", "Es muss ein Benutzername vergeben werden.", ToastEnums.ToastType.Error, new ToastOption()
+                {
+                    PositionClass = ToastPositions.TopCenter
+                });
 
-            // Fall: Benutzernamefeld ist leer.
-            if (model.Benutzername == null)
+                return RedirectToAction(nameof(ManageBenutzer));
+            }
+            else if (model.Email == null) // Fall: Email ist leer.
             {
-                toastNotification.AddToastMessage("", "Der Benutzernamen darf nicht leer sein.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("Kein Email eingegeben", "Es muss eine Email-Adresse vergeben werden.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -347,15 +361,15 @@ namespace BibApp.Controllers
             {
                 string message = "";
 
-                // Fall: Neuer Benutzername ist nicht identisch mit dem alten Benutzernamen
+                // Fall: Der Benutzername wurde geändert
                 if (model.Benutzername != oldName)
                 {
                     var userExist = bibContext.Benutzer.SingleOrDefault(b => b.UserName == model.Benutzername);
 
-                    // Prüft, ob der Benutzername schon bereits in der Datenbank vorhanden ist.
+                    // Prüft, ob der Benutzername bereits in der Datenbank vorhanden ist.
                     if (userExist != null)
                     {
-                        toastNotification.AddToastMessage("", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
+                        toastNotification.AddToastMessage("Benutzername vergeben", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
                         {
                             PositionClass = ToastPositions.TopCenter
                         });
@@ -363,7 +377,7 @@ namespace BibApp.Controllers
                         return RedirectToAction(nameof(ManageBenutzer));
                     }
 
-                    // Alle bisherigern Referenzen auf den Namen mitändern
+                    // Alle bisherigern Referenzen auf den Namen ändern
                     var warenkorb = bibContext.Warenkorb.Where(e => e.Benutzer.Equals(user.UserName));
                     foreach (var item in warenkorb)
                     {
@@ -371,30 +385,26 @@ namespace BibApp.Controllers
                         bibContext.Warenkorb.Update(item);
                     }
 
-                    var adminKorb = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName));
-                    foreach (var item in adminKorb)
+                    var leihauftraege = bibContext.Leihauftrag.Where(e => e.Benutzer.Equals(user.UserName));
+                    foreach (var leihauftrag in leihauftraege)
                     {
-                        item.Benutzer = model.Benutzername;
-                        bibContext.Leihauftrag.Update(item);
+                        leihauftrag.Benutzer = model.Benutzername;
+                        bibContext.Leihauftrag.Update(leihauftrag);
                     }
 
                     await bibContext.SaveChangesAsync();
-                    var setNameResult = await userManager.SetUserNameAsync(user, model.Benutzername);
 
+                    await userManager.SetUserNameAsync(user, model.Benutzername);
                     message += "Der Benutzername wurde in \"" + model.Benutzername + "\" geändert.";
 
-                    if (!setNameResult.Succeeded)
-                    {
-                        throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                    }
                 }
 
                 var oldEmail = user.Email;
 
+                // Fall: Email wurde gändert
                 if (model.Email != oldEmail)
                 {
                     await userManager.SetEmailAsync(user, model.Email);
-
                     message += " Die Email wurde in \"" + model.Email + "\" geändert.";
                 }
 
@@ -410,23 +420,18 @@ namespace BibApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Benutzers/ChangePassword
+        // GET: Benutzer/ChangePassword
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-            }
-
             var hasPassword = await userManager.HasPasswordAsync(user);
             var model = new ChangePasswordModel();
             return View(model);
         }
 
-        // POST: Benutzers/ChangePassword
+        // POST: Benutzer/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
@@ -437,11 +442,6 @@ namespace BibApp.Controllers
             }
 
             var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-            }
-
             var result = await userManager.CheckPasswordAsync(user, model.OldPassword);
 
             if (!result)
@@ -452,15 +452,14 @@ namespace BibApp.Controllers
                 });
             }
 
-            // Passwort wird mit dem Usermanager geändert.
+            // Passwort wird geändert
             var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                // AddErrors(changePasswordResult);
                 return View(model);
             }
 
-            // Benutzer wird eingeloggt und auf die Hauptseite verwiesen.
+            // Benutzer wird eingeloggt und auf die Hauptseite weitergeleitet
             await signInManager.SignInAsync(user, isPersistent: false);
 
             toastNotification.AddToastMessage("Passwort geändert", "Das Passwort wurde geändert.", ToastEnums.ToastType.Success, new ToastOption()
@@ -471,45 +470,43 @@ namespace BibApp.Controllers
             return RedirectToAction("Index", "Home");
         }
         
-        // GET: Benutzers/Register
+        // GET: Benutzer/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Register()
         {
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        // POST: Benutzers/Register
+        // POST: Benutzer/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var userCheck = await bibContext.Benutzer.SingleOrDefaultAsync(m => m.UserName == model.Benutzername);
 
-                // Prüft, ob der Benutzername schon vorhanden ist.
+                // Fall: Benutzername ist noch nicht vergeben
                 if (userCheck == null)
                 {
-                    var user = new Benutzer { UserName = model.Benutzername, Email = model.Email };
                     // Erstellt einen neuen Benutzer mit dem Usermanager und fügt eine Rolle hinzu.
+                    var user = new Benutzer { UserName = model.Benutzername, Email = model.Email };
                     var result = await userManager.CreateAsync(user, model.Passwort);
                     await userManager.AddToRoleAsync(user, "Member");
                     user.Role = "Member";
                     bibContext.Update(user);
-                    bibContext.SaveChanges();
-                    // Prüft, ob beim Erstellen alles erfolgreich war.
+                    await bibContext.SaveChangesAsync();
+
+                    // Prüft, ob beim Erstellen alles erfolgreich war und loggt den Benutzer ein
                     if (result.Succeeded)
                     {
-
                         await signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Index", "Home");
                     }
-                    AddErrors(result);
                 }
-                else
+                else  // Fall: Benutzername ist bereits vergeben
                 {
                     toastNotification.AddToastMessage("Registrierung fehlgeschlagen", "Der Benutzername \"" + model.Benutzername + "\" ist bereits vergeben.", ToastEnums.ToastType.Error, new ToastOption()
                     {
@@ -518,7 +515,7 @@ namespace BibApp.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Wenn es bis hier hin kommt, ist etwas schief gelaufen und die Seite wird erneut geladen
             return View(model);
         }
 
@@ -529,34 +526,12 @@ namespace BibApp.Controllers
             return RedirectToAction("Login");
         }
 
+        // Zugriff verweigert, wenn en Benutzer nicht die Rechte hat um eine bestimmte Seite zu sehen
         [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
 
-#region Helpers
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-        }
-
-#endregion
     }
 }

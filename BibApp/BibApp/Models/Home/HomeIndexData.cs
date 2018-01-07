@@ -8,7 +8,7 @@ namespace BibApp.Models
     {
         public Exemplar Exemplar { get; set; }
         public Buch.Buch Buch { get; set; }
-        public Leihauftrag AdminKorb { get; set; }
+        public Leihauftrag Leihauftrag { get; set; }
 
         // ADMIN
         public Dictionary<Leihauftrag, Exemplar> ExemplareAbgelaufen { get; set; }

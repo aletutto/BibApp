@@ -14,17 +14,22 @@ namespace BibApp.Controllers
 {
     public class BuchController : Controller
     {
-        private readonly BibContext context;
+        private readonly BibContext bibContext;
         private readonly UserManager<Benutzer> userManager;
         private readonly IToastNotification toastNotification;
 
-        public BuchController(BibContext context, UserManager<Benutzer> userManager, IToastNotification toastNotification)
+        public BuchController(
+            BibContext bibContext,
+            UserManager<Benutzer> userManager,
+            IToastNotification toastNotification)
         {
-            this.context = context;
+            this.bibContext = bibContext;
             this.userManager = userManager;
             this.toastNotification = toastNotification;
         }
 
+        // GET: Buch/Index
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
@@ -37,15 +42,15 @@ namespace BibApp.Controllers
             ViewData["VerlagSortParm"] = sortOrder == "Verlag" ? "verlag_desc" : "Verlag";
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from s in context.Buch
+            var bucher = from s in bibContext.Buch
                         select s;
 
-            var exemplare = from s in context.Exemplar
+            var exemplare = from s in bibContext.Exemplar
                             select s;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                books = books.Where(s =>
+                bucher = bucher.Where(s =>
                 s.Titel.Contains(searchString)
                 || s.Autor.Contains(searchString)
                 || s.Verlag.Contains(searchString));
@@ -53,71 +58,64 @@ namespace BibApp.Controllers
             switch (sortOrder)
             {
                 case "aut_desc":
-                    books = books.OrderByDescending(s => s.Autor);
+                    bucher = bucher.OrderByDescending(s => s.Autor);
                     break;
                 case "Autor":
-                    books = books.OrderBy(s => s.Autor);
+                    bucher = bucher.OrderBy(s => s.Autor);
                     break;
                 case "name_desc":
-                    books = books.OrderByDescending(s => s.Titel);
+                    bucher = bucher.OrderByDescending(s => s.Titel);
                     break;
                 case "isbn_desc":
-                    books = books.OrderByDescending(s => s.ISBN);
+                    bucher = bucher.OrderByDescending(s => s.ISBN);
                     break;
                 case "ISBN":
-                    books = books.OrderBy(s => s.ISBN);
+                    bucher = bucher.OrderBy(s => s.ISBN);
                     break;
                 case "ersch_desc":
-                    books = books.OrderByDescending(s => s.Erscheinungsjahr);
+                    bucher = bucher.OrderByDescending(s => s.Erscheinungsjahr);
                     break;
                 case "Erscheinung":
-                    books = books.OrderBy(s => s.Erscheinungsjahr);
+                    bucher = bucher.OrderBy(s => s.Erscheinungsjahr);
                     break;
                 case "verlag_desc":
-                    books = books.OrderByDescending(s => s.Verlag);
+                    bucher = bucher.OrderByDescending(s => s.Verlag);
                     break;
                 case "Verlag":
-                    books = books.OrderBy(s => s.Verlag);
+                    bucher = bucher.OrderBy(s => s.Verlag);
                     break;
                 default:
-                    books = books.OrderBy(s => s.Titel);
+                    bucher = bucher.OrderBy(s => s.Titel);
                     break;
             }
 
             model.Exemplare = await exemplare.AsNoTracking().ToListAsync();
-            model.Buecher = await books.AsNoTracking().ToListAsync();
+            model.Buecher = await bucher.AsNoTracking().ToListAsync();
 
             return View(model);
             
         }
 
-        // GET: Buecher/Details/5
+        // GET: Buch/Details/x
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var buch = await context.Buch
+            var buch = await bibContext.Buch
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (buch == null)
-            {
-                return NotFound();
-            }
 
             return View(buch);
         }
 
-        // GET: Buecher/Create
+        // GET: Buch/Create
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Buecher/Create
+        // POST: Buch/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -125,30 +123,32 @@ namespace BibApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var buchVorhanden = await context.Buch.SingleOrDefaultAsync(m => m.ISBN == buch.ISBN);
+                var buchVorhanden = await bibContext.Buch.SingleOrDefaultAsync(m => m.ISBN == buch.ISBN);
 
+                // Fall: Buch ist noch nicht in DB vorhanden
                 if (buchVorhanden == null)
                 {
-                    context.Add(buch);
+                    bibContext.Add(buch);
 
+                    // Erzeuge die Exemplare für das Buch
                     for (int i = 1; i <= buch.AnzahlExemplare; i++)
                     {
                         var exemplar = new Exemplar { ExemplarId = i, ISBN = buch.ISBN, Verfügbarkeit = true };
-                        context.Exemplar.Add(exemplar);
+                        bibContext.Exemplar.Add(exemplar);
                     }
 
-                    await context.SaveChangesAsync();
+                    await bibContext.SaveChangesAsync();
 
-                    toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde erstellt!", ToastEnums.ToastType.Success, new ToastOption()
+                    toastNotification.AddToastMessage("Buch erstellt", "Das Buch \"" + buch.Titel + "\" wurde erstellt!", ToastEnums.ToastType.Success, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
 
                     return RedirectToAction(nameof(Index));
                 }
-                else
+                else // Fall: Buch ist bereits in DB vorhanden
                 {
-                    toastNotification.AddToastMessage("Fehler", "Das Buch mit der ISBN " + buch.ISBN + " existiert bereits in den Stammdaten!", ToastEnums.ToastType.Error, new ToastOption()
+                    toastNotification.AddToastMessage("Buch bereits vorhanden", "Das Buch mit der ISBN " + buch.ISBN + " existiert bereits in den Stammdaten!", ToastEnums.ToastType.Error, new ToastOption()
                     {
                         PositionClass = ToastPositions.TopCenter
                     });
@@ -159,64 +159,52 @@ namespace BibApp.Controllers
             return View(buch);
         }
 
-        // GET: Buecher/Edit
+        // GET: Buch/Edit
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var buch = await context.Buch.SingleOrDefaultAsync(m => m.Id == id);
-            if (buch == null)
-            {
-                return NotFound();
-            }
+            var buch = await bibContext.Buch.SingleOrDefaultAsync(m => m.Id == id);
             return View(buch);
         }
 
-        // POST: Buecher/Edit
+        // POST: Buch/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, Buch buch)
         {
-            if (id != buch.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var buchVorher = await bibContext.Buch.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
+                    var anzahlExemplareVorher = buchVorher.AnzahlExemplare;
 
-                    var buchVorher = await context.Buch.AsNoTracking().SingleOrDefaultAsync(e => e.Id == id);
-                    var AnzahlExemplareVorher = buchVorher.AnzahlExemplare;
-
-                    if (AnzahlExemplareVorher < buch.AnzahlExemplare)
+                    // Fall: Die Anzahl der Exemplare wurde erhöht
+                    if (anzahlExemplareVorher < buch.AnzahlExemplare)
                     {
-                        var Differenz = buch.AnzahlExemplare - AnzahlExemplareVorher;
+                        var Differenz = buch.AnzahlExemplare - anzahlExemplareVorher;
 
                         for (int i = 1; i <= Differenz; i++)
                         {
-                            var exemplar = new Exemplar { ExemplarId = AnzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true };
-                            context.Exemplar.Add(exemplar);
+                            var exemplar = new Exemplar { ExemplarId = anzahlExemplareVorher + i, ISBN = buchVorher.ISBN, Verfügbarkeit = true };
+                            bibContext.Exemplar.Add(exemplar);
                         }
 
                     }
 
-                    if (AnzahlExemplareVorher > buch.AnzahlExemplare)
+                    // Fall: Die Anzahl der Exemplare wurde verringert
+                    if (anzahlExemplareVorher > buch.AnzahlExemplare)
                     {
-                        var Differenz = AnzahlExemplareVorher - buch.AnzahlExemplare;
+                        var differenz = anzahlExemplareVorher - buch.AnzahlExemplare;
 
-                        for (int i = 0; i < Differenz; i++)
+                        for (int i = 0; i < differenz; i++)
                         {
-                            var exemplar = await context.Exemplar.SingleOrDefaultAsync(e => e.ISBN == buchVorher.ISBN && e.ExemplarId == AnzahlExemplareVorher - i);
-                            if (!exemplar.Verfügbarkeit)
+                            var exemplar = await bibContext.Exemplar.SingleOrDefaultAsync(e => e.ISBN == buchVorher.ISBN && e.ExemplarId == anzahlExemplareVorher - i);
+                            if (!exemplar.Verfügbarkeit) // Fall: Exemplar noch verliehen
                             {
-                                toastNotification.AddToastMessage("Fehler", "Das Exemplar ist noch verliehen und kann daher nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
+                                toastNotification.AddToastMessage("Exemplar noch verliehen", "Das Exemplar ist noch verliehen und kann daher nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
                                 {
                                     PositionClass = ToastPositions.TopCenter
                                 });
@@ -225,36 +213,20 @@ namespace BibApp.Controllers
                             }
                             else
                             {
-                                context.Exemplar.Remove(exemplar);
+                                bibContext.Exemplar.Remove(exemplar);
                             }
-                            
                         }
-
                     }
 
-                    var exemplare = context.Exemplar.Where(e => e.ISBN == buchVorher.ISBN);
-
-                    foreach (var exemplar in exemplare)
-                    {
-                        exemplar.ISBN = buch.ISBN; 
-                    }
-
-                    context.Update(buch);
-                    await context.SaveChangesAsync();
+                    bibContext.Update(buch);
+                    await bibContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BuchExists(buch.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
 
-                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde geändert!", ToastEnums.ToastType.Success, new ToastOption()
+                toastNotification.AddToastMessage("Buch geändert", "Das Buch \"" + buch.Titel + "\" wurde geändert!", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -264,33 +236,25 @@ namespace BibApp.Controllers
             return View(buch);
         }
 
-        // GET: Buecher/Delete
+        // GET: Buch/Delete
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var buch = await context.Buch
+            var buch = await bibContext.Buch
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (buch == null)
-            {
-                return NotFound();
-            }
 
             return View(buch);
         }
 
-        // POST: Buecher/Delete
+        // POST: Buch/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var buch = await context.Buch.SingleOrDefaultAsync(m => m.Id == id);
-            var exemplare = context.Exemplar.Where(e => e.ISBN == buch.ISBN);
+            var buch = await bibContext.Buch.SingleOrDefaultAsync(m => m.Id == id);
+            var exemplare = bibContext.Exemplar.Where(e => e.ISBN == buch.ISBN);
             bool istEinExemplarVerliehen = false;
 
             foreach (var exemplar in exemplare)
@@ -302,20 +266,20 @@ namespace BibApp.Controllers
                 }
             }
 
-            if (!istEinExemplarVerliehen)
+            if (!istEinExemplarVerliehen) // Fall: Buch wird gelöscht
             {
-                context.Buch.Remove(buch);
-                await context.SaveChangesAsync();
+                bibContext.Buch.Remove(buch);
+                await bibContext.SaveChangesAsync();
 
-                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
+                toastNotification.AddToastMessage("Buch gelöscht", "Das Buch \"" + buch.Titel + "\" wurde gelöscht!", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
 
             }
-            else
+            else // Fall: Buch kann nicht gelöscht werden
             {
-                toastNotification.AddToastMessage("", "Ein Exemplar des Buch \"" + buch.Titel + "\" ist noch verliehen, daher kann das Buch nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("Buch kann nicht gelöscht werden", "Ein Exemplar des Buch \"" + buch.Titel + "\" ist noch verliehen, daher kann das Buch nicht gelöscht werden!", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -324,31 +288,27 @@ namespace BibApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BuchExists(int id)
-        {
-            return context.Buch.Any(e => e.Id == id);
-        }
-
+        // Legt ein Exemplar in den Warenkorb
         public async Task<IActionResult> InDenWarenkorb(int? id)
         {
-            var exemplar = await context.Exemplar.SingleOrDefaultAsync(e => e.Id == id);
+            var exemplar = await bibContext.Exemplar.SingleOrDefaultAsync(e => e.Id == id);
             var user = await userManager.GetUserAsync(User);
-            var buchVorhanden = context.Warenkorb.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
-            var buch = await context.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+            var buchBereitsInWarenkorb = bibContext.Warenkorb.SingleOrDefault(b => b.ISBN == exemplar.ISBN && b.Benutzer == user.UserName);
+            var buch = await bibContext.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
-            if (buchVorhanden == null)
+            if (buchBereitsInWarenkorb == null) // Fall: Das Buch befindet sich noch nicht im Warenkorb und wird ihm hinzugefügt
             {
-                var korb = WarenkorbManager.GetWarenkorb(user, context);
-                await korb.InDenWarenkorb(exemplar);
+                var warenkorbManager = WarenkorbManager.GetWarenkorbManager(user, bibContext);
+                await warenkorbManager.InDenWarenkorb(exemplar);
 
-                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde dem Warenkorb hinzugefügt!", ToastEnums.ToastType.Success, new ToastOption()
+                toastNotification.AddToastMessage("Buch in Warenkorb", "Das Buch \"" + buch.Titel + "\" wurde dem Warenkorb hinzugefügt!", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
             }
-            else
+            else // Fall: Das Buch befindet sich bereits im Warenkorb
             {
-                toastNotification.AddToastMessage("Warnung", "Das Buch \"" + buch.Titel + "\" befindet sich bereits im Warenkorb!", ToastEnums.ToastType.Warning, new ToastOption()
+                toastNotification.AddToastMessage("Bereits im Warenkorb", "Das Buch \"" + buch.Titel + "\" befindet sich bereits im Warenkorb!", ToastEnums.ToastType.Warning, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });

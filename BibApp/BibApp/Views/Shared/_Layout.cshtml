@@ -23,28 +23,31 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BibApp</a> 
+                <a asp-controller="Home" asp-action="Index" class="navbar-brand">BibApp</a> 
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <li><a asp-controller="Home" asp-action="Index"> <i class="glyphicon glyphicon-dashboard"></i> Dashboard</a></li>
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="glyphicon glyphicon-folder-open"></i> &nbsp; Stammdaten <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-area="" asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                                    <li><a asp-area="" asp-controller="Benutzer" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Benutzer</a></li>
+                                    <li><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                                    <li><a asp-controller="Benutzer" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Benutzer</a></li>
                                 </ul>
                             </li>
-                            <li><a asp-area="" asp-controller="Leihauftrag" asp-action="Index"> <i class="glyphicon glyphicon-list"></i> Leihaufträge</a></li>
+                            <li><a asp-controller="Leihauftrag" asp-action="Index"> <i class="glyphicon glyphicon-list"></i> Leihaufträge</a></li>
 
                         }
                         else
                         {
-                            <li><a asp-area="" asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                            <li><a asp-area="" asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb</a></li>
+                            <li><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                            <li><a asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb</a></li>
                         }
 
                     }
@@ -52,19 +55,18 @@
                 <ul class="nav navbar-nav navbar-right">           
                     @if (User.Identity.IsAuthenticated)
                     {
-                    <li><a asp-area="" asp-controller="Benutzer" asp-action="ManageBenutzer"> <i class="glyphicon glyphicon-cog"></i> Mein Benutzerkonto</a> </li>
+                    <li><a asp-controller="Benutzer" asp-action="ManageBenutzer"> <i class="glyphicon glyphicon-cog"></i> Mein Benutzerkonto</a> </li>
                       
-                    <li><a asp-area="" asp-controller="Benutzer" asp-action="Logout"> <i class="glyphicon glyphicon-off"></i> Logout</a> </li>
+                    <li><a asp-controller="Benutzer" asp-action="Logout"> <i class="glyphicon glyphicon-off"></i> Logout</a> </li>
                     }
                     else
                     {
-                    <li><a asp-area="" asp-controller="Benutzer" asp-action="Login">Login</a></li>
+                    <li><a asp-controller="Benutzer" asp-action="Login">Login</a></li>
                     }  
                 </ul>
             </div>
         </div>
     </nav>
-
 
     <div class="container-fluid" style="max-width: 1300px">
         @RenderBody()

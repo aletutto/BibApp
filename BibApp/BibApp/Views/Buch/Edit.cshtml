@@ -2,7 +2,7 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Bearbeiten";
+    ViewData["Title"] = "Buch bearbeiten";
 }
 
 <h2>Buch bearbeiten</h2>
@@ -12,7 +12,6 @@
 <form asp-action="Edit">
     <div class="row">
         <div class="col-md-4">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="ISBN" class="control-label"></label>

@@ -15,33 +15,34 @@ namespace BibApp.Controllers
 {
     public class LeihauftragController : Controller
     {
-        private readonly BibContext context;
+        private readonly BibContext bibContext;
         private readonly UserManager<Benutzer> userManager;
         private readonly IToastNotification toastNotification;
 
         public LeihauftragController(
-            BibContext context,
+            BibContext bibContext,
             UserManager<Benutzer> userManager,
             IToastNotification toastNotification)
         {
-            this.context = context;
+            this.bibContext = bibContext;
             this.userManager = userManager;
             this.toastNotification = toastNotification;
         }
 
-        // GET: AdminWarenkorb/Index
+        // GET: Leihauftrag/Index
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult Index(string searchString, string searchString2)
         {
             LeihauftragExemplar model = new LeihauftragExemplar();
 
-            var adminWarenkoerbeAusleihen = context.Leihauftrag.Where(e => e.IstVerliehen == false);
-            var adminWarenkoerbeZurückgeben = context.Leihauftrag.Where(e => e.IstVerliehen == true);
+            var leihauftragAusleihen = bibContext.Leihauftrag.Where(e => e.IstVerliehen == false);
+            var leihauftragZurückgeben = bibContext.Leihauftrag.Where(e => e.IstVerliehen == true);
 
             // Suchfeld Ausleihen
             if (!String.IsNullOrEmpty(searchString))
             {
-                adminWarenkoerbeAusleihen = adminWarenkoerbeAusleihen.Where(s =>
+                leihauftragAusleihen = leihauftragAusleihen.Where(s =>
                 s.Benutzer.Contains(searchString)
                 || s.BuchTitel.Contains(searchString)
                 || s.ISBN.Contains(searchString));
@@ -51,23 +52,23 @@ namespace BibApp.Controllers
             // Suchfeld Zurückgeben
             if (!String.IsNullOrEmpty(searchString2))
             {
-                adminWarenkoerbeZurückgeben = adminWarenkoerbeZurückgeben.Where(s =>
+                leihauftragZurückgeben = leihauftragZurückgeben.Where(s =>
                 s.Benutzer.Contains(searchString2)
                 || s.BuchTitel.Contains(searchString2)
                 || s.ISBN.Contains(searchString2));
             }
             ViewData["currentFilter2"] = searchString2;
 
-            var zurückgebenDic = new Dictionary<Leihauftrag, Exemplar>();
+            var leihauftragZurückgebenDic = new Dictionary<Leihauftrag, Exemplar>();
 
-            foreach (var item in adminWarenkoerbeZurückgeben)
+            foreach (var leihauftrag in leihauftragZurückgeben)
             {
-                var exemplar = context.Exemplar.SingleOrDefault(e => e.ISBN == item.ISBN && e.ExemplarId == item.ExemplarId);
-                zurückgebenDic.Add(item, exemplar);
+                var exemplar = bibContext.Exemplar.SingleOrDefault(e => e.ISBN == leihauftrag.ISBN && e.ExemplarId == leihauftrag.ExemplarId);
+                leihauftragZurückgebenDic.Add(leihauftrag, exemplar);
             }
             
-            model.Ausleihen = adminWarenkoerbeAusleihen.AsNoTracking().ToList();
-            model.Zurückgeben = zurückgebenDic;
+            model.Ausleihen = leihauftragAusleihen.AsNoTracking().ToList();
+            model.Zurückgeben = leihauftragZurückgebenDic;
 
             return View(model);
         }
@@ -76,18 +77,18 @@ namespace BibApp.Controllers
         public async Task<IActionResult> Ausleihen(int? id)
         {
             // Sucht der ID nach zugehörigen Warenkorb heraus.
-            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
+            var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplar.SingleOrDefault(
-                c => c.ISBN == adminKorbExemplar.ISBN 
-                && c.ExemplarId == adminKorbExemplar.ExemplarId);
+            var exemplar = bibContext.Exemplar.SingleOrDefault(
+                c => c.ISBN == leihauftrag.ISBN 
+                && c.ExemplarId == leihauftrag.ExemplarId);
 
-            var buch = await context.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
+            var buch = await bibContext.Buch.SingleOrDefaultAsync(e => e.ISBN == exemplar.ISBN);
 
-            if (buch == null)
+            if (buch == null) // Fall: Buch wurde mitlerweile gelöscht
             {
-                toastNotification.AddToastMessage("", "Dieses Buch existiert nicht mehr in der Datenbank. Bitte löschen Sie den Leihauftrag.", ToastEnums.ToastType.Error, new ToastOption()
+                toastNotification.AddToastMessage("Buch gelöscht", "Dieses Buch existiert nicht mehr in der Datenbank. Bitte löschen Sie den Leihauftrag.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -96,11 +97,11 @@ namespace BibApp.Controllers
 
             if (!exemplar.Verfügbarkeit)
             {
-
-                var exemplare = context.Exemplar.Where(e => e.ISBN == buch.ISBN);
+                var exemplare = bibContext.Exemplar.Where(e => e.ISBN == buch.ISBN);
 
                 Exemplar gesuchtesExemplar = null;
 
+                // Wenn ein das Exemplar eines Buches bereits verliehen ist, suche ein freies Exemplar des Buches
                 foreach (var exemplarSuchen in exemplare)
                 {
                     if (exemplarSuchen.Verfügbarkeit)
@@ -110,13 +111,13 @@ namespace BibApp.Controllers
                     }
                 }
 
-                if (gesuchtesExemplar != null)
+                if (gesuchtesExemplar != null) // Fall: Exemplar bereits verliehen, jedoch wurde ein anderes Exemplar des Buches gefunden und verliehen
                 {
                     var oldExemplarId = exemplar.ExemplarId;
-                    var adminWarenkorb = LeihauftragManager.GetKorb(context);
-                    adminKorbExemplar.ExemplarId = gesuchtesExemplar.ExemplarId;
-
-                    await adminWarenkorb.Ausleihen(gesuchtesExemplar, adminKorbExemplar);
+                    var leihauftragManager = LeihauftragManager.GetLeihauftragManager(bibContext);
+                    leihauftrag.ExemplarId = gesuchtesExemplar.ExemplarId;
+                    
+                    await leihauftragManager.Ausleihen(gesuchtesExemplar, leihauftrag);
 
                     toastNotification.AddToastMessage("Anderes Exemplar verliehen", "Das Exemplar " + oldExemplarId + " ist bereits verliehen! Es wurde nun das Exemplar " + gesuchtesExemplar.ExemplarId + " des Buches \"" + buch.Titel + "\" verliehen.", ToastEnums.ToastType.Warning, new ToastOption()
                     {
@@ -126,20 +127,20 @@ namespace BibApp.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                toastNotification.AddToastMessage("Fehler", "Es sind bereits alle Exemplare des Buches \"" + buch.Titel + "\" verliehen!", ToastEnums.ToastType.Error, new ToastOption()
+                // Wenn das Programm bis hierhin kommt, sind bereits alle Exemplare des Buches verliehen
+                toastNotification.AddToastMessage("Alle Exemplare verliehen", "Es sind bereits alle Exemplare des Buches \"" + buch.Titel + "\" verliehen.", ToastEnums.ToastType.Error, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
 
                 return RedirectToAction(nameof(Index));
             }
-            else
+            else // Fall: Das Buch wurde verliehen
             {
-                var adminWarenkorb = LeihauftragManager.GetKorb(context);
+                var leihauftragManager = LeihauftragManager.GetLeihauftragManager(bibContext);
+                await leihauftragManager.Ausleihen(exemplar, leihauftrag);
 
-                await adminWarenkorb.Ausleihen(exemplar, adminKorbExemplar);
-
-                toastNotification.AddToastMessage("", "Das Buch \"" + buch.Titel + "\" wurde verliehen!", ToastEnums.ToastType.Success, new ToastOption()
+                toastNotification.AddToastMessage("Buch verliehen", "Das Buch \"" + buch.Titel + "\" wurde verliehen.", ToastEnums.ToastType.Success, new ToastOption()
                 {
                     PositionClass = ToastPositions.TopCenter
                 });
@@ -151,14 +152,13 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Loeschen(int? id)
         {
-            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
+            var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var adminWarenkorb = LeihauftragManager.GetKorb(context);
+            var leihauftragManager = LeihauftragManager.GetLeihauftragManager(bibContext);
+            await leihauftragManager.Loeschen(leihauftrag);
 
-            await adminWarenkorb.Loeschen(adminKorbExemplar);
-
-            toastNotification.AddToastMessage("Entfernt", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\", welches von \"" + adminKorbExemplar.Benutzer + "\" ausgliehen werden wollte, wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Leihauftrag entfernt", "Das Buch \"" + leihauftrag.BuchTitel + "\", welches von \"" + leihauftrag.Benutzer + "\" ausgliehen werden wollte, wurde aus den Leihaufträgen entfernt.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -169,18 +169,17 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Zurueckgeben(int? id)
         {
-            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
+            var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplar.SingleOrDefault(
-                c => c.ISBN == adminKorbExemplar.ISBN
-                && c.ExemplarId == adminKorbExemplar.ExemplarId);
+            var exemplar = bibContext.Exemplar.SingleOrDefault(
+                c => c.ISBN == leihauftrag.ISBN
+                && c.ExemplarId == leihauftrag.ExemplarId);
 
-            var adminWarenkorb = LeihauftragManager.GetKorb(context);
+            var leihauftragManager = LeihauftragManager.GetLeihauftragManager(bibContext);
+            await leihauftragManager.Zurueckgeben(exemplar, leihauftrag);
 
-            await adminWarenkorb.Zurueckgeben(exemplar, adminKorbExemplar);
-
-            toastNotification.AddToastMessage("Zurückgegeben", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\" wurde vom Benutzer \"" + adminKorbExemplar.Benutzer + "\" zurückgegeben!", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Buch zurückgegeben", "Das Buch \"" + leihauftrag.BuchTitel + "\" wurde vom Benutzer \"" + leihauftrag.Benutzer + "\" zurückgegeben.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -191,18 +190,17 @@ namespace BibApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Verlaengern(int? id)
         {
-            var adminKorbExemplar = context.Leihauftrag.SingleOrDefault(
+            var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(
                 c => c.Id == id);
 
-            var exemplar = context.Exemplar.SingleOrDefault(
-                c => c.ISBN == adminKorbExemplar.ISBN
-                && c.ExemplarId == adminKorbExemplar.ExemplarId);
+            var exemplar = bibContext.Exemplar.SingleOrDefault(
+                c => c.ISBN == leihauftrag.ISBN
+                && c.ExemplarId == leihauftrag.ExemplarId);
 
-            var adminWarenkorb = LeihauftragManager.GetKorb(context);
+            var leihauftragManager = LeihauftragManager.GetLeihauftragManager(bibContext);
+            await leihauftragManager.Verlaengern(exemplar);
 
-            await adminWarenkorb.Verlaengern(exemplar);
-
-            toastNotification.AddToastMessage("Verlängert", "Das Buch \"" + adminKorbExemplar.BuchTitel + "\" des Benutzers \"" + adminKorbExemplar.Benutzer + "\" wurde verlängert!", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Buch verlängert", "Das Buch \"" + leihauftrag.BuchTitel + "\" des Benutzers \"" + leihauftrag.Benutzer + "\" wurde verlängert.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });

@@ -13,7 +13,7 @@ namespace BibApp.Models.Warenkorb
             this.bibContext = bibContext;
         }
 
-        public static WarenkorbManager GetWarenkorb(Benutzer.Benutzer benutzer, BibContext bibContext)
+        public static WarenkorbManager GetWarenkorbManager(Benutzer.Benutzer benutzer, BibContext bibContext)
         {
             var warenkorb = new WarenkorbManager(bibContext)
             {

@@ -5,7 +5,7 @@ namespace BibApp.Models.Warenkorb
 {
     public class LeihauftragExemplar
     {
-        public Leihauftrag AdminKorb { get; set; }
+        public Leihauftrag Leihauftrag { get; set; }
         public Exemplar Exemplar { get; set; }
 
         public List<Leihauftrag> Ausleihen { get; set; }

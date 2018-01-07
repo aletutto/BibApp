@@ -15,123 +15,135 @@ namespace BibApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly BibContext context;
+        private readonly BibContext bibContext;
         private readonly UserManager<Benutzer> userManager;
 
-        public HomeController(BibContext context, UserManager<Benutzer> userManager)
+        public HomeController(
+            BibContext bibContext,
+            UserManager<Benutzer> userManager)
         {
-            this.context = context;
+            this.bibContext = bibContext;
             this.userManager = userManager;
         }
 
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string sortOrder2)
         {
             HomeIndexData model = new HomeIndexData();
 
-            // ADMIN: Abgelaufene Exemplare
-            var exemplareAbgelaufen = context.Exemplar.Where(e =>
-                e.EntliehenBis != null
-                && (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
-
-            ViewData["DatumSortParm"] = String.IsNullOrEmpty(sortOrder) ? "datum_desc" : "";
-
-            switch (sortOrder)
+            if (User.IsInRole("Admin")) // Fall: Admin ist eingeloggt
             {
-                case "datum_desc":
-                    exemplareAbgelaufen = exemplareAbgelaufen.OrderByDescending(s => s.EntliehenBis);
-                    break;
-                default:
-                    exemplareAbgelaufen = exemplareAbgelaufen.OrderBy(s => s.EntliehenBis);
-                    break;
-            }
+                // ADMIN: Abgelaufenes Leihfristende
+                var exemplareAbgelaufen = bibContext.Exemplar.Where(e =>
+                    e.EntliehenBis != null
+                    && (DateTime.Now.Date - e.EntliehenBis.Value).TotalDays > 0);
 
-            var exemplareAbgelaufenDic = new Dictionary<Leihauftrag, Exemplar>();
+                ViewData["DatumSortParm"] = String.IsNullOrEmpty(sortOrder) ? "datum_desc" : "";
 
-            if (exemplareAbgelaufen != null)
-            {
-                foreach (var item in exemplareAbgelaufen)
+                switch (sortOrder)
                 {
-                    var adminKorb = context.Leihauftrag.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
-                    exemplareAbgelaufenDic.Add(adminKorb, item);
+                    case "datum_desc":
+                        exemplareAbgelaufen = exemplareAbgelaufen.OrderByDescending(s => s.EntliehenBis);
+                        break;
+                    default:
+                        exemplareAbgelaufen = exemplareAbgelaufen.OrderBy(s => s.EntliehenBis);
+                        break;
                 }
-            }
 
-            // ADMIN: Bald ablaufende Exemplare
-            var exemplareLaufenBaldAb = context.Exemplar.Where(e =>
-                e.EntliehenBis != null
-                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays < 7
-                && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0);
+                // Ordne den Leihaufträgen die entsprechenden Exemplare zu
+                var exemplareAbgelaufenDic = new Dictionary<Leihauftrag, Exemplar>();
 
-            ViewData["DatumSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "datum2_desc" : "";
-
-            switch (sortOrder)
-            {
-                case "datum2_desc":
-                    exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderByDescending(s => s.EntliehenBis);
-                    break;
-                default:
-                    exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderBy(s => s.EntliehenBis);
-                    break;
-            }
-
-            var exemplareLaufenBaldAbDic = new Dictionary<Leihauftrag, Exemplar>();
-
-            if (exemplareLaufenBaldAb != null)
-            {
-                foreach (var item in exemplareLaufenBaldAb)
+                if (exemplareAbgelaufen != null)
                 {
-                    var adminKorb = context.Leihauftrag.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
-                    exemplareLaufenBaldAbDic.Add(adminKorb, item);
-                }
-            }
-
-            // USER: Entliehende Exemplare
-            var user = await userManager.GetUserAsync(User);
-            var exemplareEntliehen = context.Leihauftrag.Where(a =>
-                a.Benutzer.Equals(user.UserName)
-                && a.IstVerliehen == true);
-
-            var exemplareEntliehenDic = new Dictionary<Leihauftrag, Exemplar>();
-
-            if (exemplareEntliehen != null)
-            {
-                foreach (var item in exemplareEntliehen)
-                {
-                    var exemplar = context.Exemplar.SingleOrDefault(a => a.ISBN == item.ISBN && a.ExemplarId == item.ExemplarId);
-                    exemplareEntliehenDic.Add(item, exemplar);
-                }
-            }
-
-            ViewData["DatumSortParm3"] = String.IsNullOrEmpty(sortOrder) ? "datum3_desc" : "";
-
-            Dictionary<Leihauftrag, Exemplar> sorted = new Dictionary<Leihauftrag, Exemplar>();
-
-            switch (sortOrder)
-            {
-                case "datum3_desc":
-                    foreach (var ex in exemplareEntliehenDic.OrderByDescending(s => s.Value.EntliehenBis.Value))
+                    foreach (var exemplar in exemplareAbgelaufen)
                     {
-                        sorted.Add(ex.Key, ex.Value);
+                        var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(a => a.ISBN == exemplar.ISBN && a.ExemplarId == exemplar.ExemplarId);
+                        exemplareAbgelaufenDic.Add(leihauftrag, exemplar);
                     }
-                    break;
-                default:
-                    foreach (var ex in exemplareEntliehenDic.OrderBy(s => s.Value.EntliehenBis.Value))
+                }
+
+                // ADMIN: In Kürze ablaufendes Leihfristende
+                var exemplareLaufenBaldAb = bibContext.Exemplar.Where(e =>
+                    e.EntliehenBis != null
+                    && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays < 7
+                    && (e.EntliehenBis.Value - DateTime.Now.Date).TotalDays > 0);
+
+                ViewData["DatumSortParm2"] = String.IsNullOrEmpty(sortOrder) ? "datum2_desc" : "";
+
+                switch (sortOrder)
+                {
+                    case "datum2_desc":
+                        exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderByDescending(s => s.EntliehenBis);
+                        break;
+                    default:
+                        exemplareLaufenBaldAb = exemplareLaufenBaldAb.OrderBy(s => s.EntliehenBis);
+                        break;
+                }
+
+                var exemplareLaufenBaldAbDic = new Dictionary<Leihauftrag, Exemplar>();
+
+                if (exemplareLaufenBaldAb != null)
+                {
+                    foreach (var exemplar in exemplareLaufenBaldAb)
                     {
-                        sorted.Add(ex.Key, ex.Value);
+                        var leihauftrag = bibContext.Leihauftrag.SingleOrDefault(a => a.ISBN == exemplar.ISBN && a.ExemplarId == exemplar.ExemplarId);
+                        exemplareLaufenBaldAbDic.Add(leihauftrag, exemplar);
                     }
-                    break;
+                }
+
+                model.ExemplareAbgelaufen = exemplareAbgelaufenDic;
+                model.ExemplareLaufenBaldAb = exemplareLaufenBaldAbDic;
+
+            }
+            else // Fall: Member ist eingeloggt
+            {
+                // MEMBER: Ausgeliehene Bücher
+                var user = await userManager.GetUserAsync(User);
+                var exemplareEntliehen = bibContext.Leihauftrag.Where(a =>
+                    a.Benutzer.Equals(user.UserName)
+                    && a.IstVerliehen == true);
+
+                var exemplareEntliehenDic = new Dictionary<Leihauftrag, Exemplar>();
+
+                if (exemplareEntliehen != null)
+                {
+                    foreach (var leihauftrag in exemplareEntliehen)
+                    {
+                        var exemplar = bibContext.Exemplar.SingleOrDefault(a => a.ISBN == leihauftrag.ISBN && a.ExemplarId == leihauftrag.ExemplarId);
+                        exemplareEntliehenDic.Add(leihauftrag, exemplar);
+                    }
+                }
+
+                ViewData["DatumSortParm3"] = String.IsNullOrEmpty(sortOrder) ? "datum3_desc" : "";
+
+                Dictionary<Leihauftrag, Exemplar> sortedExemplareEntliehenDic = new Dictionary<Leihauftrag, Exemplar>();
+
+                switch (sortOrder)
+                {
+                    case "datum3_desc":
+                        foreach (var exemplar in exemplareEntliehenDic.OrderByDescending(s => s.Value.EntliehenBis.Value))
+                        {
+                            sortedExemplareEntliehenDic.Add(exemplar.Key, exemplar.Value);
+                        }
+                        break;
+                    default:
+                        foreach (var exemplar in exemplareEntliehenDic.OrderBy(s => s.Value.EntliehenBis.Value))
+                        {
+                            sortedExemplareEntliehenDic.Add(exemplar.Key, exemplar.Value);
+                        }
+                        break;
+                }
+
+                // MEMBER: Versendete Leihaufträge
+                var exemplareLeihauftragVersendet = bibContext.Leihauftrag.Where(a =>
+                    a.Benutzer.Equals(user.UserName)
+                    && a.IstVerliehen == false);
+
+                model.ExemplareEntliehen = sortedExemplareEntliehenDic;
+                model.ExemplareLeihauftragVersendet = await exemplareLeihauftragVersendet.ToListAsync();
             }
 
-            // USER: Leihaufträge versendet Exemplare
-            var exemplareLeihauftragVersendet = context.Leihauftrag.Where(a =>
-                a.Benutzer.Equals(user.UserName)
-                && a.IstVerliehen == false);
-
-            model.ExemplareAbgelaufen = exemplareAbgelaufenDic;
-            model.ExemplareLaufenBaldAb = exemplareLaufenBaldAbDic;
-            model.ExemplareEntliehen = sorted;
-            model.ExemplareLeihauftragVersendet = await exemplareLeihauftragVersendet.ToListAsync();
             return View(model);
         }
     }

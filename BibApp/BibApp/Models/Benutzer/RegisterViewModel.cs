@@ -4,15 +4,15 @@ namespace BibApp.Models
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Der Benutzername muss eingegeben werden.")]
         [Display(Name = "Benutzername")]
         public string Benutzername { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Die E-Mail Adresse muss eingegeben werden.")]
         [Display(Name = "E-Mail")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Ein Passwort muss vergeben werden.")]
         [StringLength(100, ErrorMessage = "Das {0} muss mindestens {2} und maximal {1} Zeichen lang sein.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Passwort")]

@@ -27,10 +27,11 @@ namespace BibApp.Controllers
             }
 
         // GET: Warenkorb/Index
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            // Gibt alle Bücher im Warenkorb des eingeloggten Benutzer an den Index
+            // Gibt alle Bücher im Warenkorb des eingeloggten Benutzer an den Index weiter
             var warenkorb = bibContext.Warenkorb.Where(w => w.Benutzer.Equals(userManager.GetUserAsync(User).Result.UserName));
             return View(await warenkorb.ToListAsync());
         }
@@ -40,10 +41,10 @@ namespace BibApp.Controllers
         {
             var warenkorbExemplar = await bibContext.Warenkorb.SingleOrDefaultAsync(i => i.Id == id);
             var user = await userManager.GetUserAsync(User);
-            var warenkorb = WarenkorbManager.GetWarenkorb(user, bibContext);
-            await warenkorb.EntferneVonWarenkorb(warenkorbExemplar);
+            var warenkorbManager = WarenkorbManager.GetWarenkorbManager(user, bibContext);
+            await warenkorbManager.EntferneVonWarenkorb(warenkorbExemplar);
 
-            toastNotification.AddToastMessage("Entfernen", "Das Buch \"" + warenkorbExemplar.BuchTitel + "\" wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Buch entfernt", "Das Buch \"" + warenkorbExemplar.BuchTitel + "\" wurde aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -55,10 +56,10 @@ namespace BibApp.Controllers
         public async Task<IActionResult> WarenkorbLeeren()
         {
             var user = await userManager.GetUserAsync(User);
-            var warenkorb = WarenkorbManager.GetWarenkorb(user, bibContext);
-            await warenkorb.WarenkorbLeeren();
+            var warenkorbManager = WarenkorbManager.GetWarenkorbManager(user, bibContext);
+            await warenkorbManager.WarenkorbLeeren();
 
-            toastNotification.AddToastMessage("Warenkorb leeren", "Es wurden alle Bücher aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Warenkorb geleert", "Es wurden alle Bücher aus dem Warenkorb entfernt.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });
@@ -70,10 +71,10 @@ namespace BibApp.Controllers
         public async Task<IActionResult> LeihauftragSenden()
         {
             var user = await userManager.GetUserAsync(User);
-            var warenkorb = WarenkorbManager.GetWarenkorb(user, bibContext);
-            await warenkorb.LeihauftragSenden();
+            var warenkorbManager = WarenkorbManager.GetWarenkorbManager(user, bibContext);
+            await warenkorbManager.LeihauftragSenden();
 
-            toastNotification.AddToastMessage("Leihauftrag senden", "Der Leihauftrag wurde an den Bibliothekar gesendet.", ToastEnums.ToastType.Success, new ToastOption()
+            toastNotification.AddToastMessage("Leihauftrag gesendet", "Der Leihauftrag wurde an den Bibliothekar gesendet.", ToastEnums.ToastType.Success, new ToastOption()
             {
                 PositionClass = ToastPositions.TopCenter
             });

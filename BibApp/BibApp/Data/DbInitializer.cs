@@ -24,11 +24,11 @@ namespace BibApp.Data
             this.roleManager = roleManager;
         }
 
+        // Füllt die Datenbank mit Testdaten
         public async Task Initialize()
         {
 
             string[] roleNames = { "Admin", "Member" };
-            IdentityResult roleResult;
 
             // Erstelle alle Benutzer-Rollen
             foreach (var roleName in roleNames)
@@ -36,7 +36,7 @@ namespace BibApp.Data
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
 
@@ -232,16 +232,16 @@ namespace BibApp.Data
                     new Buch{ISBN="978-3293200500", Titel="Die Kinder unseres Viertels", Autor="Nagib Machfus, Naguib Mahfouz", Erscheinungsjahr=2006, Regal=19, Reihe=3, Verlag="Unionsverlag", AnzahlExemplare=2},
                     new Buch{ISBN="978-3596294312", Titel="Buddenbrooks. Verfall einer Familie", Autor="Thomas Mann", Erscheinungsjahr=2008, Regal=20, Reihe=2, Verlag="Fischer", AnzahlExemplare=3},
 
-                new Buch{ISBN=" 978-3596294336", Titel="Der Zauberberg", Autor="Thomas Mann", Erscheinungsjahr=1991, Regal=5, Reihe=1, Verlag="Fischer", AnzahlExemplare=2},
-                new Buch{ISBN="978-3800054794", Titel="Moby Dick", Autor="Herman Melville", Erscheinungsjahr=2009, Regal=6, Reihe=2, Verlag="Ueberreuter", AnzahlExemplare=1},
-                new Buch{ISBN="978-3938484401", Titel="Die Essais", Autor="Michel de Montaigne", Erscheinungsjahr=2005, Regal=7, Reihe=3, Verlag="Anaconda", AnzahlExemplare=1},
-                new Buch{ISBN="978-3492245647", Titel="La Storia", Autor="Elsa Morante", Erscheinungsjahr=2005, Regal=8, Reihe=4, Verlag="Piper", AnzahlExemplare=5},
-                new Buch{ISBN="978-3499244209", Titel="Menschenkind", Autor="Toni Morrison", Erscheinungsjahr=2007, Regal=9, Reihe=1, Verlag="Rowohlt", AnzahlExemplare=6},
-                new Buch{ISBN="978-3458333593", Titel="Die Geschichte vom Prinzen Genji", Autor="Murasaki", Erscheinungsjahr=1994, Regal=10, Reihe=2, Verlag="Insel", AnzahlExemplare=2},
-                new Buch{ISBN="978-3499134623", Titel="Der Mann ohne Eigenschaften I: Erstes und Zweites Buch", Autor="Robert Musil", Erscheinungsjahr=1994, Regal=11, Reihe=3, Verlag="Rowohlt", AnzahlExemplare=2},
-                new Buch{ISBN="978-3499225437", Titel="Lolita", Autor="Vladimir Nabokov", Erscheinungsjahr=1999, Regal=3, Reihe=1, Verlag="Rowohlt", AnzahlExemplare=3},
-                new Buch{ISBN="978-3938484074", Titel="Metamorphosen", Autor="Ovid", Erscheinungsjahr=2005, Regal=4, Reihe=1, Verlag="Anaconda", AnzahlExemplare=4},
-                new Buch{ISBN="978-3250250029", Titel="Das Buch der Unruhe", Autor="Fernando Pessoa", Erscheinungsjahr=2008, Regal=13, Reihe=1, Verlag="Ammann", AnzahlExemplare=2},
+                    new Buch{ISBN=" 978-3596294336", Titel="Der Zauberberg", Autor="Thomas Mann", Erscheinungsjahr=1991, Regal=5, Reihe=1, Verlag="Fischer", AnzahlExemplare=2},
+                    new Buch{ISBN="978-3800054794", Titel="Moby Dick", Autor="Herman Melville", Erscheinungsjahr=2009, Regal=6, Reihe=2, Verlag="Ueberreuter", AnzahlExemplare=1},
+                    new Buch{ISBN="978-3938484401", Titel="Die Essais", Autor="Michel de Montaigne", Erscheinungsjahr=2005, Regal=7, Reihe=3, Verlag="Anaconda", AnzahlExemplare=1},
+                    new Buch{ISBN="978-3492245647", Titel="La Storia", Autor="Elsa Morante", Erscheinungsjahr=2005, Regal=8, Reihe=4, Verlag="Piper", AnzahlExemplare=5},
+                    new Buch{ISBN="978-3499244209", Titel="Menschenkind", Autor="Toni Morrison", Erscheinungsjahr=2007, Regal=9, Reihe=1, Verlag="Rowohlt", AnzahlExemplare=6},
+                    new Buch{ISBN="978-3458333593", Titel="Die Geschichte vom Prinzen Genji", Autor="Murasaki", Erscheinungsjahr=1994, Regal=10, Reihe=2, Verlag="Insel", AnzahlExemplare=2},
+                    new Buch{ISBN="978-3499134623", Titel="Der Mann ohne Eigenschaften I: Erstes und Zweites Buch", Autor="Robert Musil", Erscheinungsjahr=1994, Regal=11, Reihe=3, Verlag="Rowohlt", AnzahlExemplare=2},
+                    new Buch{ISBN="978-3499225437", Titel="Lolita", Autor="Vladimir Nabokov", Erscheinungsjahr=1999, Regal=3, Reihe=1, Verlag="Rowohlt", AnzahlExemplare=3},
+                    new Buch{ISBN="978-3938484074", Titel="Metamorphosen", Autor="Ovid", Erscheinungsjahr=2005, Regal=4, Reihe=1, Verlag="Anaconda", AnzahlExemplare=4},
+                    new Buch{ISBN="978-3250250029", Titel="Das Buch der Unruhe", Autor="Fernando Pessoa", Erscheinungsjahr=2008, Regal=13, Reihe=1, Verlag="Ammann", AnzahlExemplare=2},
 
                     new Buch{ISBN="978-3458069164", Titel="Sämtliche Erzählungen in vier Bänden", Autor="Edgar Allan Poe", Erscheinungsjahr=2008, Regal=14, Reihe=3, Verlag="Insel", AnzahlExemplare=4},
                     new Buch{ISBN="978-3518397091", Titel="Auf der Suche nach der verlorenen Zeit", Autor="Marcel Proust", Erscheinungsjahr=2000, Regal=18, Reihe=3, Verlag="Suhrkamp", AnzahlExemplare=2},
@@ -302,13 +302,14 @@ namespace BibApp.Data
 
                 await bibContext.SaveChangesAsync();
 
+                // Erstelle Leihaufträge
                 if (!bibContext.Leihauftrag.Any())
                 {
                     // 1. Buch verleihen
                     var buch1 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3648073278"));
                     var exemplar1 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3648073278") && e.ExemplarId == 1);
                     
-                    var adminKorb1 = new Leihauftrag {
+                    var leihauftrag1 = new Leihauftrag {
                         Benutzer = "member",
                         ISBN = exemplar1.ISBN,
                         BuchTitel = buch1.Titel,
@@ -316,7 +317,7 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.Leihauftrag.Add(adminKorb1);
+                    bibContext.Leihauftrag.Add(leihauftrag1);
 
                     exemplar1.Verfügbarkeit = false;
                     exemplar1.EntliehenBis = DateTime.Now.AddDays(-2);
@@ -327,7 +328,7 @@ namespace BibApp.Data
                     var buch2 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3864902611"));
                     var exemplar2 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3864902611") && e.ExemplarId == 1);
 
-                    var adminKorb2 = new Leihauftrag
+                    var leihauftrag2 = new Leihauftrag
                     {
                         Benutzer = "member",
                         ISBN = exemplar2.ISBN,
@@ -336,7 +337,7 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.Leihauftrag.Add(adminKorb2);
+                    bibContext.Leihauftrag.Add(leihauftrag2);
 
                     exemplar2.Verfügbarkeit = false;
                     exemplar2.EntliehenBis = DateTime.Now.AddDays(5);
@@ -347,7 +348,7 @@ namespace BibApp.Data
                     var buch3 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3938484081"));
                     var exemplar3 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3938484081") && e.ExemplarId == 1);
 
-                    var adminKorb3 = new Leihauftrag
+                    var leihauftrag3 = new Leihauftrag
                     {
                         Benutzer = "misch001",
                         ISBN = exemplar3.ISBN,
@@ -356,7 +357,7 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.Leihauftrag.Add(adminKorb3);
+                    bibContext.Leihauftrag.Add(leihauftrag3);
 
                     exemplar3.Verfügbarkeit = false;
                     exemplar3.EntliehenBis = DateTime.Now.AddDays(15);
@@ -367,7 +368,7 @@ namespace BibApp.Data
                     var buch4 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3596135103"));
                     var exemplar4 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3596135103") && e.ExemplarId == 1);
 
-                    var adminKorb4 = new Leihauftrag
+                    var leihauftrag4 = new Leihauftrag
                     {
                         Benutzer = "misch001",
                         ISBN = exemplar4.ISBN,
@@ -376,7 +377,7 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.Leihauftrag.Add(adminKorb4);
+                    bibContext.Leihauftrag.Add(leihauftrag4);
 
                     exemplar4.Verfügbarkeit = false;
                     exemplar4.EntliehenBis = DateTime.Now.AddDays(4);
@@ -387,7 +388,7 @@ namespace BibApp.Data
                     var buch5 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3866472976"));
                     var exemplar5 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3866472976") && e.ExemplarId == 1);
 
-                    var adminKorb5 = new Leihauftrag
+                    var leihauftrag5 = new Leihauftrag
                     {
                         Benutzer = "readl001",
                         ISBN = exemplar5.ISBN,
@@ -396,7 +397,7 @@ namespace BibApp.Data
                         IstVerliehen = true
                     };
 
-                    bibContext.Leihauftrag.Add(adminKorb5);
+                    bibContext.Leihauftrag.Add(leihauftrag5);
 
                     exemplar5.Verfügbarkeit = false;
                     exemplar5.EntliehenBis = DateTime.Now.AddDays(-4);

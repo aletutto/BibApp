@@ -2,7 +2,7 @@
 @await Component.InvokeAsync("NToastNotify.Toastr")
 
 @{
-    ViewData["Title"] = "Bearbeiten";
+    ViewData["Title"] = "Benutzer bearbeiten";
 }
 
 <h2>Benutzerkonto bearbeiten</h2>
@@ -10,7 +10,6 @@
 <hr />
 <div class="row" style="padding-left: 15px">
     <form asp-action="Edit">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
         <div class="row">
             <div class="col-md-3">

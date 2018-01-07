@@ -4,14 +4,13 @@ namespace BibApp.Models
 {
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Der Benutzername muss eingegeben werden.")]
         public string Benutzername { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Das Passwort muss eingegeben werden.")]
         [DataType(DataType.Password)]
         public string Passwort { get; set; }
 
-        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 }
