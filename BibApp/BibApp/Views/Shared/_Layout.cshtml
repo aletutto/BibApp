@@ -19,6 +19,8 @@
     @Html.Partial("_Favicons")
 </head>
 
+@using BibApp.Models.Shared
+
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
@@ -30,24 +32,24 @@
 
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-controller="Home" asp-action="Index"> <i class="glyphicon glyphicon-dashboard"></i> Dashboard</a></li>
+                        <li class="@Html.IsActive("Home","Index")"><a asp-controller="Home" asp-action="Index"> <i class="glyphicon glyphicon-dashboard"></i> Dashboard</a></li>
 
                         @if (User.IsInRole("Admin"))
                         {
-                            <li class="dropdown">
+                            <li class="dropdown @Html.IsActive("Benutzer","Index") @Html.IsActive("Buch","Index")">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="glyphicon glyphicon-folder-open"></i> &nbsp; Stammdaten <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                                    <li><a asp-controller="Benutzer" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Benutzer</a></li>
+                                    <li class="@Html.IsActive("Buch","Index")"><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                                    <li class="@Html.IsActive("Benutzer","Index")"><a asp-controller="Benutzer" asp-action="Index"><i class="glyphicon glyphicon-user"></i> Benutzer</a></li>
                                 </ul>
                             </li>
-                            <li><a asp-controller="Leihauftrag" asp-action="Index"> <i class="glyphicon glyphicon-list"></i> Leihaufträge</a></li>
+                            <li class="@Html.IsActive("Leihauftrag","Index")"><a asp-controller="Leihauftrag" asp-action="Index"> <i class="glyphicon glyphicon-list"></i> Leihaufträge</a></li>
 
                         }
                         else
                         {
-                            <li><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
-                            <li><a asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb</a></li>
+                            <li class="@Html.IsActive("Buch","Index")"><a asp-controller="Buch" asp-action="Index"><i class="glyphicon glyphicon-book"></i> Bücher</a></li>
+                            <li class="@Html.IsActive("Warenkorb","Index")"><a asp-controller="Warenkorb" asp-action="Index"><i class="glyphicon glyphicon-shopping-cart"></i> Warenkorb</a></li>
                         }
 
                     }
@@ -55,7 +57,7 @@
                 <ul class="nav navbar-nav navbar-right">           
                     @if (User.Identity.IsAuthenticated)
                     {
-                    <li><a asp-controller="Benutzer" asp-action="ManageBenutzer"> <i class="glyphicon glyphicon-cog"></i> Mein Benutzerkonto</a> </li>
+                    <li class="@Html.IsActive("Benutzer","ManageBenutzer")"><a asp-controller="Benutzer" asp-action="ManageBenutzer"> <i class="glyphicon glyphicon-cog"></i> Mein Benutzerkonto</a> </li>
                       
                     <li><a asp-controller="Benutzer" asp-action="Logout"> <i class="glyphicon glyphicon-off"></i> Logout</a> </li>
                     }

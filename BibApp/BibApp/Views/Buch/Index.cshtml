@@ -15,6 +15,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .parent:hover {
+        background-color: #f5f5f5;
+    }
 </style>
 
 @if (User.IsInRole("Admin"))
@@ -93,7 +96,7 @@
             <tbody>
                 @foreach (var item in Model.Buecher)
                 {
-                    <tr class="parent" style="background-color:white">
+                    <tr class="parent">
                         <td>
                             @Html.DisplayFor(modelItem => item.Titel)
                         </td>
@@ -210,14 +213,25 @@
 
             $('.parent').on('click', function () {
 
-                if ($(this).css("background-color") == "rgb(255, 255, 255)") {
+                if ($(this).css("background-color") == "rgb(255, 255, 255)" || $(this).css("background-color") == "rgb(245, 245, 245)") {
 
                     $(this).css("background-color", "rgb(51, 122, 183)");
+                    $(this).mouseenter(function () {
+                        $(this).css("background-color", "rgb(51, 122, 183)");
+                    }).mouseleave(function () {
+                        $(this).css("background-color", "rgb(51, 122, 183)");
+                    });
                     $(this).css("color", "white");
                     console.log("blue");
                 }
                 else if ($(this).css("background-color") == "rgb(51, 122, 183)") {
-                    $(this).css("background-color", "white");
+                    $(this).hover(function () {
+                        $(this).css("background-color", "rgb(245, 245, 245)");
+                    }, function () {
+                        $(this).css("background-color", "white");
+                    });
+
+                    $(this).css("background-color", "rgb(255, 255, 255)");
                     $(this).css("color", "black");
                     console.log("white");
                 }
