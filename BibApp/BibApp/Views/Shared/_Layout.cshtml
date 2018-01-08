@@ -59,11 +59,11 @@
                     {
                     <li class="@Html.IsActive("Benutzer","ManageBenutzer")"><a asp-controller="Benutzer" asp-action="ManageBenutzer"> <i class="glyphicon glyphicon-cog"></i> Mein Benutzerkonto</a> </li>
                       
-                    <li><a asp-controller="Benutzer" asp-action="Logout"> <i class="glyphicon glyphicon-off"></i> Logout</a> </li>
+                    <li><a asp-controller="Benutzer" asp-action="Logout"> <i class="glyphicon glyphicon-log-out"></i> Abmelden</a> </li>
                     }
                     else
                     {
-                    <li><a asp-controller="Benutzer" asp-action="Login">Login</a></li>
+                    <li><a asp-controller="Benutzer" asp-action="Login"> <i class="glyphicon glyphicon-log-in"></i> Anmelden</a></li>
                     }  
                 </ul>
             </div>

@@ -403,6 +403,46 @@ namespace BibApp.Data
                     exemplar5.EntliehenBis = DateTime.Now.AddDays(-4);
 
                     bibContext.Exemplar.Update(exemplar5);
+
+                    // 6. Buch verleihen
+                    var buch6 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3446440746"));
+                    var exemplar6 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3446440746") && e.ExemplarId == 1);
+
+                    var leihauftrag6 = new Leihauftrag
+                    {
+                        Benutzer = "member",
+                        ISBN = exemplar6.ISBN,
+                        BuchTitel = buch6.Titel,
+                        ExemplarId = exemplar6.ExemplarId,
+                        IstVerliehen = true
+                    };
+
+                    bibContext.Leihauftrag.Add(leihauftrag6);
+
+                    exemplar6.Verfügbarkeit = false;
+                    exemplar6.EntliehenBis = DateTime.Now.AddDays(28);
+
+                    bibContext.Exemplar.Update(exemplar6);
+
+                    // 7. Buch verleihen
+                    var buch7 = bibContext.Buch.SingleOrDefault(e => e.ISBN.Equals("978-3446447974"));
+                    var exemplar7 = bibContext.Exemplar.SingleOrDefault(e => e.ISBN.Equals("978-3446447974") && e.ExemplarId == 1);
+
+                    var leihauftrag7 = new Leihauftrag
+                    {
+                        Benutzer = "member",
+                        ISBN = exemplar7.ISBN,
+                        BuchTitel = buch7.Titel,
+                        ExemplarId = exemplar7.ExemplarId,
+                        IstVerliehen = true
+                    };
+
+                    bibContext.Leihauftrag.Add(leihauftrag7);
+
+                    exemplar7.Verfügbarkeit = false;
+                    exemplar7.EntliehenBis = DateTime.Now.AddDays(26);
+
+                    bibContext.Exemplar.Update(exemplar7);
                 }
 
                 await bibContext.SaveChangesAsync();
