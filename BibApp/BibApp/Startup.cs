@@ -20,7 +20,6 @@ namespace BibApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddNToastNotify();
@@ -30,43 +29,33 @@ namespace BibApp
 
             services.AddIdentity<Benutzer, IdentityRole>()
              .AddEntityFrameworkStores<BibContext>();
-             //.AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
-                //Password settings
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 1;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 1;
-
-                // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 10;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // User settings
-              //  options.User.RequireUniqueEmail = false;
+                //Passwort Einstellungen
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequiredUniqueChars = 2;
 
             });
 
             services.AddScoped<DbInitializer>();
             services.ConfigureApplicationCookie(options =>
             {
-                // Cookie settings
+                // Cookie Einstellungen
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(150);
-                options.LoginPath = "/Benutzer/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
-                options.LogoutPath = "/Benutzer/Login"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Login
-                options.AccessDeniedPath = "/Benutzer/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
+                options.LoginPath = "/Benutzer/Login";
+                options.LogoutPath = "/Benutzer/Login";
+                options.AccessDeniedPath = "/Benutzer/AccessDenied";
                 options.SlidingExpiration = true;
             });
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, BibContext context, IServiceProvider service, DbInitializer dbInitializer)
         {
             if (env.IsDevelopment())

@@ -45,15 +45,15 @@ namespace BibApp.Data
             {
                 var poweruser = new Benutzer
                 {
-                    UserName = "dude",
-                    Email = "dude2000@gmail.com",
+                    UserName = "admin",
+                    Email = "admin@bibapp.de",
                     Role = "Admin"
                 };
 
                 var testuser = new Benutzer
                 {
                     UserName = "member",
-                    Email = "member@gmail.com",
+                    Email = "member@bibapp.de",
                     Role = "Member"
                 };
 
@@ -92,12 +92,10 @@ namespace BibApp.Data
                     Role = "Member"
                 };
 
-                string powerUserPWD = "dude";
-                string testPWD = "member";
-                string userPWD = "member";
+                string userPWD = "Test123!";
 
-                var powerUserTest = await userManager.FindByEmailAsync("dude2000@gmail.com");
-                var testUserTest = await userManager.FindByEmailAsync("member@gmail.com");
+                var powerUserTest = await userManager.FindByEmailAsync("admin@bibapp.de");
+                var testUserTest = await userManager.FindByEmailAsync("member@bibapp.de");
                 var user1Test = await userManager.FindByEmailAsync("peter.diedrich@stud.hn.de");
                 var user2Test = await userManager.FindByEmailAsync("hans.müller@stud.hn.de");
                 var user3Test = await userManager.FindByEmailAsync("rene.adler@stud.hn.de");
@@ -106,7 +104,7 @@ namespace BibApp.Data
 
                 if (powerUserTest == null)
                 {
-                    var createPowerUser = await userManager.CreateAsync(poweruser, powerUserPWD);
+                    var createPowerUser = await userManager.CreateAsync(poweruser, userPWD);
 
                     if (createPowerUser.Succeeded)
                     {
@@ -116,7 +114,7 @@ namespace BibApp.Data
 
                 if (testUserTest == null)
                 {
-                    var createTestUser = await userManager.CreateAsync(testuser, testPWD);
+                    var createTestUser = await userManager.CreateAsync(testuser, userPWD);
 
                     if (createTestUser.Succeeded)
                     {

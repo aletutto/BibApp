@@ -494,14 +494,14 @@ namespace BibApp.Controllers
                     // Erstellt einen neuen Benutzer mit dem Usermanager und fügt eine Rolle hinzu.
                     var user = new Benutzer { UserName = model.Benutzername, Email = model.Email };
                     var result = await userManager.CreateAsync(user, model.Passwort);
-                    await userManager.AddToRoleAsync(user, "Member");
-                    user.Role = "Member";
-                    bibContext.Update(user);
-                    await bibContext.SaveChangesAsync();
 
                     // Prüft, ob beim Erstellen alles erfolgreich war und loggt den Benutzer ein
                     if (result.Succeeded)
                     {
+                        await userManager.AddToRoleAsync(user, "Member");
+                        user.Role = "Member";
+                        bibContext.Update(user);
+                        await bibContext.SaveChangesAsync();
                         await signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToAction("Index", "Home");
                     }
