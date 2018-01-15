@@ -218,6 +218,24 @@ namespace BibApp.Controllers
                         }
                     }
 
+                    var warenkorbExemplare = bibContext.Warenkorb.Where(w => 
+                    w.BuchTitel.Equals(buchVorher.Titel));
+
+                    foreach(var exemplar in warenkorbExemplare)
+                    {
+                        exemplar.BuchTitel = buch.Titel;
+                        bibContext.Update(exemplar);
+                    }
+
+                    var leihauftraege = bibContext.Leihauftrag.Where(w =>
+                        w.BuchTitel.Equals(buchVorher.Titel));
+
+                    foreach (var leihauftrag in leihauftraege)
+                    {
+                        leihauftrag.BuchTitel = buch.Titel;
+                        bibContext.Update(leihauftrag);
+                    }
+
                     bibContext.Update(buch);
                     await bibContext.SaveChangesAsync();
                 }
