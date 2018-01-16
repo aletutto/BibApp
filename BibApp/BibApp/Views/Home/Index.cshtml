@@ -25,7 +25,7 @@
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th style="width: 35%">
-                                @Html.DisplayNameFor(model => model.Buch.Titel)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.BuchTitel)
                             </th>
                             <th style="width: 25%">
                                 <a asp-action="Index" asp-route-sortOrder="@ViewData["DatumSortParm"]">Abgelaufen am</a>
@@ -97,7 +97,7 @@
                                 @Html.DisplayNameFor(model => model.Buch.ISBN)
                             </th>
                             <th style="width: 35%">
-                                @Html.DisplayNameFor(model => model.Buch.Titel)
+                                @Html.DisplayNameFor(model => model.Leihauftrag.BuchTitel)
                             </th>
                             <th style="width: 25%">
                                 <a asp-action="Index" asp-route-sortOrder="@ViewData["DatumSortParm2"]">Läuft ab am</a>
@@ -119,7 +119,7 @@
                                     <td style="width: 35%">
                                         @Html.DisplayFor(modelItem => item.Key.BuchTitel)
                                     </td>
-                                    <td style="width: 25%">
+                                    <td style="color:darkorange; font-weight: bold; width: 25%">
                                         @Html.DisplayFor(modelItem => item.Value.EntliehenBis)
                                     </td>
                                 </tr>
