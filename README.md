@@ -1,5 +1,11 @@
-# BibApp
+# BibApp - Bibliotheksmanagementsystem
 
+Diese Anwendung soll Bibliotheken die tägliche Arbeit erleichtern.
+
+## Konzept
+![alt text](https://github.com/aletutto/BibApp/blob/master/Plakat.jpg)
+
+## Start der Anwendung
 Die Anwendung wird beim ersten Start mit Testdaten gefüllt.
 Folgende Benutzer wurden zum Testen angelegt:
 - admin
