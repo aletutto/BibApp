@@ -5,6 +5,12 @@ Diese Anwendung soll Bibliotheken die tägliche Arbeit erleichtern.
 ## Konzept
 ![alt text](https://github.com/aletutto/BibApp/blob/master/Plakat.jpg)
 
+## Dokumentation
+[Pflichtenheft](https://github.com/aletutto/BibApp/blob/master/Dokumentation/Pflichtenheft.md)
+
+[Architektur](https://github.com/aletutto/BibApp/blob/master/Dokumentation/Architekturdokumentation.md)
+
+
 ## Start der Anwendung
 Die Anwendung wird beim ersten Start mit Testdaten gefüllt.
 Folgende Benutzer wurden zum Testen angelegt:
