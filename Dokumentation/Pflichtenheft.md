@@ -36,19 +36,19 @@ Microsoft Visual Studio 2017 mit folgenen Komponenten:
 
 # 3 Kontext und Überblick
 ## Systeme
-![BibApp](images\Pflichtenheft\BibApp.png)
+![BibApp](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Pflichtenheft/BibApp.png)
 
 ## Teilsystem *Buch*
-![Buch](images\Pflichtenheft\Buch.png)
+![Buch](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Pflichtenheft/Buch.png)
 
 ## Teilsystem *Benutzer*
-![Benutzer](images\Pflichtenheft\Benutzer.png)
+![Benutzer](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Pflichtenheft/Benutzer.png)
 
 ## Teilsystem *Warenkorb*
-![Warenkorb](images\Pflichtenheft\Warenkorb.png)
+![Warenkorb](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Pflichtenheft/Warenkorb.png)
 
 ## Teilsystem *Leihauftrag*
-![Leihauftrag](images\Pflichtenheft\Leihauftrag.png)
+![Leihauftrag](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Pflichtenheft/Leihauftrag.png)
 
 
 # 4 Funktionale Anforderungen
