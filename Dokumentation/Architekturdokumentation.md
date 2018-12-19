@@ -49,18 +49,18 @@ Zuletzt wurden kleinere Features eingebaut, welche die Benutzung des Systems erl
 
 ## Klassendiagramm
 
-![id](images\Architekturdokumentation\Datenbankmodell.png)
+![id](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Architekturdokumentation/Datenbankmodell.png)
 
 
 # 6 Laufzeitsicht
 
 ## Sequenzdiagramm für den Use-Case *Leihauftrag (erfolgreich) senden*
 
-![id](images\Architekturdokumentation\Sequenzdiagramm - Leihauftrag senden.png)
+![id](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Architekturdokumentation/Sequenzdiagramm%20-%20Leihauftrag%20senden.png)
 
 ## Sequenzdiagramm für den Use-Case *Buch (erfolgreich) ausleihen*
 
-![id](images\Architekturdokumentation\Sequenzdiagramm - Buch verleihen.png)
+![id](https://github.com/aletutto/BibApp/blob/master/Dokumentation/images/Architekturdokumentation/Sequenzdiagramm%20-%20Buch%20verleihen.png)
 
 # 7 Querschnittliche Konzepte
 
